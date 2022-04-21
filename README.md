@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://flutter.io/">
-    <img src="https://github.com/r2am9d/vendibase/blob/master/assets/icons/icon-text-bg-white.png" alt="Logo" width=72 height=72>
+    <img src="https://github.com/r2am9d/vendibase/blob/master/assets/icons/icon-bg-white.png" alt="Logo" width=72 height=72>
   </a>
 
   <h2 align="center">Vendibase</h2>
@@ -20,7 +20,7 @@
 - [Application Structure](#application-structure)
 - [Bugs and feature requests](#bugs-and-feature-requests)
 - [Contributing](#contributing)
-- [Creators](#creators)
+- [Creator](#creator)
 - [Thanks](#thanks)
 - [Copyright and license](#copyright-and-license)
 
