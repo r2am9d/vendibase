@@ -7,7 +7,7 @@
 
   <p align="center">
     Inventory app manager that uses <a href="https://github.com/simolus3/drift">Drift</a>
-    <br>Application made with much  :heart: . Contains CRUD, patterns, and much more!<br><br>
+    <br>Application made with <a href="https://github.com/flutter/flutter">Flutter</a> :heart:<br><br>
     <a href='https://ko-fi.com/A0A0C9HCQ' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
   </p>
 </p>
