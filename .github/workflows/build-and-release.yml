@@ -13,6 +13,7 @@ jobs:
         run: echo "APP_VERSION=v$(date +'%Y.%m.%d.%H.%M.%S')" >> $GITHUB_ENV
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Release keys
         run: |
           echo "${{ secrets.UPLOAD_KEYSTORE }}" > upload-keystore.jks.asc
           gpg -d --passphrase "${{ secrets.PASSPHRASE }}" --batch upload-keystore.jks.asc > android/app/upload-keystore.jks
