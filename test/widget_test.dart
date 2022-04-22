@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vendibase/main.dart';
 
 void main() {
+  
   testWidgets('Check if ProviderScope is present', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
     expect(find.byType(ProviderScope), findsOneWidget);

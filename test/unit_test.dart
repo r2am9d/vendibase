@@ -11,5 +11,4 @@ void main() {
     final data = db.dashboardDao.getData('2022');
     expect(data is CombineLatestStream, true);
   });
-
 }

@@ -13,6 +13,11 @@ jobs:
         run: echo "APP_VERSION=v$(date +'%Y.%m.%d.%H.%M.%S')" >> $GITHUB_ENV
       - name: Checkout repository
         uses: actions/checkout@v1
+        run: |
+          echo "${{ secrets.UPLOAD_KEYSTORE }}" > upload-keystore.jks.asc
+          gpg -d --passphrase "${{ secrets.PASSPHRASE }}" --batch upload-keystore.jks.asc > android/app/upload-keystore.jks
+          echo "${{ secrets.KEY_PROPERTIES }}" > key.properties.asc
+          gpg -d --passphrase "${{ secrets.PASSPHRASE }}" --batch key.properties.asc > android/key.properties
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
@@ -33,5 +38,5 @@ jobs:
         with:
           tag: ${{ env.APP_VERSION }}
           name: ${{ env.APP_VERSION }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.APP_TOKEN }}
           artifacts: 'build/app/outputs/apk/release/*.apk'
