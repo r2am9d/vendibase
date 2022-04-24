@@ -260,14 +260,9 @@ class _ArrearViewState extends State<ArrearView> {
                               ArrearsCompanion(id: d.Value(_args['id'])),
                             );
 
-                            // @TODO: Base route cannot be seen here.
-                            _navigator.pop();
-                            _navigator.pop();
-
-                            // _navigator.popUntil((route) {
-                            //   return route.settings.name ==
-                            //       AppRouter.productIndex;
-                            // });
+                            _navigator.popUntil((route) {
+                              return route.settings.name == AppRouter.home;
+                            });
                           },
                         ),
                       ],

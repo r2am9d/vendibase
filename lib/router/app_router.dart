@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:vendibase/home.dart';
 import 'package:vendibase/page/dashboard/dashboard_index.dart';
 import 'package:vendibase/page/backup/backup_index.dart';
 import 'package:vendibase/page/earning/earning_index.dart';
+import 'package:vendibase/page/codelab/codelab_index.dart';
 
 import 'package:vendibase/page/product/product_index.dart';
 import 'package:vendibase/page/product/product_create.dart';
@@ -36,6 +38,7 @@ class AppRouter {
   static const dashboardIndex = '/dashboard-index';
   static const backupIndex = '/backup-index';
   static const earningIndex = '/earning-index';
+  static const codelabIndex = '/codelab-index';
 
   static const productIndex = '/product-index';
   static const productCreate = '/product-create';
@@ -66,6 +69,13 @@ class AppRouter {
     final args = settings.arguments;
 
     switch (settings.name) {
+      // Home Route
+      case home:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) => const Home(),
+        );
+
       // Dashboard Route
       case dashboardIndex:
         return MaterialPageRoute(
@@ -80,11 +90,18 @@ class AppRouter {
           builder: (context) => const BackupIndex(),
         );
 
-      // Backup Route
+      // Earning Route
       case earningIndex:
         return MaterialPageRoute(
           settings: settings,
           builder: (context) => const EarningIndex(),
+        );
+
+      // Codelab Route
+      case codelabIndex:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) => const CodelabIndex(),
         );
 
       // Product Routes

@@ -15,19 +15,29 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var _index = 0;
-  final _page = [
-    const DashboardIndex(),
-    const ProductIndex(),
-    const ArrearIndex(),
-  ];
+  late int _index;
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _index = 0;
+    _pages = [
+      DashboardIndex(key: NavKeys.getKeys().elementAt(_index)),
+      const SizedBox(),
+      const SizedBox(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     final _theme = Theme.of(context);
-
     return Scaffold(
-      body: _page[_index],
+      body: IndexedStack(
+        index: _index,
+        children: _pages,
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           border: Border(
@@ -37,7 +47,6 @@ class _HomeState extends State<Home> {
         child: SalomonBottomBar(
           currentIndex: _index,
           selectedItemColor: AppColor.red,
-          onTap: (i) => setState(() => _index = i),
           items: [
             SalomonBottomBarItem(
               icon: const Icon(Icons.dashboard),
@@ -52,8 +61,32 @@ class _HomeState extends State<Home> {
               title: const Text('Arrears'),
             ),
           ],
+          onTap: (index) {
+            setState(() {
+              if (_pages[index] is SizedBox) {
+                debugPrint('Sized Box');
+                if (index == 1) {
+                  _pages[index] =
+                      ProductIndex(key: NavKeys.getKeys().elementAt(index));
+                } else {
+                  _pages[index] =
+                      ArrearIndex(key: NavKeys.getKeys().elementAt(index));
+                }
+              }
+
+              _index = index;
+            });
+          },
         ),
       ),
     );
   }
+}
+
+class NavKeys {
+  static final dashboard = GlobalKey(debugLabel: 'dashboard');
+  static final product = GlobalKey(debugLabel: 'product');
+  static final arrear = GlobalKey(debugLabel: 'arrear');
+
+  static List<GlobalKey> getKeys() => [dashboard, product, arrear];
 }

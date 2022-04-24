@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:vendibase/theme/app_theme.dart';
 import 'package:vendibase/database/app_database.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -230,6 +231,12 @@ class _DashboardIndexState extends State<DashboardIndex> {
           text: 'Backup',
           onTap: () => Future(() => _navigator.pushNamed('/backup-index')),
         ),
+        if (!kReleaseMode)
+          _popupMenuItem(
+            icon: Icons.science,
+            text: 'Codelab',
+            onTap: () => Future(() => _navigator.pushNamed('/codelab-index')),
+          ),
       ],
     );
   }
