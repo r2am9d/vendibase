@@ -40,5 +40,4 @@ jobs:
           tag: ${{ env.APP_VERSION }}
           name: ${{ env.APP_VERSION }}
           token: ${{ secrets.APP_TOKEN }}
-          name: release-apk
           artifacts: 'build/app/outputs/apk/release/app-release.apk'
