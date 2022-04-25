@@ -124,6 +124,7 @@ class _ArrearIndexState extends State<ArrearIndex> {
       floatingActionButton: _isVisible
           ? FloatingActionButton(
               tooltip: 'Add arrear',
+              heroTag: 'arrear-index-fab',
               child: const FaIcon(FontAwesomeIcons.moneyBill),
               onPressed: () {
                 _navigator.pushNamed(AppRouter.arrearCreate);

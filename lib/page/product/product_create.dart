@@ -105,6 +105,7 @@ class _ProductCreateState extends State<ProductCreate> {
                   _sizedBox(height: 16),
                   FormBuilderTextField(
                     name: 'name',
+                    textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     decoration: _inputDecoration('Name'),
                     validator: FormBuilderValidators.required(context),

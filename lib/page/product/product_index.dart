@@ -123,6 +123,7 @@ class _ProductIndexState extends State<ProductIndex> {
       floatingActionButton: _isVisible
           ? FloatingActionButton(
               tooltip: 'Add product',
+              heroTag: 'product-index-fab',
               child: const Icon(Icons.add_shopping_cart),
               onPressed: () {
                 _navigator.pushNamed(AppRouter.productCreate);

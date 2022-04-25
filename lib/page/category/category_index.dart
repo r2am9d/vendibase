@@ -88,6 +88,7 @@ class _CategoryIndexState extends State<CategoryIndex> {
       floatingActionButton: _isVisible
           ? FloatingActionButton(
               tooltip: 'Add category',
+              heroTag: 'category-index-fab',
               child: const Icon(Icons.add),
               onPressed: () {
                 _navigator.pushNamed(AppRouter.categoryCreate);

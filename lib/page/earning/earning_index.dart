@@ -90,6 +90,7 @@ class _EarningIndexState extends State<EarningIndex> {
       floatingActionButton: _isVisible
           ? FloatingActionButton(
               tooltip: 'Add earning',
+              heroTag: 'earning-index-fab',
               child: const Icon(Icons.add),
               onPressed: () async {
                 await _showEarningDialog(

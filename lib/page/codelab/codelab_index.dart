@@ -66,7 +66,7 @@ class _CodelabIndexState extends State<CodelabIndex> {
 
                       if (_cost == null) return null;
                       if (_cost > _amount) return 'Cost cannot be higher than Amount';
-                      return null;
+                      return null; // Fallback
                     }
                   ]),
                 ),

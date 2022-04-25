@@ -176,7 +176,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     ],
                   ),
                   _sizedBox(height: 32.0),
-                  // Change to flutter_editable_table deps
+                  // TODO: Change to ListView
                   SingleChildScrollView(
                     child: Container(
                       decoration: BoxDecoration(
@@ -292,6 +292,20 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       FormBuilderValidators.required(context),
                       FormBuilderValidators.numeric(context),
                       FormBuilderValidators.min(context, 1),
+                      (value) {
+                        final _fState = _formKey.currentState!;
+                        final _amount = double.tryParse(value!);
+                        final _total = _fState.fields['total']?.value;
+
+                        if (_amount == null) return null;
+                        if (_total != null) {
+                          final _mTotal =
+                              double.tryParse(_total.replaceAll(',', ''))!;
+                          if (_amount > _mTotal)
+                            return 'Amount value cannot be higher than total\'s value';
+                        }
+                        return null; // Fallback
+                      }
                     ]),
                   ),
                   _sizedBox(height: 16.0),
@@ -420,7 +434,8 @@ class _ArrearCreateState extends State<ArrearCreate> {
                           'id': _product.id,
                           'priceId': _product.activePriceId,
                           'name': _product.name,
-                          'price': _product.activePrice
+                          'price': _product.activePrice,
+                          'quantity': _product.activeQuantity
                         };
                         // final _price = _nf.format(_product.activePrice);
                         return DropdownMenuItem(
@@ -473,6 +488,19 @@ class _ArrearCreateState extends State<ArrearCreate> {
                         FormBuilderValidators.required(context),
                         FormBuilderValidators.integer(context),
                         FormBuilderValidators.min(context, 1),
+                        (value) {
+                          final _dState = _dialogKey.currentState!;
+                          final _qty = int.tryParse(value!);
+                          final _product = _dState.fields['productId']?.value;
+
+                          if (_qty == null) return null;
+                          if (_product != null) {
+                            final _quantity = _product.value['quantity'];
+                            if (_qty > _quantity)
+                              return 'Quantity value cannot be higher than product\'s quantity';
+                          }
+                          return null; // Fallback
+                        }
                       ]),
                     ),
                     _sizedBox(height: 16.0),

@@ -90,6 +90,7 @@ class _PersonIndexState extends State<PersonIndex> {
       floatingActionButton: _isVisible
           ? FloatingActionButton(
               tooltip: 'Add person',
+              heroTag: 'person-index-fab',
               child: const Icon(Icons.add),
               onPressed: () {
                 _navigator.pushNamed(AppRouter.personCreate);
