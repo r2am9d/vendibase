@@ -27,17 +27,26 @@ class _ArrearCreateState extends State<ArrearCreate> {
   final _formKey = GlobalKey<FormBuilderState>();
   final _editableKey = GlobalKey<EditableState>();
   final _dialogKey = GlobalKey<FormBuilderState>();
+  final _nf = NumberFormat("###,###.##", "en_US");
 
-  List _rows = [];
-  List _cols = [
-    {'title': 'Name', 'widthFactor': 0.36, 'key': 'name', 'editable': false},
-    {'title': 'Price', 'widthFactor': 0.2, 'key': 'price', 'editable': false},
-    {'title': 'Qty', 'widthFactor': 0.2, 'key': 'quantity', 'type': 'numeric'},
-  ];
-
-  void _addNewRow(Map<String, dynamic> row) {
+  List<Map<String, dynamic>> _purchases = [];
+  void _addPurchase(Map<String, dynamic> purchase) {
     setState(() {
-      _editableKey.currentState!.createRow(row);
+      _purchases.add(purchase);
+    });
+
+    _countTotal();
+  }
+
+  void _countTotal() {
+    final _total = _getTotalAmount(_purchases);
+    _formKey.currentState!.fields['total']!.didChange("${_nf.format(_total)}");
+  }
+
+  num _getTotalAmount(List<Map<String, dynamic>> rows) {
+    return rows.fold<num>(0, (acc, cur) {
+      num total = (cur['price'] * cur['quantity']);
+      return acc + total;
     });
   }
 
@@ -48,13 +57,6 @@ class _ArrearCreateState extends State<ArrearCreate> {
     _persons = await _db.personsDao.getPersons();
 
     setState(() {}); // Force rebuild
-  }
-
-  num getTotalAmount(List<dynamic> rows) {
-    return rows.fold<num>(0, (acc, cur) {
-      num total = (cur['price'] * cur['quantity']);
-      return acc + total;
-    });
   }
 
   @override
@@ -71,7 +73,6 @@ class _ArrearCreateState extends State<ArrearCreate> {
 
     if (_persons != null && _products != null) {
       final _radius = Radius.circular(4);
-      final _nf = NumberFormat("###,###.##", "en_US");
 
       return Scaffold(
         appBar: AppBar(
@@ -176,70 +177,59 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     ],
                   ),
                   _sizedBox(height: 32.0),
-                  // TODO: Change to ListView
-                  SingleChildScrollView(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4.0),
-                        border: Border.all(color: Colors.grey.shade500),
-                      ),
-                      height: MediaQuery.of(context).size.height / 2,
-                      width: MediaQuery.of(context).size.width,
-                      child: Editable(
-                        rows: _rows,
-                        columns: _cols,
-                        key: _editableKey,
-                        onRowAdded: (value) {
-                          final _rows = _editableKey.currentState!.rows!;
-                          final _total = _nf.format(getTotalAmount(_rows));
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4.0),
+                      border: Border.all(color: Colors.grey.shade500),
+                    ),
+                    height: MediaQuery.of(context).size.height / 2,
+                    width: MediaQuery.of(context).size.width,
+                    child: Scrollbar(
+                      child: ListView.separated(
+                        itemCount: _purchases.length,
+                        itemBuilder: (context, index) {
+                          // Get refs
+                          final _purchase = _purchases[index];
 
-                          _formKey.currentState!.fields['total']!
-                              .didChange("${_total}");
+                          return Card(
+                            child: ListTile(
+                              title: Text(
+                                _purchase['name'],
+                                style: _theme.textTheme.bodyText1,
+                              ),
+                              subtitle: Text(
+                                '₱ ${_nf.format(_purchase['price'])} • ${_nf.format(_purchase['quantity'])} pc/s',
+                                style: _theme.textTheme.bodyText2,
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _iconButton(
+                                    icon: Icons.edit,
+                                    onPressed: () {
+                                      // @TODO
+                                    },
+                                  ),
+                                  _iconButton(
+                                    icon: Icons.delete,
+                                    color: AppColor.black,
+                                    onPressed: () {
+                                      setState(() {
+                                        _purchases.removeWhere(
+                                          (p) => p['id'] == _purchase['id'],
+                                        );
+                                      });
 
-                          debugPrint(_rows.toString());
+                                      _countTotal();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
                         },
-                        onRowRemoved: (value) {
-                          num _val = 0;
-                          if (_editableKey.currentState!.rowCount! >= 1) {
-                            final _rows = _editableKey.currentState!.rows!;
-                            _val = getTotalAmount(_rows);
-                          }
-
-                          final _total = _nf.format(_val);
-                          _formKey.currentState!.fields['total']!
-                              .didChange("${_total}");
-                        },
-                        onSubmitted: (value) {
-                          final _rows = _editableKey.currentState!.rows!;
-                          final _total = _nf.format(getTotalAmount(_rows));
-
-                          _formKey.currentState!.fields['total']!
-                              .didChange("${_total}");
-                        },
-                        showRemoveIcon: true,
-                        removeIconColor: AppColor.red,
-                        borderColor: Colors.blueGrey,
-                        tdStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        trHeight: 80,
-                        thStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        thAlignment: TextAlign.left,
-                        thVertAlignment: CrossAxisAlignment.center,
-                        thPaddingBottom: 3,
-                        tdAlignment: TextAlign.left,
-                        tdEditableMaxLines: 100,
-                        tdPaddingTop: 0,
-                        tdPaddingBottom: 14,
-                        tdPaddingLeft: 10,
-                        tdPaddingRight: 8,
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.blue),
-                          borderRadius: BorderRadius.all(Radius.circular(0)),
-                        ),
+                        separatorBuilder: (context, index) =>
+                            _sizedBox(height: 16.0),
                       ),
                     ),
                   ),
@@ -390,6 +380,13 @@ class _ArrearCreateState extends State<ArrearCreate> {
     return Center(child: CircularProgressIndicator());
   }
 
+  Future _editPurchaseDialog() {
+    return showDialog(
+      context: context,
+      builder: (_) => AlertDialog(),
+    );
+  }
+
   Future _showPurchaseDialog({
     List<ProductWithDetails>? products,
     required AppDatabase db,
@@ -529,9 +526,9 @@ class _ArrearCreateState extends State<ArrearCreate> {
                   final _product = _dState.fields['productId']!.value.value;
                   final _quantity = _dState.fields['quantity']!.value;
 
-                  // Inject value & to table list
+                  // Inject value & to purchase list
                   _product['quantity'] = int.parse(_quantity);
-                  _addNewRow(_product);
+                  _addPurchase(_product);
 
                   navigator.pop();
                 }
@@ -575,6 +572,18 @@ class _ArrearCreateState extends State<ArrearCreate> {
           Icon(icon, size: 16),
         ],
       ),
+      onPressed: onPressed,
+    );
+  }
+
+  Widget _iconButton({
+    required IconData icon,
+    Color? color = const Color(0xFF930E4D),
+    required void Function()? onPressed,
+  }) {
+    return IconButton(
+      icon: Icon(icon),
+      color: color,
       onPressed: onPressed,
     );
   }

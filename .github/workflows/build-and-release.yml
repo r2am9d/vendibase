@@ -33,11 +33,11 @@ jobs:
       - name: Run Tests
         run: flutter test
       - name: Build Android App
-        run: flutter build apk
+        run: flutter build apk --split-per-abi
       - name: Release App
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.APP_VERSION }}
           name: ${{ env.APP_VERSION }}
           token: ${{ secrets.APP_TOKEN }}
-          artifacts: 'build/app/outputs/apk/release/app-release.apk'
+          artifacts: 'build/app/outputs/apk/release/*.apk'
