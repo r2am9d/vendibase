@@ -67,7 +67,7 @@ class _ProductCreateState extends State<ProductCreate> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  _sizedBox(height: 16),
+                  _sizedBox(height: 32),
                   FormBuilderImagePicker(
                     name: 'photo',
                     maxImages: 1,
@@ -129,7 +129,7 @@ class _ProductCreateState extends State<ProductCreate> {
                   FormBuilderTextField(
                     name: 'cost',
                     textInputAction: TextInputAction.next,
-                    decoration: _inputDecoration('Cost'),
+                    decoration: _inputDecoration('Cost', true),
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(context),
                       FormBuilderValidators.numeric(context),
@@ -166,7 +166,7 @@ class _ProductCreateState extends State<ProductCreate> {
                   FormBuilderTextField(
                     name: 'retail',
                     textInputAction: TextInputAction.done,
-                    decoration: _inputDecoration('Retail'),
+                    decoration: _inputDecoration('Retail', true),
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(context),
                       FormBuilderValidators.numeric(context),
@@ -277,8 +277,14 @@ class _ProductCreateState extends State<ProductCreate> {
     }
   }
 
-  InputDecoration _inputDecoration(String placeholder) {
+  InputDecoration _inputDecoration(
+    String placeholder, [
+    bool withPrefix = false,
+  ]) {
+    final _prefix = withPrefix ? '₱ ' : null;
+
     return InputDecoration(
+      prefixText: _prefix,
       labelText: placeholder,
       alignLabelWithHint: true,
       fillColor: AppColor.white,

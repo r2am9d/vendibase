@@ -192,8 +192,7 @@ class _ProductViewState extends State<ProductView> {
                           );
 
                           _navigator.popUntil((route) {
-                            return route.settings.name ==
-                                AppRouter.home;
+                            return route.settings.name == AppRouter.home;
                           });
                         },
                       ),

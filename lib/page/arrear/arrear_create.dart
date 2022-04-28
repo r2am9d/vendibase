@@ -1,8 +1,8 @@
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:drift/drift.dart' as d;
 import 'package:provider/provider.dart';
-import 'package:editable/editable.dart';
 import 'package:vendibase/theme/app_theme.dart';
 import 'package:vendibase/router/app_router.dart';
 import 'package:vendibase/database/app_database.dart';
@@ -25,7 +25,6 @@ class _ArrearCreateState extends State<ArrearCreate> {
   List<ProductWithDetails>? _products;
 
   final _formKey = GlobalKey<FormBuilderState>();
-  final _editableKey = GlobalKey<EditableState>();
   final _dialogKey = GlobalKey<FormBuilderState>();
   final _nf = NumberFormat("###,###.##", "en_US");
 
@@ -94,7 +93,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  _sizedBox(height: 16.0),
+                  _sizedBox(height: 32.0),
                   FormBuilderSearchableDropdown(
                     name: 'personId',
                     showClearButton: true,
@@ -170,7 +169,6 @@ class _ArrearCreateState extends State<ArrearCreate> {
                             products: _products,
                             dialogKey: _dialogKey,
                             navigator: _navigator,
-                            editableKey: _editableKey,
                           );
                         },
                       )
@@ -206,8 +204,14 @@ class _ArrearCreateState extends State<ArrearCreate> {
                                 children: [
                                   _iconButton(
                                     icon: Icons.edit,
-                                    onPressed: () {
-                                      // @TODO
+                                    onPressed: () async {
+                                      await _editPurchaseDialog(
+                                        purchase: _purchase,
+                                        context: context,
+                                        dialogKey: _dialogKey,
+                                        navigator: _navigator,
+                                        theme: _theme,
+                                      );
                                     },
                                   ),
                                   _iconButton(
@@ -216,7 +220,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                                     onPressed: () {
                                       setState(() {
                                         _purchases.removeWhere(
-                                          (p) => p['id'] == _purchase['id'],
+                                          (p) => p['uid'] == _purchase['uid'],
                                         );
                                       });
 
@@ -239,12 +243,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     enabled: false,
                     readOnly: true,
                     initialValue: '0',
-                    decoration: _inputDecoration('Total'),
-                    onChanged: (value) {
-                      // Set validation on the fly ??
-                      // _formKey.currentState!.fields['amount']!;
-                      // FormBuilderValidators.max(context, value);
-                    },
+                    decoration: _inputDecoration('Total', true),
                   ),
                   _sizedBox(height: 32.0),
                   Text(
@@ -260,7 +259,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     allowClear: true,
                     items: [
                       {'id': 0, 'name': 'Unpaid'},
-                      {'id': 1, 'name': 'Paid'},
+                      // {'id': 1, 'name': 'Paid'},
                     ].map((Map<String, dynamic> _status) {
                       return DropdownMenuItem(
                         value: _status['id'],
@@ -277,7 +276,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                   FormBuilderTextField(
                     name: 'amount',
                     textInputAction: TextInputAction.done,
-                    decoration: _inputDecoration('Amount'),
+                    decoration: _inputDecoration('Amount', true),
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(context),
                       FormBuilderValidators.numeric(context),
@@ -335,7 +334,6 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     final _fState = _formKey.currentState!;
 
                     final _personId = _fState.fields['personId']!.value.value;
-                    final _rows = _editableKey.currentState!.rows!;
                     final _status = _fState.fields['status']!.value;
                     final _amount = _fState.fields['amount']!.value;
                     final _due = _fState.fields['due']!.value;
@@ -353,13 +351,13 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       ),
                     );
 
-                    _rows.forEach((row) async {
+                    _purchases.forEach((purchase) async {
                       await _db.arrearPurchasesDao.make(
                         ArrearPurchasesCompanion(
                           arrearId: d.Value(_id),
-                          productId: d.Value(row['id']),
-                          productPriceId: d.Value(row['priceId']),
-                          quantity: d.Value(row['quantity']),
+                          productId: d.Value(purchase['id']),
+                          productPriceId: d.Value(purchase['priceId']),
+                          quantity: d.Value(purchase['quantity']),
                         ),
                       );
                     });
@@ -380,10 +378,92 @@ class _ArrearCreateState extends State<ArrearCreate> {
     return Center(child: CircularProgressIndicator());
   }
 
-  Future _editPurchaseDialog() {
+  Future _editPurchaseDialog({
+    required Map<String, dynamic> purchase,
+    required ThemeData theme,
+    required BuildContext context,
+    required NavigatorState navigator,
+    required GlobalKey<FormBuilderState> dialogKey,
+  }) {
     return showDialog(
       context: context,
-      builder: (_) => AlertDialog(),
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColor.white,
+        title: Text("Edit purchase", style: theme.textTheme.headline6),
+        content: Scrollbar(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: FormBuilder(
+                key: dialogKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _sizedBox(height: 16.0),
+                    FormBuilderTextField(
+                      name: 'quantity',
+                      initialValue: purchase['quantity'].toString(),
+                      textInputAction: TextInputAction.done,
+                      decoration: _inputDecoration('Quantity'),
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                        FormBuilderValidators.integer(context),
+                        FormBuilderValidators.min(context, 1),
+                        (value) {
+                          final _quantity = int.tryParse(value!);
+                          final _activeQuantity = purchase['activeQuantity'];
+
+                          if (_quantity == null) return null;
+                          if (_quantity > _activeQuantity)
+                            return 'Quantity value cannot be higher than product\'s quantity';
+                          return null; // Fallback
+                        }
+                      ]),
+                    ),
+                    _sizedBox(height: 16.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: Colors.grey.shade200)),
+            ),
+            alignment: Alignment.center,
+            child: _elevatedButton(
+              text: 'Edit',
+              icon: Icons.edit,
+              onPressed: () async {
+                if (_dialogKey.currentState!.validate()) {
+                  _dialogKey.currentState!.save();
+                  final _dState = _dialogKey.currentState!;
+
+                  // Get refs
+                  final _quantity = _dState.fields['quantity']!.value;
+
+                  // Edit value
+                  purchase['quantity'] = int.parse(_quantity);
+                  setState(() {
+                    _purchases[_purchases.indexWhere(
+                            (element) => element['uid'] == purchase['uid'])] =
+                        purchase;
+                  });
+
+                  _countTotal();
+
+                  navigator.pop();
+                }
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -393,7 +473,6 @@ class _ArrearCreateState extends State<ArrearCreate> {
     required ThemeData theme,
     required BuildContext context,
     required NavigatorState navigator,
-    required GlobalKey<EditableState> editableKey,
     required GlobalKey<FormBuilderState> dialogKey,
   }) {
     final _radius = Radius.circular(4);
@@ -432,7 +511,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                           'priceId': _product.activePriceId,
                           'name': _product.name,
                           'price': _product.activePrice,
-                          'quantity': _product.activeQuantity
+                          'activeQuantity': _product.activeQuantity
                         };
                         // final _price = _nf.format(_product.activePrice);
                         return DropdownMenuItem(
@@ -487,13 +566,14 @@ class _ArrearCreateState extends State<ArrearCreate> {
                         FormBuilderValidators.min(context, 1),
                         (value) {
                           final _dState = _dialogKey.currentState!;
-                          final _qty = int.tryParse(value!);
+                          final _quantity = int.tryParse(value!);
                           final _product = _dState.fields['productId']?.value;
 
-                          if (_qty == null) return null;
+                          if (_quantity == null) return null;
                           if (_product != null) {
-                            final _quantity = _product.value['quantity'];
-                            if (_qty > _quantity)
+                            final _activeQuantity =
+                                _product.value['activeQuantity'];
+                            if (_quantity > _activeQuantity)
                               return 'Quantity value cannot be higher than product\'s quantity';
                           }
                           return null; // Fallback
@@ -523,10 +603,12 @@ class _ArrearCreateState extends State<ArrearCreate> {
                   final _dState = _dialogKey.currentState!;
 
                   // Get refs
+                  final _uid = Uuid().v4().split('-')[0];
                   final _product = _dState.fields['productId']!.value.value;
                   final _quantity = _dState.fields['quantity']!.value;
 
-                  // Inject value & to purchase list
+                  // Inject value & add to purchase list
+                  _product['uid'] = _uid;
                   _product['quantity'] = int.parse(_quantity);
                   _addPurchase(_product);
 
@@ -540,10 +622,16 @@ class _ArrearCreateState extends State<ArrearCreate> {
     );
   }
 
-  InputDecoration _inputDecoration(String placeholder) {
+  InputDecoration _inputDecoration(
+    String placeholder, [
+    bool withPrefix = false,
+  ]) {
+    final _prefix = withPrefix ? '₱ ' : null;
+
     return InputDecoration(
-      alignLabelWithHint: true,
+      prefixText: _prefix,
       labelText: placeholder,
+      alignLabelWithHint: true,
       fillColor: AppColor.white,
       border: const OutlineInputBorder(),
     );

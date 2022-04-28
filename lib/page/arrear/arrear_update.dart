@@ -72,7 +72,7 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  _sizedBox(height: 16.0),
+                  _sizedBox(height: 32.0),
                   FormBuilderSearchableDropdown(
                     name: 'personId',
                     showClearButton: true,

@@ -79,7 +79,7 @@ class _ProductUpdateState extends State<ProductUpdate> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  _sizedBox(height: 16.0),
+                  _sizedBox(height: 32.0),
                   FormBuilderImagePicker(
                     name: 'photo',
                     maxImages: 1,
@@ -216,8 +216,14 @@ class _ProductUpdateState extends State<ProductUpdate> {
     }
   }
 
-  InputDecoration _inputDecoration(String placeholder) {
+  InputDecoration _inputDecoration(
+    String placeholder, [
+    bool withPrefix = false,
+  ]) {
+    final _prefix = withPrefix ? '₱ ' : null;
+
     return InputDecoration(
+      prefixText: _prefix,
       labelText: placeholder,
       alignLabelWithHint: true,
       fillColor: AppColor.white,
