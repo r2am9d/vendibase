@@ -21,8 +21,8 @@ final dbStateProvider = FutureProvider((ref) async {
   }
 });
 
-class Debug extends ConsumerWidget {
-  const Debug({
+class AppDebug extends ConsumerWidget {
+  const AppDebug({
     required this.home,
     Key? key,
   }) : super(key: key);
@@ -42,7 +42,7 @@ class Debug extends ConsumerWidget {
     final dbState = ref.watch(dbStateProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Debug'),
+        title: const Text('App Debug'),
       ),
       body: dbState.when(
         loading: () => const Center(child: CircularProgressIndicator()),

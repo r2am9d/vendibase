@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:vendibase/home.dart';
@@ -71,9 +72,12 @@ class AppRouter {
     switch (settings.name) {
       // Home Route
       case home:
+        final _args = jsonDecode(jsonEncode(args));
+        final _index = int.tryParse(_args['id']) ?? 0;
+
         return MaterialPageRoute(
           settings: settings,
-          builder: (context) => const Home(),
+          builder: (context) => Home(index: _index),
         );
 
       // Dashboard Route

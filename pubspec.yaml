@@ -61,6 +61,8 @@ dependencies:
   syncfusion_flutter_charts: ^20.1.48
   external_path: ^1.0.1
   flutter_local_notifications: ^9.4.1
+  flutter_native_timezone: ^2.0.0
+  timezone: ^0.8.0
   gallery_saver:
     git:
       url: https://github.com/r2am9d/gallery_saver

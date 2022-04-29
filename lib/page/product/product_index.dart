@@ -31,6 +31,7 @@ class _ProductIndexState extends State<ProductIndex> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: _isSearching
             ? TextField(
                 autofocus: true,

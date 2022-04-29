@@ -31,6 +31,7 @@ class _ArrearIndexState extends State<ArrearIndex> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: _isSearching
             ? TextField(
                 autofocus: true,
@@ -99,21 +100,19 @@ class _ArrearIndexState extends State<ArrearIndex> {
             } else {
               List<ArrearWithDetails> _arrears = snapshot.data!;
 
-              _widget = Scrollbar(
-                child: ListView.separated(
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: _arrears.length,
-                  itemBuilder: (context, index) {
-                    return _buildListTile(
-                      _arrears[index],
-                      _db,
-                      _theme,
-                      context,
-                      _navigator,
-                    );
-                  },
-                  separatorBuilder: (context, index) => _sizedBox(height: 16.0),
-                ),
+              _widget = ListView.separated(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: _arrears.length,
+                itemBuilder: (context, index) {
+                  return _buildListTile(
+                    _arrears[index],
+                    _db,
+                    _theme,
+                    context,
+                    _navigator,
+                  );
+                },
+                separatorBuilder: (context, index) => _sizedBox(height: 16.0),
               );
             }
 

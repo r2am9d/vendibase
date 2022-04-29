@@ -25,6 +25,7 @@ class _DashboardIndexState extends State<DashboardIndex> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Dashboard'),
         actions: [
           Padding(
@@ -58,138 +59,136 @@ class _DashboardIndexState extends State<DashboardIndex> {
             DashboardData _dashboardData = snapshot.data!;
             final _nf = NumberFormat("###,###.##", "en_PH");
 
-            _widget = Scrollbar(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SfCartesianChart(
-                      title: ChartTitle(
-                        text: 'Earnings [$_year]',
-                        alignment: ChartAlignment.near,
-                        textStyle: _theme.textTheme.headline6?.copyWith(
-                          color: AppColor.red,
-                          fontWeight: FontWeight.bold,
-                        ),
+            _widget = SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SfCartesianChart(
+                    title: ChartTitle(
+                      text: 'Earnings [$_year]',
+                      alignment: ChartAlignment.near,
+                      textStyle: _theme.textTheme.headline6?.copyWith(
+                        color: AppColor.red,
+                        fontWeight: FontWeight.bold,
                       ),
-                      primaryXAxis: CategoryAxis(),
-                      legend: Legend(isVisible: true),
-                      tooltipBehavior: TooltipBehavior(enable: true),
-                      series: <ChartSeries<EarningWithDetails, String>>[
-                        LineSeries<EarningWithDetails, String>(
-                          name:
-                              '₱ ${_nf.format(_dashboardData.totalEarnings)}\nTotal Earnings',
-                          dataSource: _dashboardData.earnings,
-                          xValueMapper: (EarningWithDetails earning, _) =>
-                              earning.month,
-                          yValueMapper: (EarningWithDetails earning, _) =>
-                              earning.amount,
-                          dataLabelSettings: DataLabelSettings(isVisible: true),
+                    ),
+                    primaryXAxis: CategoryAxis(),
+                    legend: Legend(isVisible: true),
+                    tooltipBehavior: TooltipBehavior(enable: true),
+                    series: <ChartSeries<EarningWithDetails, String>>[
+                      LineSeries<EarningWithDetails, String>(
+                        name:
+                            '₱ ${_nf.format(_dashboardData.totalEarnings)}\nTotal Earnings',
+                        dataSource: _dashboardData.earnings,
+                        xValueMapper: (EarningWithDetails earning, _) =>
+                            earning.month,
+                        yValueMapper: (EarningWithDetails earning, _) =>
+                            earning.amount,
+                        dataLabelSettings: DataLabelSettings(isVisible: true),
+                      ),
+                    ],
+                  ),
+                  _sizedBox(height: 32.0),
+                  Text(
+                    'Total Products',
+                    style: _theme.textTheme.headline6?.copyWith(
+                      color: AppColor.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        FaIcon(
+                          FontAwesomeIcons.boxesStacked,
+                          color: AppColor.red,
+                          size: 42,
+                        ),
+                        _sizedBox(width: 16.0),
+                        Text(
+                          _nf.format(_dashboardData.totalProducts),
+                          style: _theme.textTheme.headline3?.copyWith(
+                            color: AppColor.black,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
-                    _sizedBox(height: 32.0),
-                    Text(
-                      'Total Products',
-                      style: _theme.textTheme.headline6?.copyWith(
-                        color: AppColor.red,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                  _sizedBox(height: 32.0),
+                  Text(
+                    'Total Arrears',
+                    style: _theme.textTheme.headline6?.copyWith(
+                      color: AppColor.red,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          FaIcon(
-                            FontAwesomeIcons.boxesStacked,
-                            color: AppColor.red,
-                            size: 42,
-                          ),
-                          _sizedBox(width: 16.0),
-                          Text(
-                            _nf.format(_dashboardData.totalProducts),
-                            style: _theme.textTheme.headline3?.copyWith(
-                              color: AppColor.black,
-                              fontWeight: FontWeight.bold,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                FaIcon(
+                                  FontAwesomeIcons.moneyBill,
+                                  color: AppColor.green,
+                                  size: 42,
+                                ),
+                                _sizedBox(width: 16.0),
+                                Text(
+                                  _nf.format(_dashboardData.totalPaidArrears),
+                                  style: _theme.textTheme.headline3?.copyWith(
+                                    color: AppColor.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
+                            _sizedBox(height: 16.0),
+                            _buildChip(_theme, Status.paid),
+                          ],
+                        ),
+                        _sizedBox(width: 32.0),
+                        Text(
+                          'VS',
+                          style: _theme.textTheme.headline5?.copyWith(
+                            color: AppColor.black,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                    ),
-                    _sizedBox(height: 32.0),
-                    Text(
-                      'Total Arrears',
-                      style: _theme.textTheme.headline6?.copyWith(
-                        color: AppColor.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  FaIcon(
-                                    FontAwesomeIcons.moneyBill,
-                                    color: AppColor.green,
-                                    size: 42,
+                        ),
+                        _sizedBox(width: 32.0),
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                FaIcon(
+                                  FontAwesomeIcons.moneyBill,
+                                  color: AppColor.red1,
+                                  size: 42,
+                                ),
+                                _sizedBox(width: 16.0),
+                                Text(
+                                  _nf.format(
+                                      _dashboardData.totalUnpaidArrears),
+                                  style: _theme.textTheme.headline3?.copyWith(
+                                    color: AppColor.black,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  _sizedBox(width: 16.0),
-                                  Text(
-                                    _nf.format(_dashboardData.totalPaidArrears),
-                                    style: _theme.textTheme.headline3?.copyWith(
-                                      color: AppColor.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              _sizedBox(height: 16.0),
-                              _buildChip(_theme, Status.paid),
-                            ],
-                          ),
-                          _sizedBox(width: 32.0),
-                          Text(
-                            'VS',
-                            style: _theme.textTheme.headline5?.copyWith(
-                              color: AppColor.black,
-                              fontWeight: FontWeight.bold,
+                                ),
+                              ],
                             ),
-                          ),
-                          _sizedBox(width: 32.0),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  FaIcon(
-                                    FontAwesomeIcons.moneyBill,
-                                    color: AppColor.red1,
-                                    size: 42,
-                                  ),
-                                  _sizedBox(width: 16.0),
-                                  Text(
-                                    _nf.format(
-                                        _dashboardData.totalUnpaidArrears),
-                                    style: _theme.textTheme.headline3?.copyWith(
-                                      color: AppColor.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              _sizedBox(height: 16.0),
-                              _buildChip(_theme, Status.unpaid),
-                            ],
-                          ),
-                        ],
-                      ),
+                            _sizedBox(height: 16.0),
+                            _buildChip(_theme, Status.unpaid),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           }

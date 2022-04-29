@@ -9,8 +9,12 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+
 import 'package:vendibase/home.dart';
-import 'package:vendibase/utils/debug.dart';
+import 'package:vendibase/utils/app_debug.dart';
 import 'package:vendibase/theme/app_theme.dart';
 import 'package:vendibase/router/app_router.dart';
 
@@ -44,6 +48,8 @@ class _MyAppState extends State<MyApp> {
       Permission.manageExternalStorage,
       Permission.camera,
       Permission.photos,
+      Permission.accessNotificationPolicy,
+      Permission.notification
     ];
 
     bool f = true;
@@ -59,10 +65,17 @@ class _MyAppState extends State<MyApp> {
     FlutterNativeSplash.remove();
   }
 
+  void _initTimezone() async {
+    tz.initializeTimeZones();
+    final String? timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timeZoneName!));
+  }
+
   @override
   void initState() {
     super.initState();
     _requestPermission();
+    _initTimezone();
   }
 
   @override
@@ -90,7 +103,7 @@ class _MyAppState extends State<MyApp> {
           GlobalWidgetsLocalizations.delegate,
           FormBuilderLocalizations.delegate,
         ],
-        home: kReleaseMode ? const Home() : const Debug(home: Home()),
+        home: kReleaseMode ? const Home() : const AppDebug(home: Home()),
       ),
     );
   }

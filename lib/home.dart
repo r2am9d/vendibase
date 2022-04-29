@@ -13,8 +13,11 @@ import 'package:vendibase/page/dashboard/dashboard_index.dart';
 import 'package:vendibase/page/product/product_index.dart';
 import 'package:vendibase/page/arrear/arrear_index.dart';
 
+import 'package:vendibase/utils/app_notification.dart';
+
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  final int? index;
+  const Home({Key? key, this.index}) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
@@ -64,17 +67,49 @@ class _HomeState extends State<Home> {
     }
   }
 
+  void _listenNotifs() =>
+      AppNotification.onNotification.stream.listen(onClickedNotification);
+
+  void onClickedNotification(String? payload) {
+    debugPrint('Notification here.');
+  }
+
   @override
   void initState() {
     super.initState();
     if (!kReleaseMode) _setupDb();
+    _index = widget.index ?? 0;
+    _setupPages(_index);
 
-    _index = 0;
-    _pages = [
-      DashboardIndex(key: NavKeys.getKeys().elementAt(_index)),
-      const SizedBox(),
-      const SizedBox(),
-    ];
+    AppNotification.init();
+    _listenNotifs();
+  }
+
+  void _setupPages(int index) {
+    switch (index) {
+      case 0:
+        _pages = [
+          DashboardIndex(),
+          const SizedBox(),
+          const SizedBox(),
+        ];
+        break;
+      case 1:
+        _pages = [
+          const SizedBox(),
+          ProductIndex(),
+          const SizedBox(),
+        ];
+        break;
+      case 2:
+        _pages = [
+          const SizedBox(),
+          const SizedBox(),
+          ArrearIndex(),
+        ];
+        break;
+      default:
+    }
   }
 
   @override
@@ -111,13 +146,17 @@ class _HomeState extends State<Home> {
           onTap: (index) {
             setState(() {
               if (_pages[index] is SizedBox) {
-                debugPrint('Sized Box');
-                if (index == 1) {
-                  _pages[index] =
-                      ProductIndex(key: NavKeys.getKeys().elementAt(index));
-                } else {
-                  _pages[index] =
-                      ArrearIndex(key: NavKeys.getKeys().elementAt(index));
+                switch (index) {
+                  case 0:
+                    _pages[index] = DashboardIndex();
+                    break;
+                  case 1:
+                    _pages[index] = ProductIndex();
+                    break;
+                  case 2:
+                    _pages[index] = ArrearIndex();
+                    break;
+                  default:
                 }
               }
 
@@ -128,12 +167,4 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-}
-
-class NavKeys {
-  static final dashboard = GlobalKey(debugLabel: 'dashboard');
-  static final product = GlobalKey(debugLabel: 'product');
-  static final arrear = GlobalKey(debugLabel: 'arrear');
-
-  static List<GlobalKey> getKeys() => [dashboard, product, arrear];
 }
