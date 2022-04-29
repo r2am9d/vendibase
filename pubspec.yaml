@@ -56,6 +56,11 @@ dependencies:
   rxdart: ^0.27.3
   font_awesome_flutter: ^10.1.0
   just_the_tooltip: ^0.0.11+2
+  animated_toggle_switch: ^0.4.0
+  flash: ^2.0.3+2
+  syncfusion_flutter_charts: ^20.1.48
+  external_path: ^1.0.1
+  flutter_local_notifications: ^9.4.1
   gallery_saver:
     git:
       url: https://github.com/r2am9d/gallery_saver
@@ -68,10 +73,6 @@ dependencies:
     git:
       url: https://github.com/Davenchy/flutter_launcher_icons.git
       ref: fixMinSdkParseFlutter2.8
-  animated_toggle_switch: ^0.4.0
-  flash: ^2.0.3+2
-  syncfusion_flutter_charts: ^20.1.48
-  external_path: ^1.0.1
 
 dev_dependencies:
   flutter_test:

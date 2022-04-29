@@ -491,7 +491,8 @@ class _ArrearViewState extends State<ArrearView> {
                           'id': _product.id,
                           'priceId': _product.activePriceId,
                           'name': _product.name,
-                          'price': _product.activePrice
+                          'price': _product.activePrice,
+                          'activeQuantity': _product.activeQuantity
                         };
                         // final _price = _nf.format(_product.activePrice);
                         return DropdownMenuItem(
@@ -544,17 +545,32 @@ class _ArrearViewState extends State<ArrearView> {
                         FormBuilderValidators.required(context),
                         FormBuilderValidators.integer(context),
                         FormBuilderValidators.min(context, 1),
+                        (value) {
+                          final _fState = formKey.currentState!;
+                          final _quantity = int.tryParse(value!);
+                          final _product = _fState.fields['productId']?.value;
+
+                          if (_quantity == null) return null;
+                          if (_product != null) {
+                            final _activeQuantity =
+                                _product.value['activeQuantity'];
+                            if (_quantity > _activeQuantity)
+                              return 'Quantity value cannot be higher than product\'s quantity';
+                          }
+                          return null; // Fallback
+                        }
                       ]),
                       onSubmitted: (value) {
-                        final fState = formKey.currentState!;
-                        final _pId = fState.fields['productId']!.value;
+                        final _fState = formKey.currentState!;
+                        final _product = _fState.fields['productId']?.value;
 
-                        final _qty = value == '' ? 0 : int.parse(value!);
-                        final _prc = _pId == null ? 0 : _pId.value['price'];
-                        final _amt = _prc * _qty;
+                        final _quantity = value == '' ? 0 : int.parse(value!);
+                        final _price =
+                            _product == null ? 0 : _product.value['price'];
+                        final _amount = _price * _quantity;
 
-                        fState.fields['total']!
-                            .didChange('${_nf.format(_amt)}');
+                        _fState.fields['total']!
+                            .didChange('${_nf.format(_amount)}');
                       },
                     ),
                     _sizedBox(height: 16.0),
@@ -569,11 +585,25 @@ class _ArrearViewState extends State<ArrearView> {
                     FormBuilderTextField(
                       name: 'amount',
                       textInputAction: TextInputAction.done,
-                      decoration: _inputDecoration('Amount'),
+                      decoration: _inputDecoration('Amount', true),
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(context),
                         FormBuilderValidators.numeric(context),
                         FormBuilderValidators.min(context, 1),
+                        (value) {
+                          final _fState = _formKey.currentState!;
+                          final _amount = double.tryParse(value!);
+                          final _total = _fState.fields['total']?.value;
+
+                          if (_amount == null) return null;
+                          if (_total != null) {
+                            final _mTotal =
+                                double.tryParse(_total.replaceAll(',', ''))!;
+                            if (_amount > _mTotal)
+                              return 'Amount value cannot be higher than total\'s value';
+                          }
+                          return null; // Fallback
+                        }
                       ]),
                     ),
                   ],

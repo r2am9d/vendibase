@@ -475,7 +475,7 @@ class _ProductViewState extends State<ProductView> {
                     FormBuilderTextField(
                       name: 'cost',
                       textInputAction: TextInputAction.next,
-                      decoration: _inputDecoration('Cost'),
+                      decoration: _inputDecoration('Cost', true),
                       initialValue: productPurchase?.cost.toString(),
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(context),
@@ -801,7 +801,7 @@ class _ProductViewState extends State<ProductView> {
                     FormBuilderTextField(
                       name: 'retail',
                       textInputAction: TextInputAction.done,
-                      decoration: _inputDecoration('Retail'),
+                      decoration: _inputDecoration('Retail', true),
                       initialValue: productPrice?.retail.toString(),
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(context),
@@ -937,9 +937,16 @@ class _ProductViewState extends State<ProductView> {
     );
   }
 
-  InputDecoration _inputDecoration(String placeholder) {
+  InputDecoration _inputDecoration(
+    String placeholder, [
+    bool withPrefix = false,
+  ]) {
+    final _prefix = withPrefix ? '₱ ' : null;
+
     return InputDecoration(
+      prefixText: _prefix,
       labelText: placeholder,
+      alignLabelWithHint: true,
       fillColor: AppColor.white,
       border: const OutlineInputBorder(),
     );

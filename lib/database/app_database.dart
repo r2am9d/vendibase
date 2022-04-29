@@ -583,6 +583,7 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
           FROM product_purchases GROUP BY product_id
         ) ISQ ON PPCH.product_id = ISQ.product_id AND PPCH.date_created = ISQ.MDC
       ) AS SQ3 ON SQ3.product_id = P.id
+      WHERE SQ2.active_quantity >= 1
       ORDER BY P.is_favorite DESC;
     """;
 

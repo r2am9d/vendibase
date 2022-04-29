@@ -21,7 +21,6 @@
 - [Bugs and feature requests](#bugs-and-feature-requests)
 - [Contributing](#contributing)
 - [Creator](#creator)
-- [Thanks](#thanks)
 - [Copyright and license](#copyright-and-license)
 
 ## Description
