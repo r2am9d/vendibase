@@ -3,6 +3,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class AppNotification {
+  static int _notifId = 0;
   static final _notification = FlutterLocalNotificationsPlugin();
   static final onNotification = BehaviorSubject<String?>();
 
@@ -50,8 +51,10 @@ class AppNotification {
     required String body,
     String? payload,
   }) async {
+    final _id = _notifId;
+    _notifId++;
     return await _notification.show(
-      0,
+      _id,
       title,
       body,
       _notificationDetails(),
@@ -65,8 +68,10 @@ class AppNotification {
     required DateTime dateTime,
     String? payload,
   }) async {
+    final _id = _notifId;
+    _notifId++;
     return await _notification.zonedSchedule(
-      0,
+      _id,
       title,
       body,
       tz.TZDateTime.from(dateTime, tz.local),

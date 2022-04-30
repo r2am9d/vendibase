@@ -12,6 +12,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
+import 'package:vendibase/utils/app_notification.dart';
 
 class ArrearCreate extends StatefulWidget {
   const ArrearCreate({Key? key}) : super(key: key);
@@ -301,7 +302,8 @@ class _ArrearCreateState extends State<ArrearCreate> {
                   FormBuilderDateTimePicker(
                     name: 'due',
                     inputType: InputType.date,
-                    firstDate: DateTime.now(),
+                    initialDate: DateTime.now().add(Duration(days: 1)),
+                    firstDate: DateTime.now().add(Duration(days: 1)),
                     decoration: _inputDecoration('Due'),
                     textInputAction: TextInputAction.next,
                   ),
@@ -361,6 +363,15 @@ class _ArrearCreateState extends State<ArrearCreate> {
                         ),
                       );
                     });
+
+                    // Scheduled notifs
+                    if (_due != null) {
+                      await AppNotification.scheduleNotification(
+                        title: 'Arrear title',
+                        body: 'Arrear body',
+                        dateTime: _due,
+                      );
+                    }
 
                     _navigator.pushReplacementNamed(
                       AppRouter.arrearView,

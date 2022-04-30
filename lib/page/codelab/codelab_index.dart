@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vendibase/theme/app_theme.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:vendibase/utils/app_notification.dart';
 
 class CodelabIndex extends StatefulWidget {
   const CodelabIndex({Key? key}) : super(key: key);
@@ -99,6 +100,18 @@ class _CodelabIndexState extends State<CodelabIndex> {
           ],
         )
       ],
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'FAB',
+        heroTag: 'codelab-index-fab',
+        child: const Icon(Icons.add),
+        onPressed: () async {
+          await AppNotification.scheduleNotification(
+            title: 'Codelab title',
+            body: 'Codelab body',
+            dateTime: DateTime.now(),
+          );
+        },
+      ),
     );
   }
 

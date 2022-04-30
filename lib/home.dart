@@ -67,7 +67,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void _listenNotifs() =>
+  void _listerAndroidNotifs() =>
       AppNotification.onNotification.stream.listen(onClickedNotification);
 
   void onClickedNotification(String? payload) {
@@ -82,7 +82,7 @@ class _HomeState extends State<Home> {
     _setupPages(_index);
 
     AppNotification.init();
-    _listenNotifs();
+    _listerAndroidNotifs();
   }
 
   void _setupPages(int index) {

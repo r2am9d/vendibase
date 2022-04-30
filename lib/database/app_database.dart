@@ -5,7 +5,6 @@ import 'package:rxdart/rxdart.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 part 'app_database.g.dart';
 
@@ -183,7 +182,6 @@ LazyDatabase _openConnection(Future<File> filename) {
     ArrearPurchasesDao,
     ArrearPaymentsDao,
     EarningsDao,
-
     DashboardDao
   ],
 )
@@ -211,9 +209,6 @@ class AppDatabase extends _$AppDatabase {
         },
       );
 }
-
-AppDatabase get db => AppDatabase();
-Provider<AppDatabase> get dbProvider => Provider((_) => AppDatabase());
 
 enum ActionType { create, view, update, delete }
 
