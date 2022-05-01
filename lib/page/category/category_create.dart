@@ -40,8 +40,6 @@ class _CategoryCreateState extends State<CategoryCreate> {
     final _navigator = Navigator.of(context);
 
     if (_categories != null) {
-      debugPrint(_categories!.length.toString());
-
       return Scaffold(
         appBar: AppBar(
           title: Text('Category Create'),
@@ -65,6 +63,7 @@ class _CategoryCreateState extends State<CategoryCreate> {
                   _sizedBox(height: 16),
                   FormBuilderTextField(
                     name: 'name',
+                    textCapitalization: TextCapitalization.words,
                     textInputAction: _categories!.length == 0
                         ? TextInputAction.done
                         : TextInputAction.next,
@@ -115,7 +114,7 @@ class _CategoryCreateState extends State<CategoryCreate> {
                       ),
                     );
 
-                    _navigator.popAndPushNamed(
+                    _navigator.pushReplacementNamed(
                       AppRouter.categoryView,
                       arguments: {'id': _id},
                     );

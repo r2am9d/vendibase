@@ -1,5 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:vendibase/utils/app_debug.dart';
+import 'package:vendibase/utils/app_notification.dart';
 
 import 'package:vendibase/home.dart';
 import 'package:vendibase/page/dashboard/dashboard_index.dart';
@@ -67,17 +69,15 @@ class AppRouter {
   static const categoryUpdate = '/category-update';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    final args = settings.arguments;
+    var args = settings.arguments;
 
     switch (settings.name) {
       // Home Route
       case home:
-        final _args = jsonDecode(jsonEncode(args));
-        final _index = int.tryParse(_args['id']) ?? 0;
-
         return MaterialPageRoute(
           settings: settings,
-          builder: (context) => Home(index: _index),
+          builder: (context) =>
+              kReleaseMode ? const Home() : const AppDebug(home: Home()),
         );
 
       // Dashboard Route
@@ -142,6 +142,16 @@ class AppRouter {
           builder: (context) => const ArrearCreate(),
         );
       case arrearView:
+        final payload = AppNotification.selectedPayload;
+        if (payload.isNotEmpty) {
+          final _args =
+              payload.split('/').where((i) => i.length >= 1).toList().asMap();
+          args = {'id': int.parse(_args[1]!)};
+
+          // Reset
+          AppNotification.resetPayload();
+        }
+
         return MaterialPageRoute(
           settings: settings,
           builder: (context) => ArrearView(args: args),

@@ -353,6 +353,28 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       ),
                     );
 
+                    if (_due != null) {
+                      final _person = await _db.personsDao.getPerson(_personId);
+
+                      // Schedule notif
+                      await AppNotification.scheduleNotification(
+                        title: 'Arrear payment',
+                        body:
+                            '${_person.name} debt should be paid today! Check it out.',
+                        dateTime: _due,
+                        payload: '/arrear-view/${_id}',
+                      );
+
+                      // Update notifId
+                      final _notifId = AppNotification.notifId;
+                      await _db.arrearsDao.revise(
+                        ArrearsCompanion(
+                          id: d.Value(_id),
+                          notificationId: d.Value(_notifId),
+                        ),
+                      );
+                    }
+
                     _purchases.forEach((purchase) async {
                       await _db.arrearPurchasesDao.make(
                         ArrearPurchasesCompanion(
@@ -363,15 +385,6 @@ class _ArrearCreateState extends State<ArrearCreate> {
                         ),
                       );
                     });
-
-                    // Scheduled notifs
-                    if (_due != null) {
-                      await AppNotification.scheduleNotification(
-                        title: 'Arrear title',
-                        body: 'Arrear body',
-                        dateTime: _due,
-                      );
-                    }
 
                     _navigator.pushReplacementNamed(
                       AppRouter.arrearView,

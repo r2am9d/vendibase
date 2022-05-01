@@ -38,7 +38,8 @@ Follow the instructions in the [official documentation](https://flutter.io/docs/
 * A dedicated dashboard for data visualization & overview
 * Search function, to look for Products, Arrears
 * Database backup & restore
-* Internationalization 
+* Arrear due local notification
+* Internationalization
 * Responsive layout
 * Following Flutter's [best practices](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo)!
 
@@ -52,7 +53,7 @@ This application is using Drift to handle CRUD operations enabling offline data 
 * [Provider](https://github.com/rrousselGit/provider) (State Management)
 * [Permissions](https://github.com/baseflow/flutter-permission-handler)
 * [Forms](https://github.com/danvick/flutter_form_builder)
-* [Notifications](https://github.com/sososdk/flash)
+* [App Notifications](https://github.com/MaikuB/flutter_local_notifications)
 * [Data Visualization](https://github.com/syncfusion/flutter-widgets)
 * [Streams](https://github.com/ReactiveX/rxdart)
 * [Animations](https://github.com/flutter/packages/tree/master/packages/animations)

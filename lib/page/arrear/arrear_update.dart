@@ -9,6 +9,7 @@ import 'package:vendibase/provider/app_database_provider.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
+import 'package:vendibase/utils/app_notification.dart';
 
 class ArrearUpdate extends StatefulWidget {
   final args;
@@ -154,7 +155,8 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                     name: 'due',
                     initialValue: _arrear!.due,
                     inputType: InputType.date,
-                    firstDate: DateTime.now(),
+                    initialDate: DateTime.now().add(Duration(days: 1)),
+                    firstDate: DateTime.now().add(Duration(days: 1)),
                     decoration: _inputDecoration('Due'),
                     textInputAction: TextInputAction.next,
                   ),
@@ -197,6 +199,27 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
 
                     final _eic = d.EnumIndexConverter<Status>(Status.values);
 
+                    var _notifId = _arrear!.notificationId;
+                    if (_due != null && (_due != _arrear!.due)) {
+                      // Cancel previous notif
+                      if (_notifId != null) {
+                        await AppNotification.cancelNotification(_notifId);
+                      }
+
+                      // Schedule new notif
+                      final _person = await _db.personsDao.getPerson(_personId);
+                      await AppNotification.scheduleNotification(
+                        title: 'Arrear payment',
+                        body:
+                            '${_person.name} debt should be paid today! Check it out.',
+                        dateTime: _due,
+                        payload: '/arrear-view/${_arrear!.id}',
+                      );
+
+                      // Reassign notifId
+                      _notifId = AppNotification.notifId;
+                    }
+
                     await _db.arrearsDao.revise(
                       ArrearsCompanion(
                         id: d.Value(_arrear!.id),
@@ -204,8 +227,9 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                         status: d.Value(_eic.mapToDart(_status)!),
                         amount: d.Value(double.parse(_amount)),
                         due: d.Value(_due),
+                        notificationId: d.Value(_notifId),
                         remarks: d.Value(_remarks),
-                        dateCreated: d.Value(_dateCreated)
+                        dateCreated: d.Value(_dateCreated),
                       ),
                     );
 

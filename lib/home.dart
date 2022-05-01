@@ -67,11 +67,27 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void _listerAndroidNotifs() =>
-      AppNotification.onNotification.stream.listen(onClickedNotification);
+  void _listenAndroidNotifs() =>
+      AppNotification.onNotification.stream.listen(_onClickedAndroidNotifs);
 
-  void onClickedNotification(String? payload) {
-    debugPrint('Notification here.');
+  void _onClickedAndroidNotifs(String? payload) async {
+    final _args =
+        payload!.split('/').where((i) => i.length >= 1).toList().asMap();
+    final _navigator = Navigator.of(context);
+
+    if (_args.length >= 2) {
+      await _navigator.pushNamed(
+        '/${_args[0]}',
+        arguments: {'id': int.parse(_args[1]!)},
+      );
+    } else {
+      await _navigator.pushNamed(
+        '/${_args[0]}',
+      );
+    }
+
+    // Reset
+    AppNotification.resetPayload();
   }
 
   @override
@@ -81,8 +97,7 @@ class _HomeState extends State<Home> {
     _index = widget.index ?? 0;
     _setupPages(_index);
 
-    AppNotification.init();
-    _listerAndroidNotifs();
+    _listenAndroidNotifs();
   }
 
   void _setupPages(int index) {

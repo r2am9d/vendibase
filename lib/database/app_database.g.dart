@@ -1823,6 +1823,7 @@ class Arrear extends DataClass implements Insertable<Arrear> {
   final Status status;
   final double amount;
   final DateTime? due;
+  final int? notificationId;
   final String? remarks;
   final DateTime dateCreated;
   Arrear(
@@ -1831,6 +1832,7 @@ class Arrear extends DataClass implements Insertable<Arrear> {
       required this.status,
       required this.amount,
       this.due,
+      this.notificationId,
       this.remarks,
       required this.dateCreated});
   factory Arrear.fromData(Map<String, dynamic> data, {String? prefix}) {
@@ -1846,6 +1848,8 @@ class Arrear extends DataClass implements Insertable<Arrear> {
           .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
       due: const DateTimeType()
           .mapFromDatabaseResponse(data['${effectivePrefix}due']),
+      notificationId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}notification_id']),
       remarks: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}remarks']),
       dateCreated: const DateTimeType()
@@ -1865,6 +1869,9 @@ class Arrear extends DataClass implements Insertable<Arrear> {
     if (!nullToAbsent || due != null) {
       map['due'] = Variable<DateTime?>(due);
     }
+    if (!nullToAbsent || notificationId != null) {
+      map['notification_id'] = Variable<int?>(notificationId);
+    }
     if (!nullToAbsent || remarks != null) {
       map['remarks'] = Variable<String?>(remarks);
     }
@@ -1879,6 +1886,9 @@ class Arrear extends DataClass implements Insertable<Arrear> {
       status: Value(status),
       amount: Value(amount),
       due: due == null && nullToAbsent ? const Value.absent() : Value(due),
+      notificationId: notificationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notificationId),
       remarks: remarks == null && nullToAbsent
           ? const Value.absent()
           : Value(remarks),
@@ -1895,6 +1905,7 @@ class Arrear extends DataClass implements Insertable<Arrear> {
       status: serializer.fromJson<Status>(json['status']),
       amount: serializer.fromJson<double>(json['amount']),
       due: serializer.fromJson<DateTime?>(json['due']),
+      notificationId: serializer.fromJson<int?>(json['notificationId']),
       remarks: serializer.fromJson<String?>(json['remarks']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
     );
@@ -1908,6 +1919,7 @@ class Arrear extends DataClass implements Insertable<Arrear> {
       'status': serializer.toJson<Status>(status),
       'amount': serializer.toJson<double>(amount),
       'due': serializer.toJson<DateTime?>(due),
+      'notificationId': serializer.toJson<int?>(notificationId),
       'remarks': serializer.toJson<String?>(remarks),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
     };
@@ -1919,6 +1931,7 @@ class Arrear extends DataClass implements Insertable<Arrear> {
           Status? status,
           double? amount,
           DateTime? due,
+          int? notificationId,
           String? remarks,
           DateTime? dateCreated}) =>
       Arrear(
@@ -1927,6 +1940,7 @@ class Arrear extends DataClass implements Insertable<Arrear> {
         status: status ?? this.status,
         amount: amount ?? this.amount,
         due: due ?? this.due,
+        notificationId: notificationId ?? this.notificationId,
         remarks: remarks ?? this.remarks,
         dateCreated: dateCreated ?? this.dateCreated,
       );
@@ -1938,6 +1952,7 @@ class Arrear extends DataClass implements Insertable<Arrear> {
           ..write('status: $status, ')
           ..write('amount: $amount, ')
           ..write('due: $due, ')
+          ..write('notificationId: $notificationId, ')
           ..write('remarks: $remarks, ')
           ..write('dateCreated: $dateCreated')
           ..write(')'))
@@ -1945,8 +1960,8 @@ class Arrear extends DataClass implements Insertable<Arrear> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, personId, status, amount, due, remarks, dateCreated);
+  int get hashCode => Object.hash(
+      id, personId, status, amount, due, notificationId, remarks, dateCreated);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1956,6 +1971,7 @@ class Arrear extends DataClass implements Insertable<Arrear> {
           other.status == this.status &&
           other.amount == this.amount &&
           other.due == this.due &&
+          other.notificationId == this.notificationId &&
           other.remarks == this.remarks &&
           other.dateCreated == this.dateCreated);
 }
@@ -1966,6 +1982,7 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
   final Value<Status> status;
   final Value<double> amount;
   final Value<DateTime?> due;
+  final Value<int?> notificationId;
   final Value<String?> remarks;
   final Value<DateTime> dateCreated;
   const ArrearsCompanion({
@@ -1974,6 +1991,7 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
     this.status = const Value.absent(),
     this.amount = const Value.absent(),
     this.due = const Value.absent(),
+    this.notificationId = const Value.absent(),
     this.remarks = const Value.absent(),
     this.dateCreated = const Value.absent(),
   });
@@ -1983,6 +2001,7 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
     required Status status,
     required double amount,
     this.due = const Value.absent(),
+    this.notificationId = const Value.absent(),
     this.remarks = const Value.absent(),
     this.dateCreated = const Value.absent(),
   })  : personId = Value(personId),
@@ -1994,6 +2013,7 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
     Expression<Status>? status,
     Expression<double>? amount,
     Expression<DateTime?>? due,
+    Expression<int?>? notificationId,
     Expression<String?>? remarks,
     Expression<DateTime>? dateCreated,
   }) {
@@ -2003,6 +2023,7 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
       if (status != null) 'status': status,
       if (amount != null) 'amount': amount,
       if (due != null) 'due': due,
+      if (notificationId != null) 'notification_id': notificationId,
       if (remarks != null) 'remarks': remarks,
       if (dateCreated != null) 'date_created': dateCreated,
     });
@@ -2014,6 +2035,7 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
       Value<Status>? status,
       Value<double>? amount,
       Value<DateTime?>? due,
+      Value<int?>? notificationId,
       Value<String?>? remarks,
       Value<DateTime>? dateCreated}) {
     return ArrearsCompanion(
@@ -2022,6 +2044,7 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
       status: status ?? this.status,
       amount: amount ?? this.amount,
       due: due ?? this.due,
+      notificationId: notificationId ?? this.notificationId,
       remarks: remarks ?? this.remarks,
       dateCreated: dateCreated ?? this.dateCreated,
     );
@@ -2046,6 +2069,9 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
     if (due.present) {
       map['due'] = Variable<DateTime?>(due.value);
     }
+    if (notificationId.present) {
+      map['notification_id'] = Variable<int?>(notificationId.value);
+    }
     if (remarks.present) {
       map['remarks'] = Variable<String?>(remarks.value);
     }
@@ -2063,6 +2089,7 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
           ..write('status: $status, ')
           ..write('amount: $amount, ')
           ..write('due: $due, ')
+          ..write('notificationId: $notificationId, ')
           ..write('remarks: $remarks, ')
           ..write('dateCreated: $dateCreated')
           ..write(')'))
@@ -2105,6 +2132,12 @@ class $ArrearsTable extends Arrears with TableInfo<$ArrearsTable, Arrear> {
   late final GeneratedColumn<DateTime?> due = GeneratedColumn<DateTime?>(
       'due', aliasedName, true,
       type: const IntType(), requiredDuringInsert: false);
+  final VerificationMeta _notificationIdMeta =
+      const VerificationMeta('notificationId');
+  @override
+  late final GeneratedColumn<int?> notificationId = GeneratedColumn<int?>(
+      'notification_id', aliasedName, true,
+      type: const IntType(), requiredDuringInsert: false);
   final VerificationMeta _remarksMeta = const VerificationMeta('remarks');
   @override
   late final GeneratedColumn<String?> remarks = GeneratedColumn<String?>(
@@ -2120,7 +2153,7 @@ class $ArrearsTable extends Arrears with TableInfo<$ArrearsTable, Arrear> {
           defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, personId, status, amount, due, remarks, dateCreated];
+      [id, personId, status, amount, due, notificationId, remarks, dateCreated];
   @override
   String get aliasedName => _alias ?? 'arrears';
   @override
@@ -2149,6 +2182,12 @@ class $ArrearsTable extends Arrears with TableInfo<$ArrearsTable, Arrear> {
     if (data.containsKey('due')) {
       context.handle(
           _dueMeta, due.isAcceptableOrUnknown(data['due']!, _dueMeta));
+    }
+    if (data.containsKey('notification_id')) {
+      context.handle(
+          _notificationIdMeta,
+          notificationId.isAcceptableOrUnknown(
+              data['notification_id']!, _notificationIdMeta));
     }
     if (data.containsKey('remarks')) {
       context.handle(_remarksMeta,

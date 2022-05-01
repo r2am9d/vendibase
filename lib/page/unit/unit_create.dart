@@ -47,6 +47,7 @@ class _UnitCreateState extends State<UnitCreate> {
                 _sizedBox(height: 16),
                 FormBuilderTextField(
                   name: 'name',
+                  textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   decoration: _inputDecoration('Name'),
                   validator: FormBuilderValidators.required(context),
@@ -94,7 +95,7 @@ class _UnitCreateState extends State<UnitCreate> {
                     ),
                   );
 
-                  _navigator.popAndPushNamed(
+                  _navigator.pushReplacementNamed(
                     AppRouter.unitView,
                     arguments: {'id': _id},
                   );

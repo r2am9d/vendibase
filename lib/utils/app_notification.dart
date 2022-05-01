@@ -3,11 +3,12 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class AppNotification {
-  static int _notifId = 0;
+  static int notifId = 0; // 0 indicates no notifs has been created
+  static String selectedPayload = '';
   static final _notification = FlutterLocalNotificationsPlugin();
   static final onNotification = BehaviorSubject<String?>();
 
-  static _notificationDetails() {
+  static NotificationDetails _notificationDetails() {
     return NotificationDetails(
       android: AndroidNotificationDetails(
         'VENDIBASE_NOTIF_MAX',
@@ -19,7 +20,7 @@ class AppNotification {
     );
   }
 
-  static Future init() async {
+  static Future<void> init() async {
     final androidInitSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -41,6 +42,7 @@ class AppNotification {
     await _notification.initialize(
       initSettings,
       onSelectNotification: (payload) async {
+        selectedPayload = payload!;
         onNotification.add(payload);
       },
     );
@@ -51,8 +53,8 @@ class AppNotification {
     required String body,
     String? payload,
   }) async {
-    final _id = _notifId;
-    _notifId++;
+    notifId++;
+    final _id = notifId;
     return await _notification.show(
       _id,
       title,
@@ -68,13 +70,18 @@ class AppNotification {
     required DateTime dateTime,
     String? payload,
   }) async {
-    final _id = _notifId;
-    _notifId++;
+    notifId++;
+    final _id = notifId;
+
+    final _dt = tz.TZDateTime.from(dateTime, tz.local);
+    // Debugging notifs
+    // tz.TZDateTime.now(tz.local).add(const Duration(seconds: 15));
+
     return await _notification.zonedSchedule(
       _id,
       title,
       body,
-      tz.TZDateTime.from(dateTime, tz.local),
+      _dt,
       _notificationDetails(),
       payload: payload,
       androidAllowWhileIdle: true,
@@ -82,5 +89,17 @@ class AppNotification {
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
+  }
+
+  static Future<void> cancelNotification(int id) async {
+    return await _notification.cancel(id);
+  }
+
+  static Future<NotificationAppLaunchDetails?> getLaunchDetails() async {
+    return await _notification.getNotificationAppLaunchDetails();
+  }
+
+  static void resetPayload() {
+    selectedPayload = '';
   }
 }

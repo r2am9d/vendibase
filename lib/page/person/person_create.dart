@@ -61,6 +61,7 @@ class _PersonCreateState extends State<PersonCreate> {
                 _sizedBox(height: 16),
                 FormBuilderTextField(
                   name: 'name',
+                  textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   decoration: _inputDecoration('Name'),
                   validator: FormBuilderValidators.required(context),
@@ -121,7 +122,7 @@ class _PersonCreateState extends State<PersonCreate> {
                     ),
                   );
 
-                  _navigator.popAndPushNamed(
+                  _navigator.pushReplacementNamed(
                     AppRouter.personView,
                     arguments: {'id': _id},
                   );

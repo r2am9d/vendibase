@@ -107,6 +107,7 @@ class Arrears extends Table {
   IntColumn get status => intEnum<Status>()();
   RealColumn get amount => real()();
   DateTimeColumn get due => dateTime().nullable()();
+  IntColumn get notificationId => integer().nullable()();
   TextColumn get remarks => text().nullable()();
   DateTimeColumn get dateCreated =>
       dateTime().withDefault(currentDateAndTime)();
@@ -227,7 +228,7 @@ abstract class CrudInterface {
     throw UnimplementedError();
   }
 
-  Future<bool> revise(covariant Object param) async {
+  Future<int> revise(covariant Object param) async {
     throw UnimplementedError();
   }
 
@@ -281,8 +282,10 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase>
   }
 
   @override
-  Future<bool> revise(CategoriesCompanion category) async {
-    return await update(categories).replace(category);
+  Future<int> revise(CategoriesCompanion category) async {
+    final _query = update(categories);
+    _query.where((t) => t.id.equals(category.id.value));
+    return await _query.write(category);
   }
 
   // Custom query
@@ -360,8 +363,10 @@ class UnitsDao extends DatabaseAccessor<AppDatabase>
   }
 
   @override
-  Future<bool> revise(UnitsCompanion unit) async {
-    return await update(units).replace(unit);
+  Future<int> revise(UnitsCompanion unit) async {
+    final _query = update(units);
+    _query.where((t) => t.id.equals(unit.id.value));
+    return await _query.write(unit);
   }
 
   // Custom query
@@ -408,8 +413,10 @@ class PersonsDao extends DatabaseAccessor<AppDatabase>
   }
 
   @override
-  Future<bool> revise(PersonsCompanion person) async {
-    return await update(persons).replace(person);
+  Future<int> revise(PersonsCompanion person) async {
+    final _query = update(persons);
+    _query.where((t) => t.id.equals(person.id.value));
+    return await _query.write(person);
   }
 
   // Custom query
@@ -507,8 +514,10 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
   }
 
   @override
-  Future<bool> revise(ProductsCompanion product) async {
-    return await update(products).replace(product);
+  Future<int> revise(ProductsCompanion product) async {
+    final _query = update(products);
+    _query.where((t) => t.id.equals(product.id.value));
+    return await _query.write(product);
   }
 
   // Custom query
@@ -866,8 +875,10 @@ class ProductPurchasesDao extends DatabaseAccessor<AppDatabase>
   }
 
   @override
-  Future<bool> revise(ProductPurchasesCompanion productPurchase) async {
-    return await update(productPurchases).replace(productPurchase);
+  Future<int> revise(ProductPurchasesCompanion productPurchase) async {
+    final _query = update(productPurchases);
+    _query.where((t) => t.id.equals(productPurchase.id.value));
+    return await _query.write(productPurchase);
   }
 }
 
@@ -901,8 +912,10 @@ class ProductPricesDao extends DatabaseAccessor<AppDatabase>
   }
 
   @override
-  Future<bool> revise(ProductPricesCompanion productPrice) async {
-    return await update(productPrices).replace(productPrice);
+  Future<int> revise(ProductPricesCompanion productPrice) async {
+    final _query = update(productPrices);
+    _query.where((t) => t.id.equals(productPrice.id.value));
+    return await _query.write(productPrice);
   }
 
   // Custom query
@@ -949,6 +962,7 @@ class ArrearWithDetails {
     required this.personName,
     required this.personPhoto,
     this.due,
+    this.notificationId,
     this.remarks,
     required this.dateCreated,
     required this.totalPurchase,
@@ -969,6 +983,7 @@ class ArrearWithDetails {
   final String personPhoto;
 
   final DateTime? due;
+  final int? notificationId;
   final String? remarks;
   final DateTime dateCreated;
 
@@ -1017,8 +1032,10 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
   }
 
   @override
-  Future<bool> revise(ArrearsCompanion arrear) async {
-    return await update(arrears).replace(arrear);
+  Future<int> revise(ArrearsCompanion arrear) async {
+    final _query = update(arrears);
+    _query.where((t) => t.id.equals(arrear.id.value));
+    return await _query.write(arrear);
   }
 
   // Custom query
@@ -1038,6 +1055,7 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
         P.name AS person_name,
         P.photo AS person_photo,
         A.due,
+        A.notification_id,
         A.remarks,
         A.date_created,
         COALESCE(SQ.total_purchase, 0) AS total_purchase,
@@ -1102,6 +1120,7 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
       personName: _data['person_name'],
       personPhoto: _data['person_photo'],
       due: getDateTime(_data['due']),
+      notificationId: _data['notification_id'],
       remarks: _data['remarks'],
       dateCreated: getDateTime(_data['date_created'])!,
       totalPurchase: _data['total_purchase'],
@@ -1128,6 +1147,7 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
         P.name AS person_name,
         P.photo AS person_photo,
         A.due,
+        A.notification_id,
         A.remarks,
         A.date_created,
         COALESCE(SQ.total_purchase, 0) AS total_purchase,
@@ -1185,6 +1205,7 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
           personName: _data['person_name'],
           personPhoto: _data['person_photo'],
           due: getDateTime(_data['due']),
+          notificationId: _data['notification_id'],
           remarks: _data['remarks'],
           dateCreated: getDateTime(_data['date_created'])!,
           totalPurchase: _data['total_purchase'],
@@ -1211,6 +1232,7 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
         P.name AS person_name,
         P.photo AS person_photo,
         A.due,
+        A.notification_id,
         A.remarks,
         A.date_created,
         COALESCE(SQ.total_purchase, 0) AS total_purchase,
@@ -1281,6 +1303,7 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
           personName: _data['person_name'],
           personPhoto: _data['person_photo'],
           due: getDateTime(_data['due']),
+          notificationId: _data['notification_id'],
           remarks: _data['remarks'],
           dateCreated: getDateTime(_data['date_created'])!,
           totalPurchase: _data['total_purchase'],
@@ -1345,8 +1368,10 @@ class ArrearPurchasesDao extends DatabaseAccessor<AppDatabase>
   }
 
   @override
-  Future<bool> revise(ArrearPurchasesCompanion arrearPurchase) async {
-    return await update(arrearPurchases).replace(arrearPurchase);
+  Future<int> revise(ArrearPurchasesCompanion arrearPurchase) async {
+    final _query = update(arrearPurchases);
+    _query.where((t) => t.id.equals(arrearPurchase.id.value));
+    return await _query.write(arrearPurchase);
   }
 
   // Custom query
@@ -1470,8 +1495,10 @@ class ArrearPaymentsDao extends DatabaseAccessor<AppDatabase>
   }
 
   @override
-  Future<bool> revise(ArrearPaymentsCompanion arrearPayment) async {
-    return await update(arrearPayments).replace(arrearPayment);
+  Future<int> revise(ArrearPaymentsCompanion arrearPayment) async {
+    final _query = update(arrearPayments);
+    _query.where((t) => t.id.equals(arrearPayment.id.value));
+    return await _query.write(arrearPayment);
   }
 }
 
@@ -1520,8 +1547,10 @@ class EarningsDao extends DatabaseAccessor<AppDatabase>
   }
 
   @override
-  Future<bool> revise(EarningsCompanion earning) async {
-    return await update(earnings).replace(earning);
+  Future<int> revise(EarningsCompanion earning) async {
+    final _query = update(earnings);
+    _query.where((t) => t.id.equals(earning.id.value));
+    return await _query.write(earning);
   }
 }
 
