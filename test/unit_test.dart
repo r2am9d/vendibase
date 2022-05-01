@@ -6,13 +6,8 @@ import 'package:vendibase/database/app_database.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  late AppDatabase _db;
-
-  setUp(() {
-    _db = AppDatabase();
-  });
-
   test('Check if composed of streams', () {
+    final _db = AppDatabase();
     final data = _db.dashboardDao.getData('2022');
     expect(data is CombineLatestStream, true);
   });
