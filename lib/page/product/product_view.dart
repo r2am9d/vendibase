@@ -268,6 +268,15 @@ class _ProductViewState extends State<ProductView> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  _sizedBox(height: 16.0),
+                  if (product.category != null || product.unit != null)
+                    Text(
+                      "${product.category ?? ''} • ${product.unit?.toLowerCase() ?? ''}",
+                      style: theme.textTheme.bodyText2?.copyWith(
+                        color: AppColor.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                 ],
               ),
               IconButton(

@@ -70,13 +70,12 @@ class AppNotification {
     required DateTime dateTime,
     String? payload,
   }) async {
-    notifId++;
-    final _id = notifId;
-
     final _dt = tz.TZDateTime.from(dateTime, tz.local);
     // Debugging notifs
     // tz.TZDateTime.now(tz.local).add(const Duration(seconds: 15));
 
+    notifId++;
+    final _id = notifId;
     return await _notification.zonedSchedule(
       _id,
       title,

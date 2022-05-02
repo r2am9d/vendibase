@@ -62,6 +62,13 @@ class _ProductIndexState extends State<ProductIndex> {
               });
             },
           ),
+          _iconButton(
+            icon: Icons.filter_alt,
+            color: AppColor.black,
+            onPressed: () {
+              // @TODO:
+            },
+          ),
         ],
       ),
       body: NotificationListener<UserScrollNotification>(

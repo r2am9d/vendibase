@@ -287,6 +287,7 @@ class _CategoryViewState extends State<CategoryView> {
                 FormBuilderTextField(
                   name: 'name',
                   textInputAction: TextInputAction.done,
+                  textCapitalization: TextCapitalization.words,
                   initialValue: category?.name,
                   decoration: _inputDecoration('Name'),
                   validator: FormBuilderValidators.required(context),
