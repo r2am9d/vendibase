@@ -167,7 +167,10 @@ class _ArrearCreateState extends State<ArrearCreate> {
                             db: _db,
                             theme: _theme,
                             context: context,
-                            products: _products,
+                            products: filterProducts(
+                              puchases: _purchases,
+                              products: _products!,
+                            ),
                             dialogKey: _dialogKey,
                             navigator: _navigator,
                           );
@@ -400,6 +403,17 @@ class _ArrearCreateState extends State<ArrearCreate> {
     }
 
     return Center(child: CircularProgressIndicator());
+  }
+
+  List<ProductWithDetails> filterProducts({
+    required List<Map<String, dynamic>> puchases,
+    required List<ProductWithDetails> products,
+  }) {
+    if (puchases.isEmpty || products.isEmpty) return products;
+    final _purchasesId = _purchases.map((e) => e['id']).toList();
+    return products
+        .where((product) => !_purchasesId.contains(product.id))
+        .toList();
   }
 
   Future _editPurchaseDialog({

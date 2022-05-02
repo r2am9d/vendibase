@@ -139,7 +139,7 @@ class _PersonIndexState extends State<PersonIndex> {
               icon: Icons.edit,
               onPressed: () {
                 navigator.pushNamed(
-                  AppRouter.categoryUpdate,
+                  AppRouter.personUpdate,
                   arguments: {'id': person.id},
                 );
               },
