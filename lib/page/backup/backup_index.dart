@@ -154,7 +154,7 @@ class _BackupIndexState extends State<BackupIndex> {
                                               _navigator.pop(context);
 
                                               // Show flash
-                                              _showFlash(
+                                              await _showFlash(
                                                 content:
                                                     'Database restore complete',
                                                 theme: _theme,
@@ -196,7 +196,7 @@ class _BackupIndexState extends State<BackupIndex> {
                                               await _file.delete();
 
                                               // Re-render
-                                              initFiles();
+                                              await initFiles();
 
                                               _navigator.pop(context);
                                             },
@@ -254,10 +254,10 @@ class _BackupIndexState extends State<BackupIndex> {
                   _dbBackup.delete();
 
                   // Re-render
-                  initFiles();
+                  await initFiles();
 
                   // Show flash
-                  _showFlash(
+                  await _showFlash(
                     content: 'Database backup complete',
                     theme: _theme,
                   );

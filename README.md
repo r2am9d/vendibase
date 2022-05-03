@@ -39,6 +39,7 @@ Follow the instructions in the [official documentation](https://flutter.io/docs/
 * Search function, to look for Products, Arrears
 * Database backup & restore
 * Arrear due local notification
+* Database encryption
 * Internationalization
 * Responsive layout
 * Following Flutter's [best practices](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo)!
