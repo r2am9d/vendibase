@@ -43,7 +43,7 @@ class _CategoryUpdateState extends State<CategoryUpdate> {
 
   @override
   Widget build(BuildContext context) {
-    final _db = context.read<AppDatabaseProvider>().database;
+    final _db = context.watch<AppDatabaseProvider>().database;
     final _navigator = Navigator.of(context);
 
     if (_categories != null && _category != null) {

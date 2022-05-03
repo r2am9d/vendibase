@@ -47,7 +47,7 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
   @override
   Widget build(BuildContext context) {
     final _theme = Theme.of(context);
-    final _db = context.read<AppDatabaseProvider>().database;
+    final _db = context.watch<AppDatabaseProvider>().database;
     final _navigator = Navigator.of(context);
 
     if (_arrear != null) {

@@ -1,0 +1,1 @@
+-keep class com.r2am9d.vendibase.BuildConfig { *; }

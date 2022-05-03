@@ -1,6 +1,10 @@
+import 'dart:ffi';
+
+import 'package:sqlite3/open.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as fr;
 import 'package:vendibase/provider/app_database_provider.dart';
@@ -21,6 +25,8 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await AppNotification.init();
+  await FlutterConfig.loadEnvVariables();
+  setupSqlCipher();
 
   runApp(MultiProvider(
     providers: [
@@ -30,6 +36,13 @@ void main() async {
     ],
     child: const MyApp(),
   ));
+}
+
+void setupSqlCipher() {
+  open.overrideFor(
+    OperatingSystem.android,
+    () => DynamicLibrary.open('libsqlcipher.so'),
+  );
 }
 
 class MyApp extends StatefulWidget {

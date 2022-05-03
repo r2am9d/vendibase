@@ -21,7 +21,7 @@ class _DashboardIndexState extends State<DashboardIndex> {
   @override
   Widget build(BuildContext context) {
     final _theme = Theme.of(context);
-    final _db = context.read<AppDatabaseProvider>().database;
+    final _db = context.watch<AppDatabaseProvider>().database;
 
     return Scaffold(
       appBar: AppBar(

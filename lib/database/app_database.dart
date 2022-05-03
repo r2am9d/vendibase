@@ -1,10 +1,13 @@
 import 'dart:io';
+
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:path/path.dart' as p;
+import 'package:sqlite3/sqlite3.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_config/flutter_config.dart';
 
 part 'app_database.g.dart';
 
@@ -13,6 +16,10 @@ part 'app_database.g.dart';
 DateTime? getDateTime(int? timestamp) {
   if (timestamp == null) return null;
   return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+}
+
+bool _debugCheckHasCipher(Database database) {
+  return database.select('PRAGMA cipher_version;').isNotEmpty;
 }
 
 // Base Tables Definition
@@ -155,7 +162,16 @@ class Earnings extends Table {
 
 LazyDatabase _openConnection(Future<File> filename) {
   return LazyDatabase(() async {
-    return NativeDatabase(await filename, logStatements: kDebugMode);
+    final _cipherKey = FlutterConfig.get('CIPHER_KEY');
+
+    return NativeDatabase(
+      await filename,
+      logStatements: kDebugMode,
+      setup: (rawDb) {
+        assert(_debugCheckHasCipher(rawDb));
+        rawDb.execute("PRAGMA key = '${_cipherKey}';");
+      },
+    );
   });
 }
 

@@ -51,7 +51,7 @@ class _ProductUpdateState extends State<ProductUpdate> {
   @override
   Widget build(BuildContext context) {
     final _theme = Theme.of(context);
-    final _db = context.read<AppDatabaseProvider>().database;
+    final _db = context.watch<AppDatabaseProvider>().database;
     final _navigator = Navigator.of(context);
 
     if (_product != null && _units != null && _categories != null) {

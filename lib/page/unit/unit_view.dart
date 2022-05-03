@@ -17,7 +17,7 @@ class UnitView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _theme = Theme.of(context);
-    final _db = context.read<AppDatabaseProvider>().database;
+    final _db = context.watch<AppDatabaseProvider>().database;
     final _navigator = Navigator.of(context);
     final _args = jsonDecode(jsonEncode(args));
 
