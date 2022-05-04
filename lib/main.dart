@@ -20,13 +20,20 @@ import 'package:vendibase/theme/app_theme.dart';
 import 'package:vendibase/router/app_router.dart';
 import 'package:vendibase/utils/app_notification.dart';
 
+void _setupSqlCipher() {
+  open.overrideFor(
+    OperatingSystem.android,
+    () => DynamicLibrary.open('libsqlcipher.so'),
+  );
+}
+
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await AppNotification.init();
   await FlutterConfig.loadEnvVariables();
-  setupSqlCipher();
+  _setupSqlCipher();
 
   runApp(MultiProvider(
     providers: [
@@ -36,13 +43,6 @@ void main() async {
     ],
     child: const MyApp(),
   ));
-}
-
-void setupSqlCipher() {
-  open.overrideFor(
-    OperatingSystem.android,
-    () => DynamicLibrary.open('libsqlcipher.so'),
-  );
 }
 
 class MyApp extends StatefulWidget {
@@ -81,8 +81,8 @@ class _MyAppState extends State<MyApp> {
 
   void _initTimezone() async {
     tz.initializeTimeZones();
-    final String? timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timeZoneName!));
+    final timezone = await FlutterNativeTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timezone));
   }
 
   void _setupRoute() async {

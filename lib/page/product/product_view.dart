@@ -77,8 +77,10 @@ class _ProductViewState extends State<ProductView> {
 
             final _photo = _product.photo;
             final _image = _photo.contains('asset')
-                ? Image.asset(_photo, fit: BoxFit.none)
-                : Image.file(File(_photo), fit: BoxFit.fill);
+                ? Image.asset(_photo)
+                : File(_photo).existsSync()
+                    ? Image.file(File(_photo), fit: BoxFit.fill)
+                    : Image.asset('assets/images/basket.png');
 
             _widget = Stack(
               fit: StackFit.expand,

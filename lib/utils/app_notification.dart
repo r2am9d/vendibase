@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:dart_numerics/dart_numerics.dart' as numerics;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class AppNotification {
@@ -7,6 +10,8 @@ class AppNotification {
   static String selectedPayload = '';
   static final _notification = FlutterLocalNotificationsPlugin();
   static final onNotification = BehaviorSubject<String?>();
+
+  static int _getRandomNumber() => Random().nextInt(numerics.int64MaxValue);
 
   static NotificationDetails _notificationDetails() {
     return NotificationDetails(
@@ -53,10 +58,10 @@ class AppNotification {
     required String body,
     String? payload,
   }) async {
-    notifId++;
-    final _id = notifId;
+    notifId = _getRandomNumber();
+
     return await _notification.show(
-      _id,
+      notifId,
       title,
       body,
       _notificationDetails(),
@@ -70,14 +75,14 @@ class AppNotification {
     required DateTime dateTime,
     String? payload,
   }) async {
-    final _dt = tz.TZDateTime.from(dateTime, tz.local);
     // Debugging notifs
     // tz.TZDateTime.now(tz.local).add(const Duration(seconds: 15));
 
-    notifId++;
-    final _id = notifId;
+    notifId = _getRandomNumber();
+    final _dt = tz.TZDateTime.from(dateTime, tz.local);
+
     return await _notification.zonedSchedule(
-      _id,
+      notifId,
       title,
       body,
       _dt,

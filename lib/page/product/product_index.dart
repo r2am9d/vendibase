@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as d;
@@ -9,6 +10,7 @@ import 'package:vendibase/theme/app_theme.dart';
 import 'package:vendibase/router/app_router.dart';
 import 'package:vendibase/database/app_database.dart';
 import 'package:vendibase/provider/app_database_provider.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 class ProductIndex extends StatefulWidget {
   const ProductIndex({Key? key}) : super(key: key);
@@ -22,6 +24,8 @@ class _ProductIndexState extends State<ProductIndex> {
   bool _isSearching = false;
 
   bool _isVisible = true;
+
+  final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +69,14 @@ class _ProductIndexState extends State<ProductIndex> {
           _iconButton(
             icon: Icons.filter_alt,
             color: AppColor.black,
-            onPressed: () {
+            onPressed: () async {
               // @TODO:
+              await _showFilterDialog(
+                db: _db,
+                theme: _theme,
+                context: context,
+                formKey: _formKey,
+              );
             },
           ),
         ],
@@ -153,7 +163,9 @@ class _ProductIndexState extends State<ProductIndex> {
     final _borderRadius = BorderRadius.circular(20.0);
     final _image = _photo.contains('asset')
         ? Image.asset(_photo)
-        : Image.file(File(_photo), fit: BoxFit.fill);
+        : File(_photo).existsSync() ? 
+            Image.file(File(_photo), fit: BoxFit.fill) :
+            Image.asset('assets/images/basket.png');
 
     return Stack(
       clipBehavior: Clip.none,
@@ -316,12 +328,70 @@ class _ProductIndexState extends State<ProductIndex> {
               borderRadius: _borderRadius,
               child: SizedBox.fromSize(
                 size: Size.fromRadius(40.0),
-                child: _image,
+                child: Material(
+                  child: InkWell(
+                    onTap: () async {
+                      await showImageViewer(
+                        context,
+                        _image.image,
+                        immersive: false,
+                        useSafeArea: true,
+                        backgroundColor: AppColor.red,
+                      );
+                    },
+                    child: _image,
+                  ),
+                ),
               ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Future _showFilterDialog({
+    required AppDatabase db,
+    required ThemeData theme,
+    required BuildContext context,
+    required GlobalKey<FormBuilderState> formKey,
+  }) {
+    final _mQ = MediaQuery.of(context);
+    final _navigator = Navigator.of(context);
+
+    return showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColor.white,
+        title: Text(
+          'Filters',
+          style: theme.textTheme.headline6?.copyWith(
+            color: AppColor.red,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: SizedBox(
+          height: _mQ.size.height / 2,
+          width: _mQ.size.width,
+          child: Text('@TODO: UI'),
+        ),
+        actions: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: Colors.grey.shade200)),
+            ),
+            alignment: Alignment.center,
+            child: _elevatedButton(
+              text: 'Filter',
+              icon: Icons.filter_alt,
+              onPressed: () async {
+                _navigator.pop();
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -350,6 +420,26 @@ class _ProductIndexState extends State<ProductIndex> {
       style: OutlinedButton.styleFrom(
         side: BorderSide(color: color),
       ),
+    );
+  }
+
+  Widget _elevatedButton({
+    required String text,
+    required IconData icon,
+    Color? color,
+    void Function()? onPressed,
+  }) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(primary: color),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(text),
+          _sizedBox(width: 8),
+          Icon(icon, size: 16),
+        ],
+      ),
+      onPressed: onPressed,
     );
   }
 
