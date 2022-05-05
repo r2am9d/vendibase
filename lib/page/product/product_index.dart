@@ -1,16 +1,16 @@
 import 'dart:io';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:gallery_saver/gallery_saver.dart';
 import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as d;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:vendibase/theme/app_theme.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:vendibase/router/app_router.dart';
 import 'package:vendibase/database/app_database.dart';
-import 'package:vendibase/provider/app_database_provider.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:vendibase/provider/app_database_provider.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class ProductIndex extends StatefulWidget {
   const ProductIndex({Key? key}) : super(key: key);
@@ -163,9 +163,9 @@ class _ProductIndexState extends State<ProductIndex> {
     final _borderRadius = BorderRadius.circular(20.0);
     final _image = _photo.contains('asset')
         ? Image.asset(_photo)
-        : File(_photo).existsSync() ? 
-            Image.file(File(_photo), fit: BoxFit.fill) :
-            Image.asset('assets/images/basket.png');
+        : File(_photo).existsSync()
+            ? Image.file(File(_photo), fit: BoxFit.fill)
+            : Image.asset('assets/images/basket.png');
 
     return Stack(
       clipBehavior: Clip.none,
@@ -370,10 +370,37 @@ class _ProductIndexState extends State<ProductIndex> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        content: SizedBox(
-          height: _mQ.size.height / 2,
-          width: _mQ.size.width,
-          child: Text('@TODO: UI'),
+        content: Scrollbar(
+          child: SingleChildScrollView(
+            child: SizedBox(
+              height: _mQ.size.height / 2,
+              width: _mQ.size.width,
+              child: FormBuilder(
+                key: formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _sizedBox(height: 16.0),
+                    FormBuilderRangeSlider(
+                      min: 1,
+                      max: 10000,
+                      name: 'price_range',
+                      labels: RangeLabels('1', '10000'),
+                      initialValue: RangeValues(1, 10000),
+                      decoration: _inputDecoration('Price Range (PHP)'),
+                      numberFormat: NumberFormat("###,###.##", "en_US"),
+                      textStyle: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.black45,
+                      ),
+                    ),
+                    _sizedBox(height: 16.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
         actions: [
           Container(
@@ -459,6 +486,21 @@ class _ProductIndexState extends State<ProductIndex> {
       icon: Icon(icon),
       color: color,
       onPressed: onPressed,
+    );
+  }
+
+  InputDecoration _inputDecoration(
+    String placeholder, [
+    bool withPrefix = false,
+  ]) {
+    final _prefix = withPrefix ? '₱ ' : null;
+
+    return InputDecoration(
+      prefixText: _prefix,
+      labelText: placeholder,
+      alignLabelWithHint: true,
+      fillColor: AppColor.white,
+      border: const OutlineInputBorder(),
     );
   }
 }
