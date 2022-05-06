@@ -20,12 +20,27 @@ class ProductIndex extends StatefulWidget {
 }
 
 class _ProductIndexState extends State<ProductIndex> {
+  List<Category>? _categories;
+
   String _searchTerm = '';
   bool _isSearching = false;
-
   bool _isVisible = true;
 
   final _formKey = GlobalKey<FormBuilderState>();
+
+  _setVaraibles() async {
+    final _db = context.read<AppDatabaseProvider>().database;
+
+    _categories = await _db.categoriesDao.getCategories();
+
+    setState(() {}); // Force rebuild
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _setVaraibles();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -391,7 +406,7 @@ class _ProductIndexState extends State<ProductIndex> {
                       decoration: _inputDecoration('Price Range (PHP)'),
                       numberFormat: NumberFormat("###,###.##", "en_US"),
                       textStyle: TextStyle(
-                        fontSize: 16.0,
+                        fontSize: 12.0,
                         color: Colors.black45,
                       ),
                     ),

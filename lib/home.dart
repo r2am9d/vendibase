@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:faker/faker.dart';
 import 'package:drift/drift.dart' as d;
 import 'package:flutter/material.dart';
@@ -8,12 +10,13 @@ import 'package:vendibase/database/app_database.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:vendibase/provider/app_database_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 import 'package:vendibase/page/dashboard/dashboard_index.dart';
 import 'package:vendibase/page/product/product_index.dart';
 import 'package:vendibase/page/arrear/arrear_index.dart';
 
-import 'package:vendibase/utils/app_notification.dart';
+import 'package:vendibase/utils/app_notification_alt.dart';
 
 class Home extends StatefulWidget {
   final int? index;
@@ -67,37 +70,37 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void _listenAndroidNotifs() =>
-      AppNotification.onNotification.stream.listen(_onClickedAndroidNotifs);
+  void _listenNotifications() {
+    AppNotificationAlt.awesomeNotification.actionStream
+        .listen(_onClickedNotifications);
+  }
 
-  void _onClickedAndroidNotifs(String? payload) async {
-    final _args =
-        payload!.split('/').where((i) => i.length >= 1).toList().asMap();
+  void _onClickedNotifications(ReceivedAction event) async {
+    final _payload = event.payload!;
     final _navigator = Navigator.of(context);
 
-    if (_args.length >= 2) {
-      await _navigator.pushNamed(
-        '/${_args[0]}',
-        arguments: {'id': int.parse(_args[1]!)},
-      );
-    } else {
-      await _navigator.pushNamed(
-        '/${_args[0]}',
+    if (event.channelKey == AppNotificationAlt.BASIC_CHANNEL &&
+        Platform.isIOS) {
+      final count =
+          await AppNotificationAlt.awesomeNotification.getGlobalBadgeCounter();
+      await AppNotificationAlt.awesomeNotification
+          .setGlobalBadgeCounter(count - 1);
+    }
+
+    if (event.buttonKeyPressed == 'NOTIFICATION_DONE') {
+      await AppNotificationAlt.cancelNotification(
+        int.parse(_payload['notification_id']!),
       );
     }
 
-    // Reset
-    AppNotification.resetPayload();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    if (!kReleaseMode) _setupDb();
-    _index = widget.index ?? 0;
-    _setupPages(_index);
-
-    _listenAndroidNotifs();
+    if (_payload.length >= 2) {
+      await _navigator.pushNamed(
+        _payload['route']!,
+        arguments: {'id': int.parse(_payload['id']!)},
+      );
+    } else {
+      await _navigator.pushNamed(_payload['route']!);
+    }
   }
 
   void _setupPages(int index) {
@@ -125,6 +128,22 @@ class _HomeState extends State<Home> {
         break;
       default:
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (!kReleaseMode) _setupDb();
+    _index = widget.index ?? 0;
+    _setupPages(_index);
+
+    _listenNotifications();
+  }
+
+  @override
+  void dispose() {
+    AppNotificationAlt.awesomeNotification.actionSink.close();
+    super.dispose();
   }
 
   @override

@@ -64,8 +64,8 @@ dependencies:
   flutter_native_timezone: ^2.0.0
   timezone: ^0.8.0
   flutter_config: ^2.0.0
-  dart_numerics: ^0.0.6
   easy_image_viewer: ^1.0.4
+  awesome_notifications: ^0.6.21
   gallery_saver:
     git:
       url: https://github.com/r2am9d/gallery_saver

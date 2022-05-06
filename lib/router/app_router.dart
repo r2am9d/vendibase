@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:vendibase/utils/app_debug.dart';
-import 'package:vendibase/utils/app_notification.dart';
 
 import 'package:vendibase/home.dart';
 import 'package:vendibase/page/dashboard/dashboard_index.dart';
@@ -142,16 +141,6 @@ class AppRouter {
           builder: (context) => const ArrearCreate(),
         );
       case arrearView:
-        final payload = AppNotification.selectedPayload;
-        if (payload.isNotEmpty) {
-          final _args =
-              payload.split('/').where((i) => i.length >= 1).toList().asMap();
-          args = {'id': int.parse(_args[1]!)};
-
-          // Reset
-          AppNotification.resetPayload();
-        }
-
         return MaterialPageRoute(
           settings: settings,
           builder: (context) => ArrearView(args: args),

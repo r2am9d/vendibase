@@ -12,7 +12,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
-import 'package:vendibase/utils/app_notification.dart';
+
+import 'package:vendibase/utils/app_notification_alt.dart';
 
 class ArrearCreate extends StatefulWidget {
   const ArrearCreate({Key? key}) : super(key: key);
@@ -360,16 +361,21 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       final _person = await _db.personsDao.getPerson(_personId);
 
                       // Schedule notif
-                      await AppNotification.scheduleNotification(
+                      await AppNotificationAlt.scheduleNotification(
                         title: 'Arrear payment',
                         body:
                             '${_person.name} debt should be paid today! Check it out.',
                         dateTime: _due,
-                        payload: '/arrear-view/${_id}',
+                        payload: {
+                          'id': '${_id}',
+                          'route': AppRouter.arrearView,
+                          'notification_id':
+                              '${AppNotificationAlt.notificationId}',
+                        },
                       );
 
                       // Update notifId
-                      final _notifId = AppNotification.notifId;
+                      final _notifId = AppNotificationAlt.notificationId;
                       await _db.arrearsDao.revise(
                         ArrearsCompanion(
                           id: d.Value(_id),

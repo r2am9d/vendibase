@@ -2,16 +2,18 @@ import 'dart:math';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:dart_numerics/dart_numerics.dart' as numerics;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class AppNotification {
+  static final int MAX_ID = 2147483647;
+
   static int notifId = 0; // 0 indicates no notifs has been created
   static String selectedPayload = '';
+
   static final _notification = FlutterLocalNotificationsPlugin();
   static final onNotification = BehaviorSubject<String?>();
 
-  static int _getRandomNumber() => Random().nextInt(numerics.int64MaxValue);
+  static int _getRandomNumber() => Random().nextInt(AppNotification.MAX_ID);
 
   static NotificationDetails _notificationDetails() {
     return NotificationDetails(
