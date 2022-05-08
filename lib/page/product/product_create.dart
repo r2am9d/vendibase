@@ -7,10 +7,12 @@ import 'package:vendibase/theme/app_theme.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:vendibase/router/app_router.dart';
 import 'package:vendibase/database/app_database.dart';
+import 'package:dropdown_search/dropdown_search.dart' as ds;
 import 'package:vendibase/provider/app_database_provider.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
+import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 
 class ProductCreate extends StatefulWidget {
   const ProductCreate({Key? key}) : super(key: key);
@@ -43,6 +45,7 @@ class _ProductCreateState extends State<ProductCreate> {
   @override
   Widget build(BuildContext context) {
     final _theme = Theme.of(context);
+    final _radius = Radius.circular(4);
     final _db = context.watch<AppDatabaseProvider>().database;
     final _navigator = Navigator.of(context);
 
@@ -79,28 +82,104 @@ class _ProductCreateState extends State<ProductCreate> {
                     validator: FormBuilderValidators.required(context),
                   ),
                   _sizedBox(height: 16),
-                  FormBuilderDropdown(
+                  FormBuilderSearchableDropdown(
                     name: 'categoryId',
-                    allowClear: true,
+                    showClearButton: true,
+                    mode: ds.Mode.BOTTOM_SHEET,
+                    decoration: InputDecoration(
+                      labelText: 'Category',
+                      alignLabelWithHint: true,
+                      fillColor: AppColor.white,
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.all(12.0),
+                    ),
                     items: _categories!.map((_category) {
                       return DropdownMenuItem(
                         value: _category.id,
                         child: Text(_category.name),
                       );
                     }).toList(),
-                    decoration: _inputDecoration('Category'),
+                    itemAsString: (DropdownMenuItem<int>? menuItem) {
+                      final _text = menuItem!.child as Text;
+                      return _text.data.toString();
+                    },
+                    popupShape: RoundedRectangleBorder(
+                      side: BorderSide(color: Colors.grey, width: .5),
+                      borderRadius: BorderRadius.vertical(bottom: _radius),
+                    ),
+                    searchFieldProps: TextFieldProps(
+                      decoration: InputDecoration(
+                        hintText: "Search a category..",
+                        contentPadding:
+                            const EdgeInsets.only(left: 8, bottom: 4),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey, width: .5),
+                          borderRadius: BorderRadius.all(_radius),
+                        ),
+                      ),
+                    ),
+                    dropdownSearchDecoration: InputDecoration(
+                      contentPadding:
+                          const EdgeInsets.only(left: 16, bottom: 8),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 2),
+                        borderRadius: BorderRadius.all(_radius),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey, width: .5),
+                        borderRadius: BorderRadius.vertical(top: _radius),
+                      ),
+                    ),
                   ),
                   _sizedBox(height: 16),
-                  FormBuilderDropdown(
+                  FormBuilderSearchableDropdown(
                     name: 'unitId',
-                    allowClear: true,
+                    showClearButton: true,
+                    mode: ds.Mode.BOTTOM_SHEET,
+                    decoration: InputDecoration(
+                      labelText: 'Unit',
+                      alignLabelWithHint: true,
+                      fillColor: AppColor.white,
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.all(12.0),
+                    ),
                     items: _units!.map((_unit) {
                       return DropdownMenuItem(
                         value: _unit.id,
                         child: Text(_unit.name),
                       );
                     }).toList(),
-                    decoration: _inputDecoration('Unit'),
+                    itemAsString: (DropdownMenuItem<int>? menuItem) {
+                      final _text = menuItem!.child as Text;
+                      return _text.data.toString();
+                    },
+                    popupShape: RoundedRectangleBorder(
+                      side: BorderSide(color: Colors.grey, width: .5),
+                      borderRadius: BorderRadius.vertical(bottom: _radius),
+                    ),
+                    searchFieldProps: TextFieldProps(
+                      decoration: InputDecoration(
+                        hintText: "Search a unit..",
+                        contentPadding:
+                            const EdgeInsets.only(left: 8, bottom: 4),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey, width: .5),
+                          borderRadius: BorderRadius.all(_radius),
+                        ),
+                      ),
+                    ),
+                    dropdownSearchDecoration: InputDecoration(
+                      contentPadding:
+                          const EdgeInsets.only(left: 16, bottom: 8),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 2),
+                        borderRadius: BorderRadius.all(_radius),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey, width: .5),
+                        borderRadius: BorderRadius.vertical(top: _radius),
+                      ),
+                    ),
                   ),
                   _sizedBox(height: 16),
                   FormBuilderTextField(
@@ -197,10 +276,16 @@ class _ProductCreateState extends State<ProductCreate> {
                     final _photo = await _saveImage(
                       _formKey.currentState!.fields['photo']!.value,
                     );
-                    final _categoryId =
-                        _formKey.currentState!.fields['categoryId']!.value;
-                    final _unitId =
-                        _formKey.currentState!.fields['unitId']!.value;
+
+                    var _categoryId =
+                        _formKey.currentState!.fields['categoryId']?.value;
+                    _categoryId =
+                        (_categoryId != null) ? _categoryId.value : null;
+
+                    var _unitId =
+                        _formKey.currentState!.fields['unitId']?.value;
+                    _unitId = (_unitId != null) ? _unitId.value : null;
+
                     final _name = _formKey.currentState!.fields['name']!.value;
                     final _remarks =
                         _formKey.currentState!.fields['remarks']!.value;

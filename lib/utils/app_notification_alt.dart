@@ -59,6 +59,8 @@ class AppNotificationAlt {
         NotificationActionButton(
           key: 'NOTIFICATION_DONE',
           label: 'Done',
+          showInCompactView: true,
+          buttonType: ActionButtonType.KeepOnTop,
         )
       ],
     );
@@ -85,7 +87,7 @@ class AppNotificationAlt {
       ),
       schedule: NotificationCalendar(
         day: _dateTime.day,
-        hour: _dateTime.hour,
+        hour: 7, /// 8am
         minute: _dateTime.minute,
         second: 0,
         millisecond: 0,
@@ -97,7 +99,9 @@ class AppNotificationAlt {
         NotificationActionButton(
           key: 'NOTIFICATION_DONE',
           label: 'Done',
-        )
+          showInCompactView: true,
+          buttonType: ActionButtonType.KeepOnTop,
+        ),
       ],
     );
   }

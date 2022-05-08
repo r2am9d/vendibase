@@ -30,10 +30,10 @@ void _setupSqlCipher() {
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterConfig.loadEnvVariables();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await AppNotificationAlt.init();
-  await FlutterConfig.loadEnvVariables();
   _setupSqlCipher();
 
   runApp(MultiProvider(

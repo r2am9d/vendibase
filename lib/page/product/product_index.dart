@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as d;
 import 'package:flutter/material.dart';
@@ -9,8 +10,10 @@ import 'package:gallery_saver/gallery_saver.dart';
 import 'package:vendibase/router/app_router.dart';
 import 'package:vendibase/database/app_database.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:dropdown_search/dropdown_search.dart' as ds;
 import 'package:vendibase/provider/app_database_provider.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 
 class ProductIndex extends StatefulWidget {
   const ProductIndex({Key? key}) : super(key: key);
@@ -20,27 +23,11 @@ class ProductIndex extends StatefulWidget {
 }
 
 class _ProductIndexState extends State<ProductIndex> {
-  List<Category>? _categories;
-
   String _searchTerm = '';
   bool _isSearching = false;
   bool _isVisible = true;
 
   final _formKey = GlobalKey<FormBuilderState>();
-
-  _setVaraibles() async {
-    final _db = context.read<AppDatabaseProvider>().database;
-
-    _categories = await _db.categoriesDao.getCategories();
-
-    setState(() {}); // Force rebuild
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _setVaraibles();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +72,6 @@ class _ProductIndexState extends State<ProductIndex> {
             icon: Icons.filter_alt,
             color: AppColor.black,
             onPressed: () async {
-              // @TODO:
               await _showFilterDialog(
                 db: _db,
                 theme: _theme,
@@ -371,6 +357,7 @@ class _ProductIndexState extends State<ProductIndex> {
     required BuildContext context,
     required GlobalKey<FormBuilderState> formKey,
   }) {
+    final _radius = Radius.circular(4);
     final _mQ = MediaQuery.of(context);
     final _navigator = Navigator.of(context);
 
@@ -388,7 +375,6 @@ class _ProductIndexState extends State<ProductIndex> {
         content: Scrollbar(
           child: SingleChildScrollView(
             child: SizedBox(
-              height: _mQ.size.height / 2,
               width: _mQ.size.width,
               child: FormBuilder(
                 key: formKey,
@@ -411,6 +397,67 @@ class _ProductIndexState extends State<ProductIndex> {
                       ),
                     ),
                     _sizedBox(height: 16.0),
+                    StreamBuilder<List<Category>>(
+                      stream: db.categoriesDao.watchCategories(),
+                      builder: (context, snapshot) {
+                        List<Category> _categories = snapshot.data ?? [];
+
+                        return FormBuilderSearchableDropdown(
+                          name: 'categoryId',
+                          showClearButton: true,
+                          mode: ds.Mode.BOTTOM_SHEET,
+                          decoration: InputDecoration(
+                            labelText: 'Category',
+                            alignLabelWithHint: true,
+                            fillColor: AppColor.white,
+                            border: const OutlineInputBorder(),
+                            contentPadding: const EdgeInsets.all(12.0),
+                          ),
+                          items: _categories.map((_category) {
+                            return DropdownMenuItem(
+                              value: _category.id,
+                              child: Text(_category.name),
+                            );
+                          }).toList(),
+                          itemAsString: (DropdownMenuItem<int>? menuItem) {
+                            final _text = menuItem!.child as Text;
+                            return _text.data.toString();
+                          },
+                          popupShape: RoundedRectangleBorder(
+                            side: BorderSide(color: Colors.grey, width: .5),
+                            borderRadius:
+                                BorderRadius.vertical(bottom: _radius),
+                          ),
+                          searchFieldProps: TextFieldProps(
+                            decoration: InputDecoration(
+                              hintText: "Search a category..",
+                              contentPadding:
+                                  const EdgeInsets.only(left: 8, bottom: 4),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.grey, width: .5),
+                                borderRadius: BorderRadius.all(_radius),
+                              ),
+                            ),
+                          ),
+                          dropdownSearchDecoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.only(left: 16, bottom: 8),
+                            border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 2),
+                              borderRadius: BorderRadius.all(_radius),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.grey, width: .5),
+                              borderRadius: BorderRadius.vertical(top: _radius),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _sizedBox(height: 16.0),
                   ],
                 ),
               ),
@@ -428,6 +475,7 @@ class _ProductIndexState extends State<ProductIndex> {
               text: 'Filter',
               icon: Icons.filter_alt,
               onPressed: () async {
+                // @TODO: Implement filter algo
                 _navigator.pop();
               },
             ),

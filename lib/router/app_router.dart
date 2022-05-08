@@ -68,7 +68,7 @@ class AppRouter {
   static const categoryUpdate = '/category-update';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    var args = settings.arguments;
+    final args = settings.arguments;
 
     switch (settings.name) {
       // Home Route

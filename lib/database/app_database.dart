@@ -322,9 +322,13 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase>
     return await _query.getSingle();
   }
 
-  Stream<List<Category>> watchCategories() {
+  Stream<List<Category>> watchCategories([int? id]) {
     final _query = select(categories);
-    _query.where((category) => category.parentId.isNull());
+    _query.where(
+      (category) => (id == null)
+          ? category.parentId.isNull()
+          : category.parentId.isNull() & category.id.equals(id).not(),
+    );
     return _query.watch();
   }
 
@@ -452,7 +456,9 @@ class PersonsDao extends DatabaseAccessor<AppDatabase>
 class ProductWithDetails {
   ProductWithDetails({
     required this.id,
+    this.unitId,
     this.unit,
+    this.categoryId,
     this.category,
     required this.photo,
     required this.name,
@@ -472,8 +478,12 @@ class ProductWithDetails {
   });
 
   final int id;
+
+  final int? unitId;
   final String? unit;
+  final int? categoryId;
   final String? category;
+
   final String photo;
   final String name;
   final String? remarks;
@@ -538,10 +548,106 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
 
   // Custom query
 
-  Future<Product> getProduct(int id) async {
-    final _query = select(products);
-    _query.where((product) => product.id.equals(id));
-    return await _query.getSingle();
+  Future<ProductWithDetails> getProduct(int id) async {
+    final _query1 = """
+      SELECT
+        P.id,
+        P.photo,
+        U.id AS unit_id,
+        U.name AS unit,
+        C.id AS category_id,
+        C.name AS category,
+        P.name,
+        P.remarks,
+        P.is_favorite,
+        P.date_created,
+        SQ1.active_price_id,
+        SQ1.active_price,
+        SQ2.active_quantity,
+        SQ1.active_price_date,
+        SQ3.latest_cost_id,
+        SQ3.latest_cost,
+        SQ3.latest_quantity,
+        SQ3.latest_cost_date
+      FROM products P
+      LEFT OUTER JOIN units U ON U.id = P.unit_id
+      LEFT OUTER JOIN categories C ON C.id = P.category_id
+      LEFT OUTER JOIN (
+        SELECT
+          PPRC.id AS active_price_id,
+          PPRC.product_id,
+          PPRC.retail AS active_price,
+          PPRC.date_created AS active_price_date
+        FROM product_prices PPRC
+        WHERE PPRC.is_active = 1
+        GROUP BY PPRC.product_id
+      ) AS SQ1 ON SQ1.product_id = P.id
+      LEFT OUTER JOIN (
+        SELECT
+          PPCH.product_id,
+          COALESCE(SUM(PPCH.quantity), 0) - COALESCE(SQ.ap_qty, 0) AS active_quantity
+        FROM product_purchases PPCH
+        LEFT OUTER JOIN (
+          SELECT
+            APCH.product_id,
+            SUM(APCH.quantity) AS ap_qty
+          FROM arrear_purchases APCH
+          GROUP BY APCH.product_id
+        ) SQ ON SQ.product_id = PPCH.product_id
+        GROUP BY PPCH.product_id
+      ) AS SQ2 ON SQ2.product_id = P.id
+      LEFT OUTER JOIN (
+        SELECT
+          PPCH.id AS latest_cost_id,
+          PPCH.product_id,
+          PPCH.cost AS latest_cost,
+          PPCH.quantity AS latest_quantity,
+          PPCH.date_created AS latest_cost_date
+        FROM product_purchases PPCH
+        INNER JOIN (
+          SELECT product_id, MAX(date_created) AS MDC
+          FROM product_purchases GROUP BY product_id
+        ) ISQ ON PPCH.product_id = ISQ.product_id AND PPCH.date_created = ISQ.MDC
+      ) AS SQ3 ON SQ3.product_id = P.id
+      WHERE P.id = ?;
+    """;
+
+    final result = await customSelect(
+      _query1,
+      variables: [
+        Variable.withInt(id),
+      ],
+      readsFrom: {
+        products,
+        productPurchases,
+        productPrices,
+        arrearPurchases,
+        categories,
+        units,
+      },
+    ).getSingle();
+    final _data = result.data;
+    
+    return ProductWithDetails(
+      id: _data['id'],
+      photo: _data['photo'],
+      name: _data['name'],
+      remarks: _data['remarks'],
+      isFavorite: _data['is_favorite'] == 1 ? true : false,
+      dateCreated: getDateTime(_data['date_created'])!,
+      unitId: _data['unit_id'],
+      unit: _data['unit'],
+      categoryId: _data['category_id'],
+      category: _data['category'],
+      activePriceId: _data['active_price_id'],
+      activePrice: _data['active_price'],
+      activeQuantity: _data['active_quantity'],
+      activePriceDate: getDateTime(_data['active_price_date']),
+      latestCostId: _data['latest_cost_id'],
+      latestCost: _data['latest_cost'],
+      latestQuantity: _data['latest_quantity'],
+      latestCostDate: getDateTime(_data['latest_cost_date']),
+    );
   }
 
   Future<List<ProductWithDetails>> getProducts() async {
@@ -549,7 +655,9 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
       SELECT
         P.id,
         P.photo,
+        U.id AS unit_id,
         U.name AS unit,
+        C.id AS category_id,
         C.name AS category,
         P.name,
         P.remarks,
@@ -630,7 +738,9 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
         remarks: _data['remarks'],
         isFavorite: _data['is_favorite'] == 1 ? true : false,
         dateCreated: getDateTime(_data['date_created'])!,
+        unitId: _data['unit_id'],
         unit: _data['unit'],
+        categoryId: _data['category_id'],
         category: _data['category'],
         activePriceId: _data['active_price_id'],
         activePrice: _data['active_price'],
@@ -649,7 +759,9 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
       SELECT
         P.id,
         P.photo,
+        U.id AS unit_id,
         U.name AS unit,
+        C.id AS category_id,
         C.name AS category,
         P.name,
         P.remarks,
@@ -729,7 +841,9 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
           remarks: _data['remarks'],
           isFavorite: _data['is_favorite'] == 1 ? true : false,
           dateCreated: getDateTime(_data['date_created'])!,
+          unitId: _data['unit_id'],
           unit: _data['unit'],
+          categoryId: _data['category_id'],
           category: _data['category'],
           activePriceId: _data['active_price_id'],
           activePrice: _data['active_price'],
@@ -749,7 +863,9 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
       SELECT
         P.id,
         P.photo,
+        U.id AS unit_id,
         U.name AS unit,
+        C.id AS category_id,
         C.name AS category,
         P.name,
         P.remarks,
@@ -843,7 +959,9 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
           remarks: _data['remarks'],
           isFavorite: _data['is_favorite'] == 1 ? true : false,
           dateCreated: getDateTime(_data['date_created'])!,
+          unitId: _data['unit_id'],
           unit: _data['unit'],
+          categoryId: _data['category_id'],
           category: _data['category'],
           activePriceId: _data['active_price_id'],
           activePrice: _data['active_price'],
