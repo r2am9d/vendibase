@@ -627,7 +627,7 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
       },
     ).getSingle();
     final _data = result.data;
-    
+
     return ProductWithDetails(
       id: _data['id'],
       photo: _data['photo'],
@@ -754,8 +754,11 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
     }).toList();
   }
 
-  Stream<List<ProductWithDetails>> watchProducts([String term = '']) {
-    final _query = """
+  Stream<List<ProductWithDetails>> watchProducts([
+    String? term = '',
+    Map<String, dynamic>? filters,
+  ]) {
+    var _query = """
       SELECT
         P.id,
         P.photo,
@@ -816,12 +819,39 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
         ) ISQ ON PPCH.product_id = ISQ.product_id AND PPCH.date_created = ISQ.MDC
       ) AS SQ3 ON SQ3.product_id = P.id
       WHERE P.name LIKE ?
+      /* %PRICE_RANGE_FILTER% */
+      /* %CATEGORY_ID_FILTER% */
       ORDER BY P.is_favorite DESC;
     """;
 
+    List<Variable<dynamic>> _vars = [
+      Variable.withString('%$term%'),
+    ];
+
+    if (filters != null && filters.length >= 1) {
+      /// Price Range Filter
+      final _priceRangeFtr = 'AND SQ1.active_price BETWEEN ? AND ?';
+      final _priceRange = filters['priceRange'];
+      if (_priceRange != null) {
+        _vars.add(Variable.withReal(_priceRange.start));
+        _vars.add(Variable.withReal(_priceRange.end));
+        _query =
+            _query.replaceAll('/* %PRICE_RANGE_FILTER% */', _priceRangeFtr);
+      }
+
+      /// Category Id Filter
+      final _categoryIdFtr = 'AND C.id = ?';
+      final _categoryId = filters['categoryId'];
+      if (_categoryId != null) {
+        _vars.add(Variable.withInt(_categoryId));
+        _query =
+            _query.replaceAll('/* %CATEGORY_ID_FILTER% */', _categoryIdFtr);
+      }
+    }
+
     return customSelect(
       _query,
-      variables: [Variable.withString('%$term%')],
+      variables: _vars,
       readsFrom: {
         products,
         productPurchases,
@@ -1053,6 +1083,20 @@ class ProductPricesDao extends DatabaseAccessor<AppDatabase>
   }
 
   // Custom query
+  
+  Stream<double> watchMaxRetail() {
+    final _query = """
+      SELECT 
+        COALESCE(MAX(PP.retail), 0.0) AS max_retail
+      FROM product_prices PP
+    """;
+
+    return customSelect(
+      _query,
+      variables: [],
+      readsFrom: {productPrices},
+    ).watchSingle().map((result) => result.data['max_retail']);
+  }
 
   Future setActive(
     ProductPricesCompanion productPrice, {

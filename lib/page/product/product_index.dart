@@ -13,6 +13,7 @@ import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:dropdown_search/dropdown_search.dart' as ds;
 import 'package:vendibase/provider/app_database_provider.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:multiple_stream_builder/multiple_stream_builder.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 
 class ProductIndex extends StatefulWidget {
@@ -24,6 +25,8 @@ class ProductIndex extends StatefulWidget {
 
 class _ProductIndexState extends State<ProductIndex> {
   String _searchTerm = '';
+  Map<String, dynamic> _filters = {};
+
   bool _isSearching = false;
   bool _isVisible = true;
 
@@ -50,8 +53,6 @@ class _ProductIndexState extends State<ProductIndex> {
                   setState(() {
                     _searchTerm = term;
                   });
-
-                  debugPrint(term);
                 },
               )
             : const Text('Products'),
@@ -72,6 +73,10 @@ class _ProductIndexState extends State<ProductIndex> {
             icon: Icons.filter_alt,
             color: AppColor.black,
             onPressed: () async {
+              setState(() {
+                _filters = {};
+              });
+
               await _showFilterDialog(
                 db: _db,
                 theme: _theme,
@@ -95,7 +100,7 @@ class _ProductIndexState extends State<ProductIndex> {
           return true;
         },
         child: StreamBuilder<List<ProductWithDetails>>(
-          stream: _db.productsDao.watchProducts(_searchTerm),
+          stream: _db.productsDao.watchProducts(_searchTerm, _filters),
           builder: (context, snapshot) {
             Widget _widget = Center(child: CircularProgressIndicator());
 
@@ -379,86 +384,98 @@ class _ProductIndexState extends State<ProductIndex> {
               child: FormBuilder(
                 key: formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _sizedBox(height: 16.0),
-                    FormBuilderRangeSlider(
-                      min: 1,
-                      max: 10000,
-                      name: 'price_range',
-                      labels: RangeLabels('1', '10000'),
-                      initialValue: RangeValues(1, 10000),
-                      decoration: _inputDecoration('Price Range (PHP)'),
-                      numberFormat: NumberFormat("###,###.##", "en_US"),
-                      textStyle: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.black45,
-                      ),
-                    ),
-                    _sizedBox(height: 16.0),
-                    StreamBuilder<List<Category>>(
-                      stream: db.categoriesDao.watchCategories(),
-                      builder: (context, snapshot) {
-                        List<Category> _categories = snapshot.data ?? [];
+                child: StreamBuilder2<double, List<Category>>(
+                  streams: Tuple2(
+                    db.productPricesDao.watchMaxRetail(),
+                    db.categoriesDao.watchCategories(),
+                  ),
+                  builder: (context, snapshots) {
+                    var _maxRetail = snapshots.item1.data;
+                    final _categories = snapshots.item2.data ?? [];
 
-                        return FormBuilderSearchableDropdown(
-                          name: 'categoryId',
-                          showClearButton: true,
-                          mode: ds.Mode.BOTTOM_SHEET,
-                          decoration: InputDecoration(
-                            labelText: 'Category',
-                            alignLabelWithHint: true,
-                            fillColor: AppColor.white,
-                            border: const OutlineInputBorder(),
-                            contentPadding: const EdgeInsets.all(12.0),
+                    if (_maxRetail != null) {
+                      _maxRetail = (_maxRetail == 0.0) ? 1.0 : _maxRetail;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _sizedBox(height: 16.0),
+                          FormBuilderRangeSlider(
+                            min: 1,
+                            enabled: (_maxRetail == 0.0) ? false : true,
+                            max: _maxRetail,
+                            name: 'priceRange',
+                            labels: RangeLabels('1', '${_maxRetail}'),
+                            initialValue: RangeValues(1, _maxRetail),
+                            decoration: _inputDecoration('Price Range (PHP)'),
+                            numberFormat: NumberFormat("###,###.##", "en_US"),
+                            textStyle: TextStyle(
+                              fontSize: 12.0,
+                              color: Colors.black45,
+                            ),
                           ),
-                          items: _categories.map((_category) {
-                            return DropdownMenuItem(
-                              value: _category.id,
-                              child: Text(_category.name),
-                            );
-                          }).toList(),
-                          itemAsString: (DropdownMenuItem<int>? menuItem) {
-                            final _text = menuItem!.child as Text;
-                            return _text.data.toString();
-                          },
-                          popupShape: RoundedRectangleBorder(
-                            side: BorderSide(color: Colors.grey, width: .5),
-                            borderRadius:
-                                BorderRadius.vertical(bottom: _radius),
-                          ),
-                          searchFieldProps: TextFieldProps(
+                          _sizedBox(height: 16.0),
+                          FormBuilderSearchableDropdown(
+                            name: 'categoryId',
+                            showClearButton: true,
+                            mode: ds.Mode.BOTTOM_SHEET,
                             decoration: InputDecoration(
-                              hintText: "Search a category..",
+                              labelText: 'Category',
+                              alignLabelWithHint: true,
+                              fillColor: AppColor.white,
+                              border: const OutlineInputBorder(),
+                              contentPadding: const EdgeInsets.all(12.0),
+                            ),
+                            items: _categories.map((_category) {
+                              return DropdownMenuItem(
+                                value: _category.id,
+                                child: Text(_category.name),
+                              );
+                            }).toList(),
+                            itemAsString: (DropdownMenuItem<int>? menuItem) {
+                              final _text = menuItem!.child as Text;
+                              return _text.data.toString();
+                            },
+                            popupShape: RoundedRectangleBorder(
+                              side: BorderSide(color: Colors.grey, width: .5),
+                              borderRadius:
+                                  BorderRadius.vertical(bottom: _radius),
+                            ),
+                            searchFieldProps: TextFieldProps(
+                              decoration: InputDecoration(
+                                hintText: "Search a category..",
+                                contentPadding:
+                                    const EdgeInsets.only(left: 8, bottom: 4),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.grey, width: .5),
+                                  borderRadius: BorderRadius.all(_radius),
+                                ),
+                              ),
+                            ),
+                            dropdownSearchDecoration: InputDecoration(
                               contentPadding:
-                                  const EdgeInsets.only(left: 8, bottom: 4),
-                              enabledBorder: OutlineInputBorder(
+                                  const EdgeInsets.only(left: 16, bottom: 8),
+                              border: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 2),
+                                borderRadius: BorderRadius.all(_radius),
+                              ),
+                              focusedBorder: OutlineInputBorder(
                                 borderSide:
                                     BorderSide(color: Colors.grey, width: .5),
-                                borderRadius: BorderRadius.all(_radius),
+                                borderRadius:
+                                    BorderRadius.vertical(top: _radius),
                               ),
                             ),
                           ),
-                          dropdownSearchDecoration: InputDecoration(
-                            contentPadding:
-                                const EdgeInsets.only(left: 16, bottom: 8),
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.red, width: 2),
-                              borderRadius: BorderRadius.all(_radius),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey, width: .5),
-                              borderRadius: BorderRadius.vertical(top: _radius),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    _sizedBox(height: 16.0),
-                  ],
+                          _sizedBox(height: 16.0),
+                        ],
+                      );
+                    }
+
+                    return Center(child: CircularProgressIndicator());
+                  },
                 ),
               ),
             ),
@@ -475,8 +492,24 @@ class _ProductIndexState extends State<ProductIndex> {
               text: 'Filter',
               icon: Icons.filter_alt,
               onPressed: () async {
-                // @TODO: Implement filter algo
-                _navigator.pop();
+                final _fState = formKey.currentState!;
+                if (_fState.validate()) {
+                  final _priceRange =
+                      _fState.fields['priceRange']!.value as RangeValues;
+
+                  var _categoryId = _fState.fields['categoryId']?.value;
+                  _categoryId =
+                      (_categoryId != null) ? _categoryId.value : null;
+
+                  setState(() {
+                    _filters = {
+                      'priceRange': _priceRange,
+                      'categoryId': _categoryId
+                    };
+                  });
+
+                  _navigator.pop();
+                }
               },
             ),
           )
