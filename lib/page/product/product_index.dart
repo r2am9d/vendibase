@@ -73,10 +73,6 @@ class _ProductIndexState extends State<ProductIndex> {
             icon: Icons.filter_alt,
             color: AppColor.black,
             onPressed: () async {
-              setState(() {
-                _filters = {};
-              });
-
               await _showFilterDialog(
                 db: _db,
                 theme: _theme,
@@ -144,16 +140,34 @@ class _ProductIndexState extends State<ProductIndex> {
           },
         ),
       ),
-      floatingActionButton: _isVisible
-          ? FloatingActionButton(
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (_filters.length >= 1)
+            FloatingActionButton(
+              tooltip: 'Remove filter',
+              heroTag: 'product-index-filter-fab',
+              child: const Icon(Icons.filter_alt_off),
+              backgroundColor: AppColor.red,
+              onPressed: () {
+                setState(() {
+                  _filters = {};
+                });
+              },
+            ),
+          if (_isVisible) ...[
+            _sizedBox(height: 8.0),
+            FloatingActionButton(
               tooltip: 'Add product',
               heroTag: 'product-index-fab',
               child: const Icon(Icons.add_shopping_cart),
-              onPressed: () {
-                _navigator.pushNamed(AppRouter.productCreate);
+              onPressed: () async {
+                await _navigator.pushNamed(AppRouter.productCreate);
               },
-            )
-          : null,
+            ),
+          ]
+        ],
+      ),
     );
   }
 
