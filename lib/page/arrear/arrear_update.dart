@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:drift/drift.dart' as d;
 import 'package:provider/provider.dart';
 import 'package:vendibase/theme/app_theme.dart';
-import 'package:vendibase/router/app_router.dart';
 import 'package:vendibase/database/app_database.dart';
 import 'package:dropdown_search/dropdown_search.dart' as ds;
 import 'package:vendibase/provider/app_database_provider.dart';
@@ -11,7 +10,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 
-import 'package:vendibase/utils/app_notification_alt.dart';
+import 'package:vendibase/utils/app_notification.dart';
 
 class ArrearUpdate extends StatefulWidget {
   final args;
@@ -204,27 +203,21 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                     var _notifId = _arrear!.notificationId;
                     if (_due != null && (_due != _arrear!.due)) {
                       // Cancel previous notif
-                      if (_notifId != null) {
-                        await AppNotificationAlt.cancelNotification(_notifId);
-                      }
+                      if (_notifId != null)
+                        await AppNotification.cancelNotification(_notifId);
 
                       // Schedule new notif
                       final _person = await _db.personsDao.getPerson(_personId);
-                      await AppNotificationAlt.scheduleNotification(
+                      await AppNotification.scheduleNotification(
                         title: 'Arrear payment',
                         body:
                             '${_person.name} debt should be paid today! Check it out.',
                         dateTime: _due,
-                        payload: {
-                          'id': '${_arrear!.id}',
-                          'route': AppRouter.arrearView,
-                          'notification_id':
-                              '${AppNotificationAlt.notificationId}',
-                        },
+                        payload: '/arrear-view/${_arrear!.id}',
                       );
 
                       // Reassign notifId
-                      _notifId = AppNotificationAlt.notificationId;
+                      _notifId = AppNotification.notificationId;
                     }
 
                     await _db.arrearsDao.revise(

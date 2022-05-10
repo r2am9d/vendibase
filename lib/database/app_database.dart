@@ -821,6 +821,7 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
       WHERE P.name LIKE ?
       /* %PRICE_RANGE_FILTER% */
       /* %CATEGORY_ID_FILTER% */
+      /* %UNIT_ID_FILTER% */
       ORDER BY P.is_favorite DESC;
     """;
 
@@ -846,6 +847,14 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
         _vars.add(Variable.withInt(_categoryId));
         _query =
             _query.replaceAll('/* %CATEGORY_ID_FILTER% */', _categoryIdFtr);
+      }
+
+      /// Unit Id Filter
+      final _unitIdFtr = 'AND U.id = ?';
+      final _unitId = filters['unitId'];
+      if (_unitId != null) {
+        _vars.add(Variable.withInt(_unitId));
+        _query = _query.replaceAll('/* %UNIT_ID_FILTER% */', _unitIdFtr);
       }
     }
 
@@ -1083,7 +1092,7 @@ class ProductPricesDao extends DatabaseAccessor<AppDatabase>
   }
 
   // Custom query
-  
+
   Stream<double> watchMaxRetail() {
     final _query = """
       SELECT 

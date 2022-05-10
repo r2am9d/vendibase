@@ -2,26 +2,37 @@ import 'dart:math';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:vendibase/theme/app_theme.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class AppNotification {
-  static final int MAX_ID = 2147483647;
+  static const int MAX_ID = 2147483647;
+  static const String VENDIBASE_CHANNEL = 'vendibase_channel';
+  static const String VENDIBASE_GROUP_CHANNEL = 'vendibase_group_channel';
 
-  static int notifId = 0; // 0 indicates no notifs has been created
-  static String selectedPayload = '';
+  static int notificationId = 0; // Indicates no notifs has ever been created
+  static String? selectedPayload = '';
 
-  static final _notification = FlutterLocalNotificationsPlugin();
   static final onNotification = BehaviorSubject<String?>();
+  static final _localNotification = FlutterLocalNotificationsPlugin();
+
+  static void notificationTapBackground(response) async {
+    selectedPayload = response.payload;
+    onNotification.add(response.payload);
+  }
 
   static int _getRandomNumber() => Random().nextInt(AppNotification.MAX_ID);
 
   static NotificationDetails _notificationDetails() {
     return NotificationDetails(
       android: AndroidNotificationDetails(
-        'VENDIBASE_NOTIF_MAX',
-        'Max Importance Notifications',
-        channelDescription: "Channel for max importantance notifications",
+        AppNotification.VENDIBASE_CHANNEL,
+        'Basic Notifications',
+        channelDescription: 'Notification channel for basic notifications',
+        priority: Priority.max,
         importance: Importance.max,
+        channelShowBadge: true,
+        color: AppColor.lightRed,
       ),
       iOS: IOSNotificationDetails(),
     );
@@ -46,12 +57,17 @@ class AppNotification {
       iOS: iosInitSettings,
     );
 
-    await _notification.initialize(
+    await _localNotification.initialize(
       initSettings,
-      onSelectNotification: (payload) async {
-        selectedPayload = payload!;
+      onSelectNotification: (String? payload) async {
+        selectedPayload = payload;
         onNotification.add(payload);
       },
+      // onDidReceiveNotificationResponse: (NotificationResponse response) async {
+      //   selectedPayload = response.payload;
+      //   onNotification.add(response.payload);
+      // },
+      // onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
   }
 
@@ -60,10 +76,10 @@ class AppNotification {
     required String body,
     String? payload,
   }) async {
-    notifId = _getRandomNumber();
+    notificationId = _getRandomNumber();
 
-    return await _notification.show(
-      notifId,
+    return await _localNotification.show(
+      notificationId,
       title,
       body,
       _notificationDetails(),
@@ -78,13 +94,13 @@ class AppNotification {
     String? payload,
   }) async {
     // Debugging notifs
-    // tz.TZDateTime.now(tz.local).add(const Duration(seconds: 15));
+    // final _dt = tz.TZDateTime.now(tz.local).add(Duration(seconds: 15));
 
-    notifId = _getRandomNumber();
-    final _dt = tz.TZDateTime.from(dateTime, tz.local);
+    notificationId = _getRandomNumber();
+    final _dt = tz.TZDateTime.from(dateTime, tz.local).add(Duration(hours: 8));
 
-    return await _notification.zonedSchedule(
-      notifId,
+    return await _localNotification.zonedSchedule(
+      notificationId,
       title,
       body,
       _dt,
@@ -98,11 +114,11 @@ class AppNotification {
   }
 
   static Future<void> cancelNotification(int id) async {
-    return await _notification.cancel(id);
+    return await _localNotification.cancel(id);
   }
 
   static Future<NotificationAppLaunchDetails?> getLaunchDetails() async {
-    return await _notification.getNotificationAppLaunchDetails();
+    return await _localNotification.getNotificationAppLaunchDetails();
   }
 
   static void resetPayload() {

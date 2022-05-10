@@ -5,21 +5,21 @@ import 'package:vendibase/theme/app_theme.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 
 class AppNotificationAlt {
-  static final String BASIC_CHANNEL = 'basic_channel';
-  static final String BASIC_GROUP_CHANNEL = 'basic_group_channel';
+  static const String VENDIBASE_CHANNEL = 'vendibase_channel';
+  static const String VENDIBASE_GROUP_CHANNEL = 'vendibase_group_channel';
 
-  static int notificationId = 0;
+  static int notificationId = 0; // Indicates no notifs has ever been created
   static final awesomeNotification = AwesomeNotifications();
 
   static int _getRandomNumber() => Random().nextInt(AwesomeNotifications.maxID);
 
   static Future<void> init() async {
-    awesomeNotification.initialize(
+    await awesomeNotification.initialize(
       null,
       [
         NotificationChannel(
-          channelKey: AppNotificationAlt.BASIC_CHANNEL,
-          channelGroupKey: AppNotificationAlt.BASIC_GROUP_CHANNEL,
+          channelKey: AppNotificationAlt.VENDIBASE_CHANNEL,
+          channelGroupKey: AppNotificationAlt.VENDIBASE_GROUP_CHANNEL,
           channelName: 'Basic Notifications',
           channelDescription: 'Notification channel for basic notifications',
           channelShowBadge: true,
@@ -30,11 +30,22 @@ class AppNotificationAlt {
       ],
       channelGroups: [
         NotificationChannelGroup(
-          channelGroupkey: AppNotificationAlt.BASIC_GROUP_CHANNEL,
+          channelGroupkey: AppNotificationAlt.VENDIBASE_GROUP_CHANNEL,
           channelGroupName: 'Basic Group Notifications',
         ),
       ],
       debug: true,
+    );
+
+    await awesomeNotification.requestPermissionToSendNotifications(
+      channelKey: AppNotificationAlt.VENDIBASE_CHANNEL,
+      permissions: [
+        NotificationPermission.Alert,
+        NotificationPermission.Sound,
+        NotificationPermission.Badge,
+        NotificationPermission.Vibration,
+        NotificationPermission.Light
+      ],
     );
   }
 
@@ -48,7 +59,7 @@ class AppNotificationAlt {
     await awesomeNotification.createNotification(
       content: NotificationContent(
         id: notificationId,
-        channelKey: AppNotificationAlt.BASIC_CHANNEL,
+        channelKey: AppNotificationAlt.VENDIBASE_CHANNEL,
         title: title,
         body: body,
         payload: payload,
@@ -78,7 +89,7 @@ class AppNotificationAlt {
     await awesomeNotification.createNotification(
       content: NotificationContent(
         id: notificationId,
-        channelKey: AppNotificationAlt.BASIC_CHANNEL,
+        channelKey: AppNotificationAlt.VENDIBASE_CHANNEL,
         title: title,
         body: body,
         payload: payload,
@@ -87,9 +98,9 @@ class AppNotificationAlt {
       ),
       schedule: NotificationCalendar(
         day: _dateTime.day,
-        hour: 7, /// 8am
+        hour: 7, // 8am
         minute: _dateTime.minute,
-        second: 0,
+        second: 5,
         millisecond: 0,
         repeats: true,
         allowWhileIdle: true,

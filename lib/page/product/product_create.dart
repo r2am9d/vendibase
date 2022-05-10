@@ -323,7 +323,7 @@ class _ProductCreateState extends State<ProductCreate> {
                       ),
                     );
 
-                    _navigator.pushReplacementNamed(
+                    await _navigator.pushReplacementNamed(
                       AppRouter.productView,
                       arguments: {'id': _productId},
                     );

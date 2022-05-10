@@ -249,8 +249,8 @@ class _ProductIndexState extends State<ProductIndex> {
                   ),
                 );
               },
-              onTap: () {
-                navigator.pushNamed(
+              onTap: () async {
+                await navigator.pushNamed(
                   AppRouter.productView,
                   arguments: {'id': product.id},
                 );
@@ -398,14 +398,16 @@ class _ProductIndexState extends State<ProductIndex> {
               child: FormBuilder(
                 key: formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: StreamBuilder2<double, List<Category>>(
-                  streams: Tuple2(
+                child: StreamBuilder3<double, List<Category>, List<Unit>>(
+                  streams: Tuple3(
                     db.productPricesDao.watchMaxRetail(),
                     db.categoriesDao.watchCategories(),
+                    db.unitsDao.all(),
                   ),
                   builder: (context, snapshots) {
                     var _maxRetail = snapshots.item1.data;
                     final _categories = snapshots.item2.data ?? [];
+                    final _units = snapshots.item3.data ?? [];
 
                     if (_maxRetail != null) {
                       _maxRetail = (_maxRetail == 0.0) ? 1.0 : _maxRetail;
@@ -484,6 +486,61 @@ class _ProductIndexState extends State<ProductIndex> {
                             ),
                           ),
                           _sizedBox(height: 16.0),
+                          FormBuilderSearchableDropdown(
+                            name: 'unitId',
+                            showClearButton: true,
+                            mode: ds.Mode.BOTTOM_SHEET,
+                            decoration: InputDecoration(
+                              labelText: 'Unit',
+                              alignLabelWithHint: true,
+                              fillColor: AppColor.white,
+                              border: const OutlineInputBorder(),
+                              contentPadding: const EdgeInsets.all(12.0),
+                            ),
+                            items: _units.map((_unit) {
+                              return DropdownMenuItem(
+                                value: _unit.id,
+                                child: Text(_unit.name),
+                              );
+                            }).toList(),
+                            itemAsString: (DropdownMenuItem<int>? menuItem) {
+                              final _text = menuItem!.child as Text;
+                              return _text.data.toString();
+                            },
+                            popupShape: RoundedRectangleBorder(
+                              side: BorderSide(color: Colors.grey, width: .5),
+                              borderRadius:
+                                  BorderRadius.vertical(bottom: _radius),
+                            ),
+                            searchFieldProps: TextFieldProps(
+                              decoration: InputDecoration(
+                                hintText: "Search a unit..",
+                                contentPadding:
+                                    const EdgeInsets.only(left: 8, bottom: 4),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.grey, width: .5),
+                                  borderRadius: BorderRadius.all(_radius),
+                                ),
+                              ),
+                            ),
+                            dropdownSearchDecoration: InputDecoration(
+                              contentPadding:
+                                  const EdgeInsets.only(left: 16, bottom: 8),
+                              border: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 2),
+                                borderRadius: BorderRadius.all(_radius),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.grey, width: .5),
+                                borderRadius:
+                                    BorderRadius.vertical(top: _radius),
+                              ),
+                            ),
+                          ),
+                          _sizedBox(height: 16.0),
                         ],
                       );
                     }
@@ -515,10 +572,14 @@ class _ProductIndexState extends State<ProductIndex> {
                   _categoryId =
                       (_categoryId != null) ? _categoryId.value : null;
 
+                  var _unitId = _fState.fields['unitId']?.value;
+                  _unitId = (_unitId != null) ? _unitId.value : null;
+
                   setState(() {
                     _filters = {
                       'priceRange': _priceRange,
-                      'categoryId': _categoryId
+                      'categoryId': _categoryId,
+                      'unitId': _unitId,
                     };
                   });
 

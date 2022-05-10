@@ -19,7 +19,7 @@ import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:vendibase/theme/app_theme.dart';
 import 'package:vendibase/router/app_router.dart';
 
-import 'package:vendibase/utils/app_notification_alt.dart';
+import 'package:vendibase/utils/app_notification.dart';
 
 void _setupSqlCipher() {
   open.overrideFor(
@@ -33,7 +33,7 @@ void main() async {
   FlutterConfig.loadEnvVariables();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await AppNotificationAlt.init();
+  await AppNotification.init();
   _setupSqlCipher();
 
   runApp(MultiProvider(
@@ -55,6 +55,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  String? _initialRoute;
+
   void _requestPermission() async {
     final permissions = [
       Permission.storage,
@@ -84,39 +86,57 @@ class _MyAppState extends State<MyApp> {
     tz.setLocalLocation(tz.getLocation(timezone));
   }
 
+  void _setupRoute() async {
+    final launchDetails = await AppNotification.getLaunchDetails();
+    final didNotifLaunchApp = launchDetails?.didNotificationLaunchApp ?? false;
+
+    _initialRoute = AppRouter.home;
+    if (didNotifLaunchApp) {
+      AppNotification.selectedPayload = launchDetails!.payload;
+      _initialRoute = AppRouter.arrearView;
+    }
+
+    setState(() {}); // Force rebuild
+  }
+
   @override
   void initState() {
     super.initState();
     _requestPermission();
     _initTimezone();
+    _setupRoute();
   }
 
   @override
   Widget build(BuildContext context) {
-    return fr.ProviderScope(
-      child: MaterialApp(
-        title: MyApp.title,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: appTheme.appTheme,
-        initialRoute: AppRouter.home,
-        onGenerateRoute: AppRouter.generateRoute,
-        supportedLocales: const [
-          Locale('de'),
-          Locale('en'),
-          Locale('es'),
-          Locale('fr'),
-          Locale('it'),
-          Locale('lo'),
-          Locale('uk'),
-        ],
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          FormBuilderLocalizations.delegate,
-        ],
-      ),
-    );
+    if (_initialRoute != null) {
+      return fr.ProviderScope(
+        child: MaterialApp(
+          title: MyApp.title,
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: appTheme.appTheme,
+          initialRoute: _initialRoute,
+          onGenerateRoute: AppRouter.generateRoute,
+          supportedLocales: const [
+            Locale('de'),
+            Locale('en'),
+            Locale('es'),
+            Locale('fr'),
+            Locale('it'),
+            Locale('lo'),
+            Locale('uk'),
+          ],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            FormBuilderLocalizations.delegate,
+          ],
+        ),
+      );
+    }
+
+    return Center(child: CircularProgressIndicator());
   }
 }

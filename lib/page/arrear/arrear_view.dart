@@ -16,6 +16,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
+import 'package:vendibase/utils/app_notification.dart';
 
 class ArrearView extends StatefulWidget {
   final args;
@@ -216,8 +217,8 @@ class _ArrearViewState extends State<ArrearView> {
               _elevatedButton(
                 text: 'Edit',
                 icon: Icons.edit,
-                onPressed: () {
-                  _navigator.pushNamed(
+                onPressed: () async {
+                  await _navigator.pushNamed(
                     AppRouter.arrearUpdate,
                     arguments: {'id': _args['id']},
                   );
@@ -292,6 +293,12 @@ class _ArrearViewState extends State<ArrearView> {
       current: arrear.status,
       onTap: () async {
         final _status = arrear.status == 1 ? 0 : 1;
+
+        /// If paid, disable notification
+        if (_status == 1) {
+          if (arrear.notificationId != null)
+            AppNotification.cancelNotification(arrear.notificationId!);
+        }
 
         await db.arrearsDao.revise(
           ArrearsCompanion(

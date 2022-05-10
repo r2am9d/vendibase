@@ -13,7 +13,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 
-import 'package:vendibase/utils/app_notification_alt.dart';
+import 'package:vendibase/utils/app_notification.dart';
 
 class ArrearCreate extends StatefulWidget {
   const ArrearCreate({Key? key}) : super(key: key);
@@ -361,21 +361,16 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       final _person = await _db.personsDao.getPerson(_personId);
 
                       // Schedule notif
-                      await AppNotificationAlt.scheduleNotification(
+                      await AppNotification.scheduleNotification(
                         title: 'Arrear payment',
                         body:
                             '${_person.name} debt should be paid today! Check it out.',
                         dateTime: _due,
-                        payload: {
-                          'id': '${_id}',
-                          'route': AppRouter.arrearView,
-                          'notification_id':
-                              '${AppNotificationAlt.notificationId}',
-                        },
+                        payload: '/arrear-view/${_id}',
                       );
 
                       // Update notifId
-                      final _notifId = AppNotificationAlt.notificationId;
+                      final _notifId = AppNotification.notificationId;
                       await _db.arrearsDao.revise(
                         ArrearsCompanion(
                           id: d.Value(_id),
@@ -395,7 +390,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       );
                     });
 
-                    _navigator.pushReplacementNamed(
+                    await _navigator.pushReplacementNamed(
                       AppRouter.arrearView,
                       arguments: {'id': _id},
                     );

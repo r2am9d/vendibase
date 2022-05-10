@@ -6,12 +6,13 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:vendibase/main.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  testWidgets('Check if ProviderScope is present', (WidgetTester tester) async {
+  testWidgets('Check if initialRoute is initialized',
+      (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
-    expect(find.byType(ProviderScope), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }

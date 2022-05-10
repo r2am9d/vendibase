@@ -125,8 +125,8 @@ class _ArrearIndexState extends State<ArrearIndex> {
               tooltip: 'Add arrear',
               heroTag: 'arrear-index-fab',
               child: const FaIcon(FontAwesomeIcons.moneyBill),
-              onPressed: () {
-                _navigator.pushNamed(AppRouter.arrearCreate);
+              onPressed: () async {
+                await _navigator.pushNamed(AppRouter.arrearCreate);
               },
             )
           : null,
