@@ -833,8 +833,7 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
       /// Price Range Filter
       final _priceRangeFtr = 'AND SQ1.active_price BETWEEN ? AND ?';
       final _priceRange = filters['priceRange'];
-      if (_priceRange != null &&
-          (_priceRange.start != 1.0 && _priceRange.end != 1.0)) {
+      if (_priceRange != null && _priceRange.end != 1.0) {
         _vars.add(Variable.withReal(_priceRange.start));
         _vars.add(Variable.withReal(_priceRange.end));
         _query =
@@ -1232,9 +1231,9 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
     final _query = """
       SELECT
         CASE WHEN 
-          COALESCE(A.amount, 0.0.0) - COALESCE(SQ.total_payment_amount, 0.0) <= 0 
+          COALESCE(A.amount, 0.0) - COALESCE(SQ.total_payment_amount, 0.0) <= 0 
           THEN 0.0 
-          ELSE MAX(COALESCE(A.amount, 0.0.0) - COALESCE(SQ.total_payment_amount, 0.0)) 
+          ELSE MAX(COALESCE(A.amount, 0.0) - COALESCE(SQ.total_payment_amount, 0.0)) 
         END AS max_active_amount
       FROM arrears A
       LEFT OUTER JOIN (
@@ -1410,8 +1409,7 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
       /// Price Range Filter
       final _priceRangeFtr = 'AND active_amount BETWEEN ? AND ?';
       final _priceRange = filters['priceRange'];
-      if (_priceRange != null &&
-          (_priceRange.start != 1.0 && _priceRange.end != 1.0)) {
+      if (_priceRange != null && _priceRange.end != 1.0) {
         _vars.add(Variable.withReal(_priceRange.start));
         _vars.add(Variable.withReal(_priceRange.end));
         _query =

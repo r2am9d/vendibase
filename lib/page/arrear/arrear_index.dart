@@ -269,7 +269,6 @@ class _ArrearIndexState extends State<ArrearIndex> {
     required BuildContext context,
     required GlobalKey<FormBuilderState> formKey,
   }) async {
-    final _radius = Radius.circular(4);
     final _mQ = MediaQuery.of(context);
     final _navigator = Navigator.of(context);
 
