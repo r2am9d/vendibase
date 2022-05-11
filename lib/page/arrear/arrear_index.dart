@@ -8,6 +8,7 @@ import 'package:vendibase/theme/app_theme.dart';
 import 'package:vendibase/router/app_router.dart';
 import 'package:vendibase/database/app_database.dart';
 import 'package:vendibase/provider/app_database_provider.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ArrearIndex extends StatefulWidget {
@@ -19,9 +20,12 @@ class ArrearIndex extends StatefulWidget {
 
 class _ArrearIndexState extends State<ArrearIndex> {
   String _searchTerm = '';
-  bool _isSearching = false;
+  Map<String, dynamic> _filters = {};
 
+  bool _isSearching = false;
   bool _isVisible = true;
+
+  final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +66,18 @@ class _ArrearIndexState extends State<ArrearIndex> {
               });
             },
           ),
+          _iconButton(
+            icon: Icons.filter_alt,
+            color: AppColor.black,
+            onPressed: () async {
+              await _showFilterDialog(
+                db: _db,
+                theme: _theme,
+                context: context,
+                formKey: _formKey,
+              );
+            },
+          ),
         ],
       ),
       body: NotificationListener<UserScrollNotification>(
@@ -77,7 +93,7 @@ class _ArrearIndexState extends State<ArrearIndex> {
           return true;
         },
         child: StreamBuilder<List<ArrearWithDetails>>(
-          stream: _db.arrearsDao.watchArrears(_searchTerm),
+          stream: _db.arrearsDao.watchArrears(_searchTerm, _filters),
           builder: (context, snapshot) {
             Widget _widget = Center(child: CircularProgressIndicator());
 
@@ -120,8 +136,24 @@ class _ArrearIndexState extends State<ArrearIndex> {
           },
         ),
       ),
-      floatingActionButton: _isVisible
-          ? FloatingActionButton(
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (_filters.length >= 1)
+            FloatingActionButton(
+              tooltip: 'Remove filter',
+              heroTag: 'product-index-filter-fab',
+              child: const Icon(Icons.filter_alt_off),
+              backgroundColor: AppColor.red,
+              onPressed: () {
+                setState(() {
+                  _filters = {};
+                });
+              },
+            ),
+          if (_isVisible) ...[
+            _sizedBox(height: 8.0),
+            FloatingActionButton(
               tooltip: 'Add arrear',
               heroTag: 'arrear-index-fab',
               child: const FaIcon(FontAwesomeIcons.moneyBill),
@@ -129,7 +161,9 @@ class _ArrearIndexState extends State<ArrearIndex> {
                 await _navigator.pushNamed(AppRouter.arrearCreate);
               },
             )
-          : null,
+          ]
+        ],
+      ),
     );
   }
 
@@ -229,6 +263,129 @@ class _ArrearIndexState extends State<ArrearIndex> {
     );
   }
 
+  Future _showFilterDialog({
+    required AppDatabase db,
+    required ThemeData theme,
+    required BuildContext context,
+    required GlobalKey<FormBuilderState> formKey,
+  }) async {
+    final _radius = Radius.circular(4);
+    final _mQ = MediaQuery.of(context);
+    final _navigator = Navigator.of(context);
+
+    return showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColor.white,
+        title: Text(
+          'Filters',
+          style: theme.textTheme.headline6?.copyWith(
+            color: AppColor.red,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Scrollbar(
+          child: SingleChildScrollView(
+            child: SizedBox(
+              width: _mQ.size.width,
+              child: FormBuilder(
+                key: formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: StreamBuilder<double>(
+                  stream: db.arrearsDao.watchMaxActiveAmount(),
+                  builder: (context, snapshot) {
+                    var _maxActiveAmount = snapshot.data;
+
+                    if (_maxActiveAmount != null) {
+                      _maxActiveAmount =
+                          (_maxActiveAmount == 0.0) ? 1.0 : _maxActiveAmount;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _sizedBox(height: 16.0),
+                          FormBuilderRangeSlider(
+                            min: 1,
+                            enabled: (_maxActiveAmount == 0.0) ? false : true,
+                            max: _maxActiveAmount,
+                            name: 'priceRange',
+                            labels: RangeLabels('1', '${_maxActiveAmount}'),
+                            initialValue: RangeValues(1, _maxActiveAmount),
+                            decoration: _inputDecoration('Price Range (PHP)'),
+                            numberFormat: NumberFormat("###,###.##", "en_US"),
+                            textStyle: TextStyle(
+                              fontSize: 12.0,
+                              color: Colors.black45,
+                            ),
+                          ),
+                          _sizedBox(height: 16.0),
+                          FormBuilderDropdown(
+                            name: 'status',
+                            allowClear: true,
+                            items: [
+                              {'id': 0, 'name': 'Unpaid'},
+                              {'id': 1, 'name': 'Paid'},
+                            ].map((Map<String, dynamic> _status) {
+                              return DropdownMenuItem(
+                                value: _status['id'],
+                                child: Text(_status['name']),
+                              );
+                            }).toList(),
+                            decoration: _inputDecoration('Status'),
+                          ),
+                          _sizedBox(height: 16.0),
+                          FormBuilderDateTimePicker(
+                            name: 'due',
+                            inputType: InputType.date,
+                            decoration: _inputDecoration('Due'),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return Center(child: CircularProgressIndicator());
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: Colors.grey.shade200)),
+            ),
+            alignment: Alignment.center,
+            child: _elevatedButton(
+              text: 'Filter',
+              icon: Icons.filter_alt,
+              onPressed: () async {
+                final _fState = formKey.currentState!;
+                if (_fState.validate()) {
+                  final _priceRange =
+                      _fState.fields['priceRange']!.value as RangeValues;
+                  final _status = _fState.fields['status']?.value ?? null;
+                  final _due = _fState.fields['due']?.value ?? null;
+
+                  setState(() {
+                    _filters = {
+                      'priceRange': _priceRange,
+                      'status': _status,
+                      'due': _due,
+                    };
+                  });
+
+                  _navigator.pop();
+                }
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   Widget _buildChip(ThemeData theme, Status status) {
     var _text, _chipColor, _textColor;
     switch (status) {
@@ -262,6 +419,26 @@ class _ArrearIndexState extends State<ArrearIndex> {
     );
   }
 
+  Widget _elevatedButton({
+    required String text,
+    required IconData icon,
+    Color? color,
+    void Function()? onPressed,
+  }) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(primary: color),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(text),
+          _sizedBox(width: 8),
+          Icon(icon, size: 16),
+        ],
+      ),
+      onPressed: onPressed,
+    );
+  }
+
   Widget _sizedBox({double? height, double? width}) {
     return SizedBox(
       height: height,
@@ -278,6 +455,21 @@ class _ArrearIndexState extends State<ArrearIndex> {
       icon: Icon(icon),
       color: color,
       onPressed: onPressed,
+    );
+  }
+
+  InputDecoration _inputDecoration(
+    String placeholder, [
+    bool withPrefix = false,
+  ]) {
+    final _prefix = withPrefix ? '₱ ' : null;
+
+    return InputDecoration(
+      prefixText: _prefix,
+      labelText: placeholder,
+      alignLabelWithHint: true,
+      fillColor: AppColor.white,
+      border: const OutlineInputBorder(),
     );
   }
 }

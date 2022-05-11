@@ -833,7 +833,8 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
       /// Price Range Filter
       final _priceRangeFtr = 'AND SQ1.active_price BETWEEN ? AND ?';
       final _priceRange = filters['priceRange'];
-      if (_priceRange != null) {
+      if (_priceRange != null &&
+          (_priceRange.start != 1.0 && _priceRange.end != 1.0)) {
         _vars.add(Variable.withReal(_priceRange.start));
         _vars.add(Variable.withReal(_priceRange.end));
         _query =
@@ -1227,6 +1228,32 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
 
   // Custom query
 
+  Stream<double> watchMaxActiveAmount() {
+    final _query = """
+      SELECT
+        CASE WHEN 
+          COALESCE(A.amount, 0.0.0) - COALESCE(SQ.total_payment_amount, 0.0) <= 0 
+          THEN 0.0 
+          ELSE MAX(COALESCE(A.amount, 0.0.0) - COALESCE(SQ.total_payment_amount, 0.0)) 
+        END AS max_active_amount
+      FROM arrears A
+      LEFT OUTER JOIN (
+        SELECT
+          AP.arrear_id,
+          COALESCE(COUNT(AP.arrear_id), 0.0) AS total_payment,
+          COALESCE(SUM(AP.amount), 0.0) AS total_payment_amount
+        FROM arrear_payments AP
+        GROUP BY AP.arrear_id
+      ) AS SQ ON SQ.arrear_id = A.id
+    """;
+
+    return customSelect(
+      _query,
+      variables: [],
+      readsFrom: {arrears},
+    ).watchSingle().map((result) => result.data['max_active_amount']);
+  }
+
   Future<ArrearWithDetails> getArrear(int id) async {
     final _query = """
       SELECT
@@ -1234,9 +1261,9 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
         A.status,
         A.amount,
         CASE WHEN 
-          COALESCE(A.amount, 0) - COALESCE(SQ2.total_payment_amount, 0) <= 0 
+          COALESCE(A.amount, 0.0) - COALESCE(SQ2.total_payment_amount, 0.0) <= 0 
           THEN 0.0 
-          ELSE COALESCE(A.amount, 0) - COALESCE(SQ2.total_payment_amount, 0) 
+          ELSE COALESCE(A.amount, 0.0) - COALESCE(SQ2.total_payment_amount, 0.0) 
         END AS active_amount,
         P.id AS person_id,
         P.name AS person_name,
@@ -1254,7 +1281,7 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
       LEFT OUTER JOIN (
         SELECT
           AP.arrear_id,
-          COALESCE(SUM(AP.product_id), 0) AS total_purchase
+          COALESCE(COUNT(AP.product_id), 0) AS total_purchase
         FROM arrear_purchases AP
         GROUP BY AP.arrear_id
       ) AS SQ ON SQ.arrear_id = A.id
@@ -1269,8 +1296,8 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
       LEFT OUTER JOIN (
         SELECT
           AP.arrear_id,
-          COALESCE(SUM(AP.arrear_id), 0) AS total_payment,
-          COALESCE(SUM(AP.amount), 0) AS total_payment_amount
+          COALESCE(COUNT(AP.arrear_id), 0) AS total_payment,
+          COALESCE(SUM(AP.amount), 0.0) AS total_payment_amount
         FROM arrear_payments AP
         GROUP BY AP.arrear_id
       ) AS SQ2 ON SQ2.arrear_id = A.id
@@ -1319,16 +1346,19 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
     );
   }
 
-  Stream<List<ArrearWithDetails>> watchArrears([String term = '']) {
-    final _query = """
+  Stream<List<ArrearWithDetails>> watchArrears([
+    String term = '',
+    Map<String, dynamic>? filters,
+  ]) {
+    var _query = """
       SELECT
         A.id,
         A.status,
         A.amount,
         CASE WHEN 
-          COALESCE(A.amount, 0) - COALESCE(SQ2.total_payment_amount, 0) <= 0 
+          COALESCE(A.amount, 0.0) - COALESCE(SQ2.total_payment_amount, 0.0) <= 0 
           THEN 0.0 
-          ELSE COALESCE(A.amount, 0) - COALESCE(SQ2.total_payment_amount, 0) 
+          ELSE COALESCE(A.amount, 0.0) - COALESCE(SQ2.total_payment_amount, 0.0) 
         END AS active_amount,
         P.id AS person_id,
         P.name AS person_name,
@@ -1346,7 +1376,7 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
       LEFT OUTER JOIN (
         SELECT
           AP.arrear_id,
-          COALESCE(SUM(AP.product_id), 0) AS total_purchase
+          COALESCE(COUNT(AP.product_id), 0) AS total_purchase
         FROM arrear_purchases AP
         GROUP BY AP.arrear_id
       ) AS SQ ON SQ.arrear_id = A.id
@@ -1361,17 +1391,53 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
       LEFT OUTER JOIN (
         SELECT
           AP.arrear_id,
-          COALESCE(SUM(AP.arrear_id), 0) AS total_payment,
-          COALESCE(SUM(AP.amount), 0) AS total_payment_amount
+          COALESCE(COUNT(AP.arrear_id), 0) AS total_payment,
+          COALESCE(SUM(AP.amount), 0.0) AS total_payment_amount
         FROM arrear_payments AP
         GROUP BY AP.arrear_id
       ) AS SQ2 ON SQ2.arrear_id = A.id
       WHERE P.name LIKE ?
+      /* %PRICE_RANGE_FILTER% */
+      /* %STATUS_FILTER% */
+      /* %DUE_FILTER% */
     """;
+
+    List<Variable<dynamic>> _vars = [
+      Variable.withString('%$term%'),
+    ];
+
+    if (filters != null && filters.length >= 1) {
+      /// Price Range Filter
+      final _priceRangeFtr = 'AND active_amount BETWEEN ? AND ?';
+      final _priceRange = filters['priceRange'];
+      if (_priceRange != null &&
+          (_priceRange.start != 1.0 && _priceRange.end != 1.0)) {
+        _vars.add(Variable.withReal(_priceRange.start));
+        _vars.add(Variable.withReal(_priceRange.end));
+        _query =
+            _query.replaceAll('/* %PRICE_RANGE_FILTER% */', _priceRangeFtr);
+      }
+
+      /// Status Filter
+      final _statusFtr = 'AND A.status = ?';
+      final _status = filters['status'];
+      if (_status != null) {
+        _vars.add(Variable.withInt(_status));
+        _query = _query.replaceAll('/* %STATUS_FILTER% */', _statusFtr);
+      }
+
+      /// Due Filter
+      final _dueFtr = 'AND A.due = ?';
+      final _due = filters['due'];
+      if (_due != null) {
+        _vars.add(Variable.withDateTime(_due));
+        _query = _query.replaceAll('/* %DUE_FILTER% */', _dueFtr);
+      }
+    }
 
     return customSelect(
       _query,
-      variables: [Variable.withString('%$term%')],
+      variables: _vars,
       readsFrom: {
         persons,
         productPrices,
@@ -1411,9 +1477,9 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
         A.status,
         A.amount,
         CASE WHEN 
-          COALESCE(A.amount, 0) - COALESCE(SQ2.total_payment_amount, 0) <= 0 
+          COALESCE(A.amount, 0.0) - COALESCE(SQ2.total_payment_amount, 0.0) <= 0 
           THEN 0.0 
-          ELSE COALESCE(A.amount, 0) - COALESCE(SQ2.total_payment_amount, 0) 
+          ELSE COALESCE(A.amount, 0.0) - COALESCE(SQ2.total_payment_amount, 0.0) 
         END AS active_amount,
         P.id AS person_id,
         P.name AS person_name,
@@ -1431,7 +1497,7 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
       LEFT OUTER JOIN (
         SELECT
           AP.arrear_id,
-          COALESCE(SUM(AP.product_id), 0) AS total_purchase
+          COALESCE(COUNT(AP.product_id), 0) AS total_purchase
         FROM arrear_purchases AP
         GROUP BY AP.arrear_id
       ) AS SQ ON SQ.arrear_id = A.id
@@ -1446,8 +1512,8 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
       LEFT OUTER JOIN (
         SELECT
           AP.arrear_id,
-          COALESCE(SUM(AP.arrear_id), 0) AS total_payment,
-          COALESCE(SUM(AP.amount), 0) AS total_payment_amount
+          COALESCE(COUNT(AP.arrear_id), 0) AS total_payment,
+          COALESCE(SUM(AP.amount), 0.0) AS total_payment_amount
         FROM arrear_payments AP
         GROUP BY AP.arrear_id
       ) AS SQ2 ON SQ2.arrear_id = A.id
