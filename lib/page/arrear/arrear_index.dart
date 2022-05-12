@@ -187,8 +187,8 @@ class _ArrearIndexState extends State<ArrearIndex> {
     return Card(
       child: ListTile(
         contentPadding: const EdgeInsets.all(8.0),
-        onTap: () {
-          navigator.pushNamed(
+        onTap: () async {
+          await navigator.pushNamed(
             AppRouter.arrearView,
             arguments: {'id': arrear.id},
           );

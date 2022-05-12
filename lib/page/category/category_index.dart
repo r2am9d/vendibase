@@ -90,8 +90,8 @@ class _CategoryIndexState extends State<CategoryIndex> {
               tooltip: 'Add category',
               heroTag: 'category-index-fab',
               child: const Icon(Icons.add),
-              onPressed: () {
-                _navigator.pushNamed(AppRouter.categoryCreate);
+              onPressed: () async {
+                await _navigator.pushNamed(AppRouter.categoryCreate);
               },
             )
           : null,

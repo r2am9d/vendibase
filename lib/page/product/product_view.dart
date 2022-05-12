@@ -144,8 +144,8 @@ class _ProductViewState extends State<ProductView> {
             _elevatedButton(
               text: 'Edit',
               icon: Icons.edit,
-              onPressed: () {
-                _navigator.pushNamed(
+              onPressed: () async {
+                await _navigator.pushNamed(
                   AppRouter.productUpdate,
                   arguments: {'id': _args['id']},
                 );

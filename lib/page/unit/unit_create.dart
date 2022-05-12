@@ -95,7 +95,7 @@ class _UnitCreateState extends State<UnitCreate> {
                     ),
                   );
 
-                  _navigator.pushReplacementNamed(
+                  await _navigator.pushReplacementNamed(
                     AppRouter.unitView,
                     arguments: {'id': _id},
                   );

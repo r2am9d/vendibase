@@ -80,8 +80,8 @@ class UnitView extends StatelessWidget {
             _elevatedButton(
               text: 'Edit',
               icon: Icons.edit,
-              onPressed: () {
-                Navigator.pushNamed(
+              onPressed: () async {
+                await Navigator.pushNamed(
                   context,
                   AppRouter.unitUpdate,
                   arguments: {'id': _args['id']},

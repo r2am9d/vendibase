@@ -92,8 +92,8 @@ class _PersonIndexState extends State<PersonIndex> {
               tooltip: 'Add person',
               heroTag: 'person-index-fab',
               child: const Icon(Icons.add),
-              onPressed: () {
-                _navigator.pushNamed(AppRouter.personCreate);
+              onPressed: () async {
+                await _navigator.pushNamed(AppRouter.personCreate);
               },
             )
           : null,
@@ -114,8 +114,8 @@ class _PersonIndexState extends State<PersonIndex> {
 
     return Card(
       child: ListTile(
-        onTap: () {
-          navigator.pushNamed(
+        onTap: () async {
+          await navigator.pushNamed(
             AppRouter.personView,
             arguments: {'id': person.id},
           );
@@ -137,8 +137,8 @@ class _PersonIndexState extends State<PersonIndex> {
           children: [
             _iconButton(
               icon: Icons.edit,
-              onPressed: () {
-                navigator.pushNamed(
+              onPressed: () async {
+                await navigator.pushNamed(
                   AppRouter.personUpdate,
                   arguments: {'id': person.id},
                 );

@@ -89,8 +89,8 @@ class _UnitIndexState extends State<UnitIndex> {
           ? FloatingActionButton(
               tooltip: 'Add unit',
               child: const Icon(Icons.add),
-              onPressed: () {
-                _navigator.pushNamed(AppRouter.unitCreate);
+              onPressed: () async {
+                await _navigator.pushNamed(AppRouter.unitCreate);
               },
             )
           : null,
@@ -106,8 +106,8 @@ class _UnitIndexState extends State<UnitIndex> {
   ) {
     return Card(
       child: ListTile(
-        onTap: () {
-          navigator.pushNamed(
+        onTap: () async {
+          await navigator.pushNamed(
             AppRouter.unitView,
             arguments: {'id': unit.id},
           );
@@ -125,8 +125,8 @@ class _UnitIndexState extends State<UnitIndex> {
           children: [
             _iconButton(
               icon: Icons.edit,
-              onPressed: () {
-                navigator.pushNamed(
+              onPressed: () async {
+                await navigator.pushNamed(
                   AppRouter.unitUpdate,
                   arguments: {'id': unit.id},
                 );

@@ -122,7 +122,7 @@ class _PersonCreateState extends State<PersonCreate> {
                     ),
                   );
 
-                  _navigator.pushReplacementNamed(
+                  await _navigator.pushReplacementNamed(
                     AppRouter.personView,
                     arguments: {'id': _id},
                   );

@@ -172,8 +172,8 @@ class _CategoryViewState extends State<CategoryView> {
             _elevatedButton(
               text: 'Edit',
               icon: Icons.edit,
-              onPressed: () {
-                _navigator.pushNamed(
+              onPressed: () async {
+                await _navigator.pushNamed(
                   AppRouter.categoryUpdate,
                   arguments: {'id': _args['id']},
                 );

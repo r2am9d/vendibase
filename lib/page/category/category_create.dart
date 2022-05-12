@@ -114,7 +114,7 @@ class _CategoryCreateState extends State<CategoryCreate> {
                       ),
                     );
 
-                    _navigator.pushReplacementNamed(
+                    await _navigator.pushReplacementNamed(
                       AppRouter.categoryView,
                       arguments: {'id': _id},
                     );
