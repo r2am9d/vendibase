@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vendibase/theme/app_theme.dart';
-import 'package:vendibase/router/app_router.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-
-import 'package:vendibase/utils/app_notification_alt.dart';
 
 class CodelabIndex extends StatefulWidget {
   const CodelabIndex({Key? key}) : super(key: key);
@@ -107,15 +104,7 @@ class _CodelabIndexState extends State<CodelabIndex> {
         heroTag: 'codelab-index-fab',
         child: const Icon(Icons.add),
         onPressed: () async {
-          await AppNotificationAlt.showNotification(
-            title: 'This is a notification',
-            body: 'Lorem ipsum dolor sit amet.',
-            payload: {
-              'id': '1',
-              'route': AppRouter.productView,
-              'notification_id': '${AppNotificationAlt.notificationId}',
-            },
-          );
+          // @TODO
         },
       ),
     );

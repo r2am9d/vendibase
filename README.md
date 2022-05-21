@@ -1,8 +1,6 @@
-<p align="center">
-  <a href="https://flutter.io/">
-    <img src="https://github.com/r2am9d/vendibase/blob/master/assets/icons/icon-bg-white.png" alt="Logo" width=72 height=72>
-  </a>
+![](https://github.com/r2am9d/vendibase/blob/master/assets/images/vendibase.png)
 
+<p align="center">
   <h2 align="center">Vendibase</h2>
 
   <p align="center">
