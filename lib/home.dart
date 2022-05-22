@@ -30,6 +30,21 @@ class _HomeState extends State<Home> {
   void _setupDb() async {
     final _db = context.read<AppDatabaseProvider>().database;
 
+    // Unit
+    await _db.unitsDao.make(
+      UnitsCompanion(
+        name: d.Value('New unit'),
+        amount: d.Value(10),
+      ),
+    );
+
+    // Category
+    await _db.categoriesDao.make(
+      CategoriesCompanion(
+        name: d.Value('New category'),
+      ),
+    );
+
     // Product
     final _productId = await _db.productsDao.make(
       ProductsCompanion(

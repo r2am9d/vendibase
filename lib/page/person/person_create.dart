@@ -56,7 +56,7 @@ class _PersonCreateState extends State<PersonCreate> {
                   initialValue: const [AssetImage('assets/images/man.png')],
                   decoration: _inputDecoration('Photo'),
                   fit: BoxFit.fill,
-                  validator: FormBuilderValidators.required(context),
+                  validator: FormBuilderValidators.required(),
                 ),
                 _sizedBox(height: 16),
                 FormBuilderTextField(
@@ -64,7 +64,7 @@ class _PersonCreateState extends State<PersonCreate> {
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   decoration: _inputDecoration('Name'),
-                  validator: FormBuilderValidators.required(context),
+                  validator: FormBuilderValidators.required(),
                 ),
                 _sizedBox(height: 16),
                 FormBuilderTextField(
@@ -72,8 +72,8 @@ class _PersonCreateState extends State<PersonCreate> {
                   textInputAction: TextInputAction.next,
                   decoration: _inputDecoration('Contact No'),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.numeric(context),
-                    FormBuilderValidators.maxLength(context, 11),
+                    FormBuilderValidators.numeric(),
+                    FormBuilderValidators.maxLength(11),
                   ]),
                 ),
                 _sizedBox(height: 16),

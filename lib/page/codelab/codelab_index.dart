@@ -43,9 +43,9 @@ class _CodelabIndexState extends State<CodelabIndex> {
                   textInputAction: TextInputAction.next,
                   decoration: _inputDecoration('Amount'),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(context),
-                    FormBuilderValidators.numeric(context),
-                    FormBuilderValidators.min(context, 1),
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.numeric(),
+                    FormBuilderValidators.min(1),
                   ]),
                 ),
                 _sizedBox(height: 16.0),
@@ -54,9 +54,9 @@ class _CodelabIndexState extends State<CodelabIndex> {
                   textInputAction: TextInputAction.next,
                   decoration: _inputDecoration('Cost'),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(context),
-                    FormBuilderValidators.numeric(context),
-                    FormBuilderValidators.min(context, 1),
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.numeric(),
+                    FormBuilderValidators.min(1),
 
                     // Dependent validation: FormBuilderValidators.max
                     (value) {

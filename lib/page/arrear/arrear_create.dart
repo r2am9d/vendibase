@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:vendibase/theme/app_theme.dart';
 import 'package:vendibase/router/app_router.dart';
 import 'package:vendibase/database/app_database.dart';
-import 'package:dropdown_search/dropdown_search.dart' as ds;
 import 'package:vendibase/provider/app_database_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -99,7 +98,20 @@ class _ArrearCreateState extends State<ArrearCreate> {
                   FormBuilderSearchableDropdown(
                     name: 'personId',
                     showClearButton: true,
-                    mode: ds.Mode.BOTTOM_SHEET,
+                    popupProps: PopupProps.bottomSheet(
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          hintText: "Search a person..",
+                          contentPadding:
+                              const EdgeInsets.only(left: 8, bottom: 4),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: .5),
+                            borderRadius: BorderRadius.all(_radius),
+                          ),
+                        ),
+                      ),
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Person',
                       alignLabelWithHint: true,
@@ -113,25 +125,19 @@ class _ArrearCreateState extends State<ArrearCreate> {
                         child: Text(_person.name),
                       );
                     }).toList(),
-                    itemAsString: (DropdownMenuItem<int>? menuItem) {
-                      final _text = menuItem!.child as Text;
+                    // itemAsString: (DropdownMenuItem<int>? menuItem) {
+                    //   final _text = menuItem!.child as Text;
+                    //   return _text.data.toString();
+                    // },
+                    // popupShape: RoundedRectangleBorder(
+                    //   side: BorderSide(color: Colors.grey, width: .5),
+                    //   borderRadius: BorderRadius.vertical(bottom: _radius),
+                    // ),
+                    itemAsString: (dynamic menuItem) {
+                      menuItem = menuItem as DropdownMenuItem<int>;
+                      final _text = menuItem.child as Text;
                       return _text.data.toString();
                     },
-                    popupShape: RoundedRectangleBorder(
-                      side: BorderSide(color: Colors.grey, width: .5),
-                      borderRadius: BorderRadius.vertical(bottom: _radius),
-                    ),
-                    searchFieldProps: TextFieldProps(
-                      decoration: InputDecoration(
-                        hintText: "Search a person..",
-                        contentPadding:
-                            const EdgeInsets.only(left: 8, bottom: 4),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey, width: .5),
-                          borderRadius: BorderRadius.all(_radius),
-                        ),
-                      ),
-                    ),
                     dropdownSearchDecoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.only(left: 16, bottom: 8),
@@ -145,7 +151,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       ),
                     ),
                     validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
+                      FormBuilderValidators.required(),
                     ]),
                   ),
                   _sizedBox(height: 32.0),
@@ -274,7 +280,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     initialValue: 0,
                     decoration: _inputDecoration('Status'),
                     validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
+                      FormBuilderValidators.required(),
                     ]),
                   ),
                   _sizedBox(height: 16.0),
@@ -283,9 +289,9 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     textInputAction: TextInputAction.done,
                     decoration: _inputDecoration('Amount', true),
                     validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                      FormBuilderValidators.numeric(context),
-                      FormBuilderValidators.min(context, 1),
+                      FormBuilderValidators.required(),
+                      FormBuilderValidators.numeric(),
+                      FormBuilderValidators.min(1),
                       (value) {
                         final _fState = _formKey.currentState!;
                         final _amount = double.tryParse(value!);
@@ -447,9 +453,9 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       textInputAction: TextInputAction.done,
                       decoration: _inputDecoration('Quantity'),
                       validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                        FormBuilderValidators.integer(context),
-                        FormBuilderValidators.min(context, 1),
+                        FormBuilderValidators.required(),
+                        FormBuilderValidators.integer(),
+                        FormBuilderValidators.min(1),
                         (value) {
                           final _quantity = int.tryParse(value!);
                           final _activeQuantity = purchase['activeQuantity'];
@@ -536,7 +542,20 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     FormBuilderSearchableDropdown(
                       name: 'productId',
                       showClearButton: true,
-                      mode: ds.Mode.BOTTOM_SHEET,
+                      popupProps: PopupProps.bottomSheet(
+                        searchFieldProps: TextFieldProps(
+                          decoration: InputDecoration(
+                            hintText: "Search a product..",
+                            contentPadding:
+                                const EdgeInsets.only(left: 8, bottom: 4),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.grey, width: .5),
+                              borderRadius: BorderRadius.all(_radius),
+                            ),
+                          ),
+                        ),
+                      ),
                       decoration: InputDecoration(
                         labelText: 'Product',
                         alignLabelWithHint: true,
@@ -558,26 +577,19 @@ class _ArrearCreateState extends State<ArrearCreate> {
                           child: Text("${_product.name}"),
                         );
                       }).toList(),
-                      itemAsString: (DropdownMenuItem? menuItem) {
-                        final _text = menuItem!.child as Text;
-                        return _text.data!.toString();
+                      // itemAsString: (DropdownMenuItem? menuItem) {
+                      //   final _text = menuItem!.child as Text;
+                      //   return _text.data!.toString();
+                      // },
+                      // popupShape: RoundedRectangleBorder(
+                      //   side: BorderSide(color: Colors.grey, width: .5),
+                      //   borderRadius: BorderRadius.vertical(bottom: _radius),
+                      // ),
+                      itemAsString: (dynamic menuItem) {
+                        menuItem = menuItem as DropdownMenuItem<int>;
+                        final _text = menuItem.child as Text;
+                        return _text.data.toString();
                       },
-                      popupShape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.grey, width: .5),
-                        borderRadius: BorderRadius.vertical(bottom: _radius),
-                      ),
-                      searchFieldProps: TextFieldProps(
-                        decoration: InputDecoration(
-                          hintText: "Search a product..",
-                          contentPadding:
-                              const EdgeInsets.only(left: 8, bottom: 4),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.grey, width: .5),
-                            borderRadius: BorderRadius.all(_radius),
-                          ),
-                        ),
-                      ),
                       dropdownSearchDecoration: InputDecoration(
                         contentPadding:
                             const EdgeInsets.only(left: 16, bottom: 8),
@@ -591,7 +603,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                         ),
                       ),
                       validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
+                        FormBuilderValidators.required(),
                       ]),
                     ),
                     _sizedBox(height: 16.0),
@@ -600,9 +612,9 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       textInputAction: TextInputAction.done,
                       decoration: _inputDecoration('Quantity'),
                       validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                        FormBuilderValidators.integer(context),
-                        FormBuilderValidators.min(context, 1),
+                        FormBuilderValidators.required(),
+                        FormBuilderValidators.integer(),
+                        FormBuilderValidators.min(1),
                         (value) {
                           final _dState = _dialogKey.currentState!;
                           final _quantity = int.tryParse(value!);

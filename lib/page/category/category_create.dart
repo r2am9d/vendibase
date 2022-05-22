@@ -68,7 +68,7 @@ class _CategoryCreateState extends State<CategoryCreate> {
                         ? TextInputAction.done
                         : TextInputAction.next,
                     decoration: _inputDecoration('Name'),
-                    validator: FormBuilderValidators.required(context),
+                    validator: FormBuilderValidators.required(),
                   ),
                   _sizedBox(height: 16),
                   FormBuilderDropdown(

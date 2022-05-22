@@ -4,7 +4,6 @@ import 'package:drift/drift.dart' as d;
 import 'package:provider/provider.dart';
 import 'package:vendibase/theme/app_theme.dart';
 import 'package:vendibase/database/app_database.dart';
-import 'package:dropdown_search/dropdown_search.dart' as ds;
 import 'package:vendibase/provider/app_database_provider.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -82,7 +81,20 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                       value: _arrear!.personId,
                       child: Text(_arrear!.personName),
                     ),
-                    mode: ds.Mode.BOTTOM_SHEET,
+                    popupProps: PopupProps.bottomSheet(
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          hintText: "Search a person..",
+                          contentPadding:
+                              const EdgeInsets.only(left: 8, bottom: 4),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: .5),
+                            borderRadius: BorderRadius.all(_radius),
+                          ),
+                        ),
+                      ),
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Person',
                       alignLabelWithHint: true,
@@ -96,25 +108,19 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                         child: Text(_person.name),
                       );
                     }).toList(),
-                    itemAsString: (DropdownMenuItem<int>? menuItem) {
-                      final _text = menuItem!.child as Text;
+                    // itemAsString: (DropdownMenuItem<int>? menuItem) {
+                    //   final _text = menuItem!.child as Text;
+                    //   return _text.data.toString();
+                    // },
+                    // popupShape: RoundedRectangleBorder(
+                    //   side: BorderSide(color: Colors.grey, width: .5),
+                    //   borderRadius: BorderRadius.vertical(bottom: _radius),
+                    // ),
+                    itemAsString: (dynamic menuItem) {
+                      menuItem = menuItem as DropdownMenuItem<int>;
+                      final _text = menuItem.child as Text;
                       return _text.data.toString();
                     },
-                    popupShape: RoundedRectangleBorder(
-                      side: BorderSide(color: Colors.grey, width: .5),
-                      borderRadius: BorderRadius.vertical(bottom: _radius),
-                    ),
-                    searchFieldProps: TextFieldProps(
-                      decoration: InputDecoration(
-                        hintText: "Search a person..",
-                        contentPadding:
-                            const EdgeInsets.only(left: 8, bottom: 4),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey, width: .5),
-                          borderRadius: BorderRadius.all(_radius),
-                        ),
-                      ),
-                    ),
                     dropdownSearchDecoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.only(left: 16, bottom: 8),
@@ -128,7 +134,7 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                       ),
                     ),
                     validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
+                      FormBuilderValidators.required(),
                     ]),
                   ),
                   _sizedBox(height: 32.0),
@@ -146,9 +152,9 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                     textInputAction: TextInputAction.done,
                     decoration: _inputDecoration('Amount', true),
                     validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                      FormBuilderValidators.numeric(context),
-                      FormBuilderValidators.min(context, 1),
+                      FormBuilderValidators.required(),
+                      FormBuilderValidators.numeric(),
+                      FormBuilderValidators.min(1),
                     ]),
                   ),
                   _sizedBox(height: 16.0),

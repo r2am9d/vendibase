@@ -140,9 +140,9 @@ class _EarningIndexState extends State<EarningIndex> {
                       textInputAction: TextInputAction.next,
                       decoration: _inputDecoration('Amount', true),
                       validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                        FormBuilderValidators.numeric(context),
-                        FormBuilderValidators.min(context, 1),
+                        FormBuilderValidators.required(),
+                        FormBuilderValidators.numeric(),
+                        FormBuilderValidators.min(1),
                       ]),
                     ),
                     _sizedBox(height: 16.0),

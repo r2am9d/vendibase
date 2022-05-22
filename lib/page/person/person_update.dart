@@ -82,7 +82,7 @@ class _PersonUpdateState extends State<PersonUpdate> {
                     initialValue: [_image],
                     decoration: _inputDecoration('Photo'),
                     fit: BoxFit.fill,
-                    validator: FormBuilderValidators.required(context),
+                    validator: FormBuilderValidators.required(),
                   ),
                   _sizedBox(height: 16),
                   FormBuilderTextField(
@@ -90,7 +90,7 @@ class _PersonUpdateState extends State<PersonUpdate> {
                     initialValue: _person!.name,
                     textInputAction: TextInputAction.next,
                     decoration: _inputDecoration('Name'),
-                    validator: FormBuilderValidators.required(context),
+                    validator: FormBuilderValidators.required(),
                   ),
                   _sizedBox(height: 16),
                   FormBuilderTextField(
@@ -99,8 +99,8 @@ class _PersonUpdateState extends State<PersonUpdate> {
                     textInputAction: TextInputAction.next,
                     decoration: _inputDecoration('Contact No'),
                     validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.numeric(context),
-                      FormBuilderValidators.maxLength(context, 11),
+                      FormBuilderValidators.numeric(),
+                      FormBuilderValidators.maxLength(11),
                     ]),
                   ),
                   _sizedBox(height: 16),

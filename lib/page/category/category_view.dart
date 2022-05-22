@@ -290,7 +290,7 @@ class _CategoryViewState extends State<CategoryView> {
                   textCapitalization: TextCapitalization.words,
                   initialValue: category?.name,
                   decoration: _inputDecoration('Name'),
-                  validator: FormBuilderValidators.required(context),
+                  validator: FormBuilderValidators.required(),
                 ),
               ],
             ),

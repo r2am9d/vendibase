@@ -71,7 +71,7 @@ class _UnitUpdateState extends State<UnitUpdate> {
                     initialValue: _unit!.name,
                     textInputAction: TextInputAction.next,
                     decoration: _inputDecoration('Name'),
-                    validator: FormBuilderValidators.required(context),
+                    validator: FormBuilderValidators.required(),
                   ),
                   _sizedBox(height: 16),
                   FormBuilderTextField(
@@ -80,9 +80,9 @@ class _UnitUpdateState extends State<UnitUpdate> {
                     textInputAction: TextInputAction.done,
                     decoration: _inputDecoration('Amount (pc/s)'),
                     validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                      FormBuilderValidators.integer(context),
-                      FormBuilderValidators.min(context, 1),
+                      FormBuilderValidators.required(),
+                      FormBuilderValidators.integer(),
+                      FormBuilderValidators.min(1),
                     ]),
                   ),
                 ],

@@ -64,7 +64,7 @@ class _CategoryUpdateState extends State<CategoryUpdate> {
                     textInputAction: TextInputAction.next,
                     decoration: _inputDecoration('Name'),
                     initialValue: _category!.name,
-                    validator: FormBuilderValidators.required(context),
+                    validator: FormBuilderValidators.required(),
                   ),
                   _sizedBox(height: 16),
                   FormBuilderDropdown(

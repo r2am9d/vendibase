@@ -7,7 +7,6 @@ import 'package:vendibase/theme/app_theme.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:vendibase/router/app_router.dart';
 import 'package:vendibase/database/app_database.dart';
-import 'package:dropdown_search/dropdown_search.dart' as ds;
 import 'package:vendibase/provider/app_database_provider.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -79,13 +78,29 @@ class _ProductCreateState extends State<ProductCreate> {
                     ],
                     decoration: _inputDecoration('Photo'),
                     fit: BoxFit.fill,
-                    validator: FormBuilderValidators.required(context),
+                    validator: FormBuilderValidators.required(),
                   ),
                   _sizedBox(height: 16),
-                  FormBuilderSearchableDropdown(
+                  FormBuilderSearchableDropdown<DropdownMenuItem>(
                     name: 'categoryId',
                     showClearButton: true,
-                    mode: ds.Mode.BOTTOM_SHEET,
+                    compareFn: (item, selectedItem) =>
+                        item.value == selectedItem.value,
+                    popupProps: PopupProps.modalBottomSheet(
+                      showSearchBox: true,
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          hintText: "Search a category..",
+                          contentPadding:
+                              const EdgeInsets.only(left: 8, bottom: 4),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: .5),
+                            borderRadius: BorderRadius.all(_radius),
+                          ),
+                        ),
+                      ),
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Category',
                       alignLabelWithHint: true,
@@ -99,25 +114,19 @@ class _ProductCreateState extends State<ProductCreate> {
                         child: Text(_category.name),
                       );
                     }).toList(),
-                    itemAsString: (DropdownMenuItem<int>? menuItem) {
-                      final _text = menuItem!.child as Text;
+                    // itemAsString: (DropdownMenuItem<int>? menuItem) {
+                    //   final _text = menuItem!.child as Text;
+                    //   return _text.data.toString();
+                    // },
+                    // popupShape: RoundedRectangleBorder(
+                    //   side: BorderSide(color: Colors.grey, width: .5),
+                    //   borderRadius: BorderRadius.vertical(bottom: _radius),
+                    // ),
+                    itemAsString: (dynamic menuItem) {
+                      menuItem = menuItem as DropdownMenuItem;
+                      final _text = menuItem.child as Text;
                       return _text.data.toString();
                     },
-                    popupShape: RoundedRectangleBorder(
-                      side: BorderSide(color: Colors.grey, width: .5),
-                      borderRadius: BorderRadius.vertical(bottom: _radius),
-                    ),
-                    searchFieldProps: TextFieldProps(
-                      decoration: InputDecoration(
-                        hintText: "Search a category..",
-                        contentPadding:
-                            const EdgeInsets.only(left: 8, bottom: 4),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey, width: .5),
-                          borderRadius: BorderRadius.all(_radius),
-                        ),
-                      ),
-                    ),
                     dropdownSearchDecoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.only(left: 16, bottom: 8),
@@ -132,10 +141,26 @@ class _ProductCreateState extends State<ProductCreate> {
                     ),
                   ),
                   _sizedBox(height: 16),
-                  FormBuilderSearchableDropdown(
+                  FormBuilderSearchableDropdown<DropdownMenuItem>(
                     name: 'unitId',
+                    compareFn: (item, selectedItem) =>
+                        item.value == selectedItem.value,
                     showClearButton: true,
-                    mode: ds.Mode.BOTTOM_SHEET,
+                    popupProps: PopupProps.modalBottomSheet(
+                      showSearchBox: true,
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          hintText: "Search a unit..",
+                          contentPadding:
+                              const EdgeInsets.only(left: 8, bottom: 4),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: .5),
+                            borderRadius: BorderRadius.all(_radius),
+                          ),
+                        ),
+                      ),
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Unit',
                       alignLabelWithHint: true,
@@ -149,25 +174,19 @@ class _ProductCreateState extends State<ProductCreate> {
                         child: Text(_unit.name),
                       );
                     }).toList(),
-                    itemAsString: (DropdownMenuItem<int>? menuItem) {
-                      final _text = menuItem!.child as Text;
+                    // itemAsString: (DropdownMenuItem<int>? menuItem) {
+                    //   final _text = menuItem!.child as Text;
+                    //   return _text.data.toString();
+                    // },
+                    // popupShape: RoundedRectangleBorder(
+                    //   side: BorderSide(color: Colors.grey, width: .5),
+                    //   borderRadius: BorderRadius.vertical(bottom: _radius),
+                    // ),
+                    itemAsString: (dynamic menuItem) {
+                      menuItem = menuItem as DropdownMenuItem;
+                      final _text = menuItem.child as Text;
                       return _text.data.toString();
                     },
-                    popupShape: RoundedRectangleBorder(
-                      side: BorderSide(color: Colors.grey, width: .5),
-                      borderRadius: BorderRadius.vertical(bottom: _radius),
-                    ),
-                    searchFieldProps: TextFieldProps(
-                      decoration: InputDecoration(
-                        hintText: "Search a unit..",
-                        contentPadding:
-                            const EdgeInsets.only(left: 8, bottom: 4),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey, width: .5),
-                          borderRadius: BorderRadius.all(_radius),
-                        ),
-                      ),
-                    ),
                     dropdownSearchDecoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.only(left: 16, bottom: 8),
@@ -187,7 +206,7 @@ class _ProductCreateState extends State<ProductCreate> {
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     decoration: _inputDecoration('Name'),
-                    validator: FormBuilderValidators.required(context),
+                    validator: FormBuilderValidators.required(),
                   ),
                   _sizedBox(height: 16),
                   FormBuilderTextField(
@@ -210,9 +229,9 @@ class _ProductCreateState extends State<ProductCreate> {
                     textInputAction: TextInputAction.next,
                     decoration: _inputDecoration('Cost', true),
                     validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                      FormBuilderValidators.numeric(context),
-                      FormBuilderValidators.min(context, 1),
+                      FormBuilderValidators.required(),
+                      FormBuilderValidators.numeric(),
+                      FormBuilderValidators.min(1),
                     ]),
                   ),
                   _sizedBox(height: 16),
@@ -221,9 +240,9 @@ class _ProductCreateState extends State<ProductCreate> {
                     textInputAction: TextInputAction.done,
                     decoration: _inputDecoration('Quantity'),
                     validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                      FormBuilderValidators.integer(context),
-                      FormBuilderValidators.min(context, 1),
+                      FormBuilderValidators.required(),
+                      FormBuilderValidators.integer(),
+                      FormBuilderValidators.min(1),
                     ]),
                   ),
                   _sizedBox(height: 32),
@@ -247,9 +266,9 @@ class _ProductCreateState extends State<ProductCreate> {
                     textInputAction: TextInputAction.done,
                     decoration: _inputDecoration('Retail', true),
                     validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                      FormBuilderValidators.numeric(context),
-                      FormBuilderValidators.min(context, 1),
+                      FormBuilderValidators.required(),
+                      FormBuilderValidators.numeric(),
+                      FormBuilderValidators.min(1),
                     ]),
                   ),
                 ],
