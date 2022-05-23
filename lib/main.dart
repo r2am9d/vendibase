@@ -30,20 +30,22 @@ void _setupSqlCipher() {
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterConfig.loadEnvVariables();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await FlutterConfig.loadEnvVariables();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await AppNotification.init();
   _setupSqlCipher();
 
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(
-        create: (context) => AppDatabaseProvider(),
-      ),
-    ],
-    child: const MyApp(),
-  ));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AppDatabaseProvider(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
