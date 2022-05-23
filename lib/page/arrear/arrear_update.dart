@@ -74,14 +74,17 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                     ),
                   ),
                   _sizedBox(height: 32.0),
-                  FormBuilderSearchableDropdown(
+                  FormBuilderSearchableDropdown<DropdownMenuItem>(
                     name: 'personId',
                     showClearButton: true,
+                    compareFn: (item, selectedItem) =>
+                        item.value == selectedItem.value,
                     initialValue: DropdownMenuItem(
                       value: _arrear!.personId,
                       child: Text(_arrear!.personName),
                     ),
-                    popupProps: PopupProps.bottomSheet(
+                    popupProps: PopupProps.modalBottomSheet(
+                      showSearchBox: true,
                       searchFieldProps: TextFieldProps(
                         decoration: InputDecoration(
                           hintText: "Search a person..",
@@ -117,7 +120,7 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                     //   borderRadius: BorderRadius.vertical(bottom: _radius),
                     // ),
                     itemAsString: (dynamic menuItem) {
-                      menuItem = menuItem as DropdownMenuItem<int>;
+                      menuItem = menuItem as DropdownMenuItem;
                       final _text = menuItem.child as Text;
                       return _text.data.toString();
                     },

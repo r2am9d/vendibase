@@ -95,10 +95,13 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     ),
                   ),
                   _sizedBox(height: 32.0),
-                  FormBuilderSearchableDropdown(
+                  FormBuilderSearchableDropdown<DropdownMenuItem>(
                     name: 'personId',
                     showClearButton: true,
-                    popupProps: PopupProps.bottomSheet(
+                    compareFn: (item, selectedItem) =>
+                        item.value == selectedItem.value,
+                    popupProps: PopupProps.modalBottomSheet(
+                      showSearchBox: true,
                       searchFieldProps: TextFieldProps(
                         decoration: InputDecoration(
                           hintText: "Search a person..",
@@ -134,7 +137,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     //   borderRadius: BorderRadius.vertical(bottom: _radius),
                     // ),
                     itemAsString: (dynamic menuItem) {
-                      menuItem = menuItem as DropdownMenuItem<int>;
+                      menuItem = menuItem as DropdownMenuItem;
                       final _text = menuItem.child as Text;
                       return _text.data.toString();
                     },
@@ -539,10 +542,13 @@ class _ArrearCreateState extends State<ArrearCreate> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _sizedBox(height: 16.0),
-                    FormBuilderSearchableDropdown(
+                    FormBuilderSearchableDropdown<DropdownMenuItem>(
                       name: 'productId',
                       showClearButton: true,
-                      popupProps: PopupProps.bottomSheet(
+                      compareFn: (item, selectedItem) =>
+                          item.value == selectedItem.value,
+                      popupProps: PopupProps.modalBottomSheet(
+                        showSearchBox: true,
                         searchFieldProps: TextFieldProps(
                           decoration: InputDecoration(
                             hintText: "Search a product..",
@@ -586,7 +592,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       //   borderRadius: BorderRadius.vertical(bottom: _radius),
                       // ),
                       itemAsString: (dynamic menuItem) {
-                        menuItem = menuItem as DropdownMenuItem<int>;
+                        menuItem = menuItem as DropdownMenuItem;
                         final _text = menuItem.child as Text;
                         return _text.data.toString();
                       },
