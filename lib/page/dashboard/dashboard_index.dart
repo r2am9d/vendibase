@@ -172,8 +172,7 @@ class _DashboardIndexState extends State<DashboardIndex> {
                                 ),
                                 _sizedBox(width: 16.0),
                                 Text(
-                                  _nf.format(
-                                      _dashboardData.totalUnpaidArrears),
+                                  _nf.format(_dashboardData.totalUnpaidArrears),
                                   style: _theme.textTheme.headline3?.copyWith(
                                     color: AppColor.black,
                                     fontWeight: FontWeight.bold,

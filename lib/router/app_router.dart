@@ -8,6 +8,7 @@ import 'package:vendibase/page/dashboard/dashboard_index.dart';
 import 'package:vendibase/page/backup/backup_index.dart';
 import 'package:vendibase/page/earning/earning_index.dart';
 import 'package:vendibase/page/codelab/codelab_index.dart';
+import 'package:vendibase/page/error/error_index.dart';
 
 import 'package:vendibase/page/product/product_index.dart';
 import 'package:vendibase/page/product/product_create.dart';
@@ -42,6 +43,7 @@ class AppRouter {
   static const backupIndex = '/backup-index';
   static const earningIndex = '/earning-index';
   static const codelabIndex = '/codelab-index';
+  static const errorIndex = '/error-index';
 
   static const productIndex = '/product-index';
   static const productCreate = '/product-create';
@@ -106,6 +108,13 @@ class AppRouter {
         return MaterialPageRoute(
           settings: settings,
           builder: (context) => const CodelabIndex(),
+        );
+
+      // Error Route
+      case errorIndex:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) => const ErrorIndex(),
         );
 
       // Product Routes
