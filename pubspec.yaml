@@ -83,6 +83,7 @@ dependencies:
     git:
       url: https://github.com/Davenchy/flutter_launcher_icons.git
       ref: fixMinSdkParseFlutter2.8
+  page_transition: ^2.0.5
 
 dev_dependencies:
   flutter_test:

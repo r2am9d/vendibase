@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:vendibase/utils/app_debug.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:vendibase/utils/app_notification.dart';
 
 import 'package:vendibase/home.dart';
@@ -34,6 +35,8 @@ import 'package:vendibase/page/category/category_index.dart';
 import 'package:vendibase/page/category/category_create.dart';
 import 'package:vendibase/page/category/category_view.dart';
 import 'package:vendibase/page/category/category_update.dart';
+
+enum PageType { Index, View, Create, Update, Delete }
 
 class AppRouter {
   // Named Routes
@@ -195,24 +198,28 @@ class AppRouter {
 
       // Person Routes
       case personIndex:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: PersonIndex(),
+          pageType: PageType.Index,
           settings: settings,
-          builder: (context) => const PersonIndex(),
         );
       case personCreate:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: PersonCreate(),
+          pageType: PageType.Create,
           settings: settings,
-          builder: (context) => const PersonCreate(),
         );
       case personView:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: PersonView(args: args),
+          pageType: PageType.View,
           settings: settings,
-          builder: (context) => PersonView(args: args),
         );
       case personUpdate:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: PersonUpdate(args: args),
+          pageType: PageType.Update,
           settings: settings,
-          builder: (context) => PersonUpdate(args: args),
         );
 
       // Category Routes
@@ -243,6 +250,55 @@ class AppRouter {
           builder: (context) => UndefinedView(name: settings.name ?? 'No Name'),
         );
     }
+  }
+
+  static PageTransition _pageTransition({
+    required Widget child,
+    required PageType pageType,
+    required RouteSettings settings,
+  }) {
+    final _curve = Curves.easeInOut;
+    final _duration = Duration(milliseconds: 100);
+
+    var _transition;
+    switch (pageType) {
+      case PageType.Index:
+        _transition = PageTransition(
+          child: child,
+          curve: _curve,
+          settings: settings,
+          duration: _duration,
+          reverseDuration: _duration,
+          type: PageTransitionType.fade,
+        );
+        break;
+      case PageType.View:
+        _transition = PageTransition(
+          child: child,
+          curve: _curve,
+          settings: settings,
+          duration: _duration,
+          reverseDuration: _duration,
+          type: PageTransitionType.leftToRightWithFade,
+        );
+        break;
+      case PageType.Create:
+      case PageType.Update:
+        _transition = PageTransition(
+          child: child,
+          curve: _curve,
+          settings: settings,
+          duration: _duration,
+          reverseDuration: _duration,
+          type: PageTransitionType.bottomToTop,
+        );
+        break;
+      case PageType.Delete:
+        // TODO: Handle this case.
+        break;
+    }
+
+    return _transition;
   }
 }
 
