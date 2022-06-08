@@ -176,24 +176,28 @@ class AppRouter {
 
       // Unit Routes
       case unitIndex:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: UnitIndex(),
+          pageType: PageType.Index,
           settings: settings,
-          builder: (context) => const UnitIndex(),
         );
       case unitCreate:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: UnitCreate(),
+          pageType: PageType.Create,
           settings: settings,
-          builder: (context) => const UnitCreate(),
         );
       case unitView:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: UnitView(args: args),
+          pageType: PageType.View,
           settings: settings,
-          builder: (context) => UnitView(args: args),
         );
       case unitUpdate:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: UnitUpdate(args: args),
+          pageType: PageType.Update,
           settings: settings,
-          builder: (context) => UnitUpdate(args: args),
         );
 
       // Person Routes
