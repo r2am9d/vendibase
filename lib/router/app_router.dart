@@ -228,24 +228,28 @@ class AppRouter {
 
       // Category Routes
       case categoryIndex:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: CategoryIndex(),
+          pageType: PageType.Index,
           settings: settings,
-          builder: (context) => const CategoryIndex(),
         );
       case categoryCreate:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: CategoryCreate(),
+          pageType: PageType.Create,
           settings: settings,
-          builder: (context) => const CategoryCreate(),
         );
       case categoryView:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: CategoryView(args: args),
+          pageType: PageType.View,
           settings: settings,
-          builder: (context) => CategoryView(args: args),
         );
       case categoryUpdate:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: CategoryUpdate(args: args),
+          pageType: PageType.Update,
           settings: settings,
-          builder: (context) => CategoryUpdate(args: args),
         );
 
       default:
