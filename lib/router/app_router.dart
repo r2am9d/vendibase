@@ -79,45 +79,50 @@ class AppRouter {
     switch (settings.name) {
       // Home Route
       case home:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: kReleaseMode ? const Home() : const AppDebug(home: Home()),
+          pageType: PageType.Index,
           settings: settings,
-          builder: (context) =>
-              kReleaseMode ? const Home() : const AppDebug(home: Home()),
         );
 
       // Dashboard Route
       case dashboardIndex:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: const DashboardIndex(),
+          pageType: PageType.Index,
           settings: settings,
-          builder: (context) => const DashboardIndex(),
         );
 
       // Backup Route
       case backupIndex:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: const BackupIndex(),
+          pageType: PageType.Index,
           settings: settings,
-          builder: (context) => const BackupIndex(),
         );
 
       // Earning Route
       case earningIndex:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: const EarningIndex(),
+          pageType: PageType.Index,
           settings: settings,
-          builder: (context) => const EarningIndex(),
         );
 
       // Codelab Route
       case codelabIndex:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: const CodelabIndex(),
+          pageType: PageType.Index,
           settings: settings,
-          builder: (context) => const CodelabIndex(),
         );
 
       // Error Route
       case errorIndex:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: const ErrorIndex(),
+          pageType: PageType.Index,
           settings: settings,
-          builder: (context) => const ErrorIndex(),
         );
 
       // Product Routes
@@ -177,13 +182,13 @@ class AppRouter {
       // Unit Routes
       case unitIndex:
         return _pageTransition(
-          child: UnitIndex(),
+          child: const UnitIndex(),
           pageType: PageType.Index,
           settings: settings,
         );
       case unitCreate:
         return _pageTransition(
-          child: UnitCreate(),
+          child: const UnitCreate(),
           pageType: PageType.Create,
           settings: settings,
         );
@@ -203,13 +208,13 @@ class AppRouter {
       // Person Routes
       case personIndex:
         return _pageTransition(
-          child: PersonIndex(),
+          child: const PersonIndex(),
           pageType: PageType.Index,
           settings: settings,
         );
       case personCreate:
         return _pageTransition(
-          child: PersonCreate(),
+          child: const PersonCreate(),
           pageType: PageType.Create,
           settings: settings,
         );
@@ -229,13 +234,13 @@ class AppRouter {
       // Category Routes
       case categoryIndex:
         return _pageTransition(
-          child: CategoryIndex(),
+          child: const CategoryIndex(),
           pageType: PageType.Index,
           settings: settings,
         );
       case categoryCreate:
         return _pageTransition(
-          child: CategoryCreate(),
+          child: const CategoryCreate(),
           pageType: PageType.Create,
           settings: settings,
         );
