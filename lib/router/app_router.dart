@@ -36,17 +36,19 @@ import 'package:vendibase/page/category/category_create.dart';
 import 'package:vendibase/page/category/category_view.dart';
 import 'package:vendibase/page/category/category_update.dart';
 
+enum RouteType { Primary, Secondary }
+
 enum PageType { Index, View, Create, Update, Delete }
 
 class AppRouter {
   // Named Routes
   static const home = '/';
-
   static const dashboardIndex = '/dashboard-index';
+  static const errorIndex = '/error-index';
+
   static const backupIndex = '/backup-index';
   static const earningIndex = '/earning-index';
   static const codelabIndex = '/codelab-index';
-  static const errorIndex = '/error-index';
 
   static const productIndex = '/product-index';
   static const productCreate = '/product-create';
@@ -83,6 +85,7 @@ class AppRouter {
           child: kReleaseMode ? const Home() : const AppDebug(home: Home()),
           pageType: PageType.Index,
           settings: settings,
+          routeType: RouteType.Primary,
         );
 
       // Dashboard Route
@@ -91,30 +94,7 @@ class AppRouter {
           child: const DashboardIndex(),
           pageType: PageType.Index,
           settings: settings,
-        );
-
-      // Backup Route
-      case backupIndex:
-        return _pageTransition(
-          child: const BackupIndex(),
-          pageType: PageType.Index,
-          settings: settings,
-        );
-
-      // Earning Route
-      case earningIndex:
-        return _pageTransition(
-          child: const EarningIndex(),
-          pageType: PageType.Index,
-          settings: settings,
-        );
-
-      // Codelab Route
-      case codelabIndex:
-        return _pageTransition(
-          child: const CodelabIndex(),
-          pageType: PageType.Index,
-          settings: settings,
+          routeType: RouteType.Primary,
         );
 
       // Error Route
@@ -123,40 +103,80 @@ class AppRouter {
           child: const ErrorIndex(),
           pageType: PageType.Index,
           settings: settings,
+          routeType: RouteType.Primary,
+        );
+
+      // Backup Route
+      case backupIndex:
+        return _pageTransition(
+          child: const BackupIndex(),
+          pageType: PageType.Index,
+          settings: settings,
+          routeType: RouteType.Secondary,
+        );
+
+      // Earning Route
+      case earningIndex:
+        return _pageTransition(
+          child: const EarningIndex(),
+          pageType: PageType.Index,
+          settings: settings,
+          routeType: RouteType.Secondary,
+        );
+
+      // Codelab Route
+      case codelabIndex:
+        return _pageTransition(
+          child: const CodelabIndex(),
+          pageType: PageType.Index,
+          settings: settings,
+          routeType: RouteType.Secondary,
         );
 
       // Product Routes
       case productIndex:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: const ProductIndex(),
+          pageType: PageType.Index,
           settings: settings,
-          builder: (context) => const ProductIndex(),
+          routeType: RouteType.Primary,
         );
       case productCreate:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: const ProductCreate(),
+          pageType: PageType.Create,
           settings: settings,
-          builder: (context) => const ProductCreate(),
+          routeType: RouteType.Primary,
         );
       case productView:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: ProductView(args: args),
+          pageType: PageType.View,
           settings: settings,
-          builder: (context) => ProductView(args: args),
+          routeType: RouteType.Primary,
         );
       case productUpdate:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: ProductUpdate(args: args),
+          pageType: PageType.Update,
           settings: settings,
-          builder: (context) => ProductUpdate(args: args),
+          routeType: RouteType.Primary,
         );
 
       // Arrear Routes
       case arrearIndex:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: const ArrearIndex(),
+          pageType: PageType.Index,
           settings: settings,
-          builder: (context) => const ArrearIndex(),
+          routeType: RouteType.Primary,
         );
       case arrearCreate:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: const ArrearCreate(),
+          pageType: PageType.Create,
           settings: settings,
-          builder: (context) => const ArrearCreate(),
+          routeType: RouteType.Primary,
         );
       case arrearView:
         final payload = AppNotification.selectedPayload;
@@ -169,14 +189,18 @@ class AppRouter {
           AppNotification.resetPayload();
         }
 
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: ArrearView(args: args),
+          pageType: PageType.View,
           settings: settings,
-          builder: (context) => ArrearView(args: args),
+          routeType: RouteType.Primary,
         );
       case arrearUpdate:
-        return MaterialPageRoute(
+        return _pageTransition(
+          child: ArrearUpdate(args: args),
+          pageType: PageType.Update,
           settings: settings,
-          builder: (context) => ArrearUpdate(args: args),
+          routeType: RouteType.Primary,
         );
 
       // Unit Routes
@@ -185,24 +209,28 @@ class AppRouter {
           child: const UnitIndex(),
           pageType: PageType.Index,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
       case unitCreate:
         return _pageTransition(
           child: const UnitCreate(),
           pageType: PageType.Create,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
       case unitView:
         return _pageTransition(
           child: UnitView(args: args),
           pageType: PageType.View,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
       case unitUpdate:
         return _pageTransition(
           child: UnitUpdate(args: args),
           pageType: PageType.Update,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
 
       // Person Routes
@@ -211,24 +239,28 @@ class AppRouter {
           child: const PersonIndex(),
           pageType: PageType.Index,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
       case personCreate:
         return _pageTransition(
           child: const PersonCreate(),
           pageType: PageType.Create,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
       case personView:
         return _pageTransition(
           child: PersonView(args: args),
           pageType: PageType.View,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
       case personUpdate:
         return _pageTransition(
           child: PersonUpdate(args: args),
           pageType: PageType.Update,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
 
       // Category Routes
@@ -237,24 +269,28 @@ class AppRouter {
           child: const CategoryIndex(),
           pageType: PageType.Index,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
       case categoryCreate:
         return _pageTransition(
           child: const CategoryCreate(),
           pageType: PageType.Create,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
       case categoryView:
         return _pageTransition(
           child: CategoryView(args: args),
           pageType: PageType.View,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
       case categoryUpdate:
         return _pageTransition(
           child: CategoryUpdate(args: args),
           pageType: PageType.Update,
           settings: settings,
+          routeType: RouteType.Secondary,
         );
 
       default:
@@ -269,9 +305,10 @@ class AppRouter {
     required Widget child,
     required PageType pageType,
     required RouteSettings settings,
+    required RouteType routeType,
   }) {
     final _curve = Curves.easeInOut;
-    final _duration = Duration(milliseconds: 100);
+    final _duration = Duration(milliseconds: 250);
 
     var _transition;
     switch (pageType) {
@@ -292,7 +329,10 @@ class AppRouter {
           settings: settings,
           duration: _duration,
           reverseDuration: _duration,
-          type: PageTransitionType.leftToRightWithFade,
+          alignment: Alignment.center,
+          type: routeType == RouteType.Primary
+              ? PageTransitionType.scale
+              : PageTransitionType.leftToRightWithFade,
         );
         break;
       case PageType.Create:

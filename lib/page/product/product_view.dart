@@ -313,8 +313,6 @@ class _ProductViewState extends State<ProductView> {
                   await db.productsDao.revise(
                     ProductsCompanion(
                       id: d.Value(product.id),
-                      photo: d.Value(product.photo),
-                      name: d.Value(product.name),
                       isFavorite: d.Value(!product.isFavorite),
                     ),
                   );
