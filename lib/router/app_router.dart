@@ -6,10 +6,12 @@ import 'package:vendibase/utils/app_notification.dart';
 
 import 'package:vendibase/home.dart';
 import 'package:vendibase/page/dashboard/dashboard_index.dart';
+import 'package:vendibase/page/error/error_index.dart';
+import 'package:vendibase/page/onboard/onboard_index.dart';
+
 import 'package:vendibase/page/backup/backup_index.dart';
 import 'package:vendibase/page/earning/earning_index.dart';
 import 'package:vendibase/page/codelab/codelab_index.dart';
-import 'package:vendibase/page/error/error_index.dart';
 
 import 'package:vendibase/page/product/product_index.dart';
 import 'package:vendibase/page/product/product_create.dart';
@@ -45,6 +47,7 @@ class AppRouter {
   static const home = '/';
   static const dashboardIndex = '/dashboard-index';
   static const errorIndex = '/error-index';
+  static const onboardIndex = '/onboard-index';
 
   static const backupIndex = '/backup-index';
   static const earningIndex = '/earning-index';
@@ -101,6 +104,15 @@ class AppRouter {
       case errorIndex:
         return _pageTransition(
           child: const ErrorIndex(),
+          pageType: PageType.Index,
+          settings: settings,
+          routeType: RouteType.Primary,
+        );
+
+      // Onboard Route
+      case onboardIndex:
+        return _pageTransition(
+          child: const OnboardIndex(),
           pageType: PageType.Index,
           settings: settings,
           routeType: RouteType.Primary,
@@ -307,8 +319,8 @@ class AppRouter {
     required RouteSettings settings,
     required RouteType routeType,
   }) {
-    final _curve = Curves.easeInOut;
-    final _duration = Duration(milliseconds: 250);
+    final _curve = Curves.fastLinearToSlowEaseIn;
+    final _duration = Duration(milliseconds: 175);
 
     var _transition;
     switch (pageType) {

@@ -67,6 +67,8 @@ dependencies:
   awesome_notifications: ^0.6.21
   multiple_stream_builder: ^2.0.0
   flutter_local_notifications: ^9.5.2
+  page_transition: ^2.0.5
+  introduction_screen: ^3.0.2
   just_the_tooltip:
     git:
       url: https://github.com/r2am9d/just_the_tooltip
@@ -83,7 +85,6 @@ dependencies:
     git:
       url: https://github.com/Davenchy/flutter_launcher_icons.git
       ref: fixMinSdkParseFlutter2.8
-  page_transition: ^2.0.5
 
 dev_dependencies:
   flutter_test:

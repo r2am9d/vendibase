@@ -229,12 +229,18 @@ class _DashboardIndexState extends State<DashboardIndex> {
           text: 'Backup',
           onTap: () => Future(() => _navigator.pushNamed('/backup-index')),
         ),
-        if (!kReleaseMode)
+        if (!kReleaseMode) ...[
           _popupMenuItem(
             icon: Icons.science,
             text: 'Codelab',
             onTap: () => Future(() => _navigator.pushNamed('/codelab-index')),
           ),
+          _popupMenuItem(
+            icon: Icons.emergency,
+            text: 'Onboard',
+            onTap: () => Future(() => _navigator.pushNamed('/onboard-index')),
+          ),
+        ],
       ],
     );
   }

@@ -131,6 +131,7 @@ class AppTheme with ChangeNotifier {
 class AppColor {
   static Color white = const Color(0xFFFFFFFF);
   static Color black = const Color(0xFF02040F);
+  static Color gray = const Color(0xFFBDBDBD);
 
   static Color red = const Color(0xFF930E4D);
   static Color darkRed = const Color(0xFF4A092E);

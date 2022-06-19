@@ -68,6 +68,8 @@ This application is using Drift to handle CRUD operations enabling offline data 
 * [Launcher Icons](https://github.com/Davenchy/flutter_launcher_icons/tree/fixMinSdkParseFlutter2.8)
 * [Toggle](https://github.com/SplashByte/animated_toggle_switch)
 * [Easy Image Viewer](https://github.com/thesmythgroup/easy_image_viewer)
+* [Transitions](https://github.com/kalismeras61/flutter_page_transition)
+* [Onboarding](https://github.com/Pyozer/introduction_screen)
 
 ### Forked & Enhanced repo
 

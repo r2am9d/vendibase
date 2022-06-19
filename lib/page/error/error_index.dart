@@ -21,7 +21,7 @@ class ErrorIndex extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/images/error-mascot.png',
+                'assets/images/vendarr-error.png',
                 fit: BoxFit.fitWidth,
                 width: _mQ.size.width / 2,
               ),
