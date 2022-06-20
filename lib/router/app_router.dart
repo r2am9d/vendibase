@@ -359,7 +359,6 @@ class AppRouter {
         );
         break;
       case PageType.Delete:
-        // TODO: Handle this case.
         break;
     }
 
