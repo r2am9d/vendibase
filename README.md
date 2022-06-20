@@ -51,6 +51,7 @@ This application is using Drift to handle CRUD operations enabling offline data 
 * [Drift](https://github.com/simolus3/drift) (Persistence Library)
 * [Provider](https://github.com/rrousselGit/provider) (State Management)
 * [Permissions](https://github.com/baseflow/flutter-permission-handler)
+* [Shared Preferences](https://github.com/flutter/plugins/tree/main/packages/shared_preferences/shared_preferences)
 * [Forms](https://github.com/danvick/flutter_form_builder)
 * [App Notifications](https://github.com/MaikuB/flutter_local_notifications)
 * [Data Visualization](https://github.com/syncfusion/flutter-widgets)

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as fr;
 import 'package:vendibase/provider/app_database_provider.dart';
@@ -59,6 +60,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String? _initialRoute;
 
+  Future<bool> _checkOnboard() async {
+    final _prefs = await SharedPreferences.getInstance();
+    final _isInitial = _prefs.getBool('isInitial') ?? true;
+    await _prefs.setBool('isInitial', false);
+    return _isInitial;
+  }
+
   void _requestPermission() async {
     final permissions = [
       Permission.storage,
@@ -92,7 +100,8 @@ class _MyAppState extends State<MyApp> {
     final launchDetails = await AppNotification.getLaunchDetails();
     final didNotifLaunchApp = launchDetails?.didNotificationLaunchApp ?? false;
 
-    _initialRoute = AppRouter.home;
+    _initialRoute =
+        await _checkOnboard() ? AppRouter.onboardIndex : AppRouter.home;
     if (didNotifLaunchApp) {
       AppNotification.selectedPayload = launchDetails!.payload;
       _initialRoute = AppRouter.arrearView;

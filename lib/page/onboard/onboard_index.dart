@@ -33,7 +33,8 @@ class _OnboardIndexState extends State<OnboardIndex> {
       padding: const EdgeInsets.only(bottom: 24.0),
       child: Text(
         title,
-        style: theme.textTheme.headline5?.copyWith(
+        style: theme.textTheme.headline4?.copyWith(
+          color: AppColor.red,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -41,7 +42,10 @@ class _OnboardIndexState extends State<OnboardIndex> {
   }
 
   Widget _buildSubTitle(String subtitle, ThemeData theme) {
-    return Text(subtitle, style: theme.textTheme.headline6);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+      child: Text(subtitle, style: theme.textTheme.bodyText1),
+    );
   }
 
   @override
@@ -74,8 +78,9 @@ class _OnboardIndexState extends State<OnboardIndex> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildImage('assets/images/vendarr-cart.png'),
-                  _buildTitle('Lorem ipsum!', _theme),
-                  _buildSubTitle('Sed non dui nec nulla pharetra.', _theme),
+                  _buildTitle('Definitive storage', _theme),
+                  _buildSubTitle(
+                      'Storehouse for your products and stuff!', _theme),
                 ],
               ),
             ),
@@ -91,8 +96,8 @@ class _OnboardIndexState extends State<OnboardIndex> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildImage('assets/images/vendarr-phone.png'),
-                  _buildTitle('Lorem ipsum!', _theme),
-                  _buildSubTitle('Sed non dui nec nulla pharetra.', _theme),
+                  _buildTitle('Works Offline', _theme),
+                  _buildSubTitle('No connection? No problem!', _theme),
                 ],
               ),
             ),
@@ -108,17 +113,16 @@ class _OnboardIndexState extends State<OnboardIndex> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildImage('assets/images/vendarr-money.png'),
-                  _buildTitle('Lorem ipsum!', _theme),
-                  _buildSubTitle('Sed non dui nec nulla pharetra.', _theme),
+                  _buildTitle('Monitor Earnings', _theme),
+                  _buildSubTitle('Tracking profit as easy as it gets!', _theme),
                 ],
               ),
             ),
             decoration: _pageDecoration,
           ),
         ],
-
         onDone: () => _onIntroEnd(context),
-        //onSkip: () => _onIntroEnd(context), // You can override onSkip callback
+        // onSkip: () => _onIntroEnd(context),
         showSkipButton: true,
         skipOrBackFlex: 0,
         nextFlex: 0,
@@ -139,8 +143,11 @@ class _OnboardIndexState extends State<OnboardIndex> {
           'Done',
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: AppColor.red,
+            color: AppColor.white,
           ),
+        ),
+        doneStyle: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(AppColor.red),
         ),
         curve: Curves.fastLinearToSlowEaseIn,
         controlsMargin: const EdgeInsets.all(16.0),
