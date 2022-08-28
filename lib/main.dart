@@ -130,15 +130,7 @@ class _MyAppState extends State<MyApp> {
           themeMode: appTheme.appTheme,
           initialRoute: _initialRoute,
           onGenerateRoute: AppRouter.generateRoute,
-          supportedLocales: const [
-            Locale('de'),
-            Locale('en'),
-            Locale('es'),
-            Locale('fr'),
-            Locale('it'),
-            Locale('lo'),
-            Locale('uk'),
-          ],
+          supportedLocales: FormBuilderLocalizations.delegate.supportedLocales,
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
