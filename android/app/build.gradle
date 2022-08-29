@@ -50,7 +50,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.r2am9d.vendibase"
+        applicationId "com.r2am9d.apps.vendibase"
         minSdkVersion project.env.get("MIN_SDK").toInteger()
         targetSdkVersion project.env.get("TARGET_SDK").toInteger()
         versionCode flutterVersionCode.toInteger()

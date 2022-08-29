@@ -1,1 +1,1 @@
--keep class com.r2am9d.vendibase.BuildConfig { *; }
+-keep class com.r2am9d.apps.vendibase.BuildConfig { *; }

@@ -4,7 +4,6 @@ import 'package:sqlite3/open.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as fr;
@@ -32,7 +31,6 @@ void _setupSqlCipher() {
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  await FlutterConfig.loadEnvVariables();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await AppNotification.init();
   _setupSqlCipher();
