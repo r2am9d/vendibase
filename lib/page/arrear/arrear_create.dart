@@ -89,7 +89,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                 children: [
                   Text(
                     'Details',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -97,7 +97,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                   _sizedBox(height: 32.0),
                   FormBuilderSearchableDropdown<DropdownMenuItem>(
                     name: 'personId',
-                    showClearButton: true,
+                    clearButtonProps: ClearButtonProps(isVisible: true),
                     compareFn: (item, selectedItem) =>
                         item.value == selectedItem.value,
                     popupProps: PopupProps.modalBottomSheet(
@@ -118,7 +118,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     decoration: InputDecoration(
                       labelText: 'Person',
                       alignLabelWithHint: true,
-                      fillColor: AppColor.white,
+                      fillColor: AppColor.red,
                       border: const OutlineInputBorder(),
                       contentPadding: const EdgeInsets.all(12.0),
                     ),
@@ -141,6 +141,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                       final _text = menuItem.child as Text;
                       return _text.data.toString();
                     },
+                    dropdownSearchTextStyle: TextStyle(color: AppColor.black),
                     dropdownSearchDecoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.only(left: 16, bottom: 8),
@@ -162,7 +163,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     children: [
                       Text(
                         'Purchase',
-                        style: _theme.textTheme.headline6?.copyWith(
+                        style: _theme.textTheme.titleLarge?.copyWith(
                           color: AppColor.red,
                           fontWeight: FontWeight.bold,
                         ),
@@ -207,11 +208,11 @@ class _ArrearCreateState extends State<ArrearCreate> {
                             child: ListTile(
                               title: Text(
                                 _purchase['name'],
-                                style: _theme.textTheme.bodyText1,
+                                style: _theme.textTheme.bodyLarge,
                               ),
                               subtitle: Text(
                                 '₱ ${_nf.format(_purchase['price'])} • ${_nf.format(_purchase['quantity'])} pc/s',
-                                style: _theme.textTheme.bodyText2,
+                                style: _theme.textTheme.bodyMedium,
                               ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -262,7 +263,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                   _sizedBox(height: 32.0),
                   Text(
                     'Arrear',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -270,7 +271,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                   _sizedBox(height: 32.0),
                   FormBuilderDropdown(
                     name: 'status',
-                    allowClear: true,
+                    // allowClear: true,
                     items: [
                       {'id': 0, 'name': 'Unpaid'},
                       // {'id': 1, 'name': 'Paid'},
@@ -289,6 +290,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                   _sizedBox(height: 16.0),
                   FormBuilderTextField(
                     name: 'amount',
+                    keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
                     decoration: _inputDecoration('Amount', true),
                     validator: FormBuilderValidators.compose([
@@ -359,7 +361,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     final _id = await _db.arrearsDao.make(
                       ArrearsCompanion(
                         personId: d.Value(_personId),
-                        status: d.Value(_eic.mapToDart(_status)!),
+                        status: d.Value(_eic.fromSql(_status)),
                         amount: d.Value(double.parse(_amount)),
                         due: d.Value(_due),
                         remarks: d.Value(_remarks),
@@ -437,7 +439,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColor.white,
-        title: Text("Edit purchase", style: theme.textTheme.headline6),
+        title: Text("Edit purchase", style: theme.textTheme.titleLarge),
         content: Scrollbar(
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -452,6 +454,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     _sizedBox(height: 16.0),
                     FormBuilderTextField(
                       name: 'quantity',
+                      keyboardType: TextInputType.number,
                       initialValue: purchase['quantity'].toString(),
                       textInputAction: TextInputAction.done,
                       decoration: _inputDecoration('Quantity'),
@@ -529,7 +532,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColor.white,
-        title: Text("Create purchase", style: theme.textTheme.headline6),
+        title: Text("Create purchase", style: theme.textTheme.titleLarge),
         content: Scrollbar(
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -544,7 +547,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     _sizedBox(height: 16.0),
                     FormBuilderSearchableDropdown<DropdownMenuItem>(
                       name: 'productId',
-                      showClearButton: true,
+                      clearButtonProps: ClearButtonProps(isVisible: true),
                       compareFn: (item, selectedItem) =>
                           item.value == selectedItem.value,
                       popupProps: PopupProps.modalBottomSheet(
@@ -596,6 +599,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                         final _text = menuItem.child as Text;
                         return _text.data.toString();
                       },
+                      dropdownSearchTextStyle: TextStyle(color: AppColor.black),
                       dropdownSearchDecoration: InputDecoration(
                         contentPadding:
                             const EdgeInsets.only(left: 16, bottom: 8),
@@ -615,6 +619,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
                     _sizedBox(height: 16.0),
                     FormBuilderTextField(
                       name: 'quantity',
+                      keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.done,
                       decoration: _inputDecoration('Quantity'),
                       validator: FormBuilderValidators.compose([
@@ -708,7 +713,7 @@ class _ArrearCreateState extends State<ArrearCreate> {
     void Function()? onPressed,
   }) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(primary: color),
+      style: ElevatedButton.styleFrom(backgroundColor: color),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

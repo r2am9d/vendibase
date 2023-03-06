@@ -270,7 +270,7 @@ class _ProductIndexState extends State<ProductIndex> {
                         children: [
                           Text(
                             "₱ ${_f.format(product.activePrice)}",
-                            style: theme.textTheme.bodyText1?.copyWith(
+                            style: theme.textTheme.bodyLarge?.copyWith(
                               color: AppColor.red,
                               fontWeight: FontWeight.bold,
                             ),
@@ -300,7 +300,7 @@ class _ProductIndexState extends State<ProductIndex> {
                               product.name,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.bodyText2,
+                              style: theme.textTheme.bodyMedium,
                             ),
                           ),
                           IconButton(
@@ -385,7 +385,7 @@ class _ProductIndexState extends State<ProductIndex> {
         backgroundColor: AppColor.white,
         title: Text(
           'Filters',
-          style: theme.textTheme.headline6?.copyWith(
+          style: theme.textTheme.titleLarge?.copyWith(
             color: AppColor.red,
             fontWeight: FontWeight.bold,
           ),
@@ -398,15 +398,15 @@ class _ProductIndexState extends State<ProductIndex> {
                 key: formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: StreamBuilder3<double, List<Category>, List<Unit>>(
-                  streams: Tuple3(
+                  streams: StreamTuple3(
                     db.productPricesDao.watchMaxRetail(),
                     db.categoriesDao.watchCategories(),
                     db.unitsDao.all(),
                   ),
                   builder: (context, snapshots) {
-                    var _maxRetail = snapshots.item1.data;
-                    final _categories = snapshots.item2.data ?? [];
-                    final _units = snapshots.item3.data ?? [];
+                    var _maxRetail = snapshots.snapshot1.data;
+                    final _categories = snapshots.snapshot2.data ?? [];
+                    final _units = snapshots.snapshot3.data ?? [];
 
                     if (_maxRetail != null) {
                       _maxRetail = (_maxRetail == 0.0) ? 1.0 : _maxRetail;
@@ -432,7 +432,7 @@ class _ProductIndexState extends State<ProductIndex> {
                           _sizedBox(height: 16.0),
                           FormBuilderSearchableDropdown<DropdownMenuItem>(
                             name: 'categoryId',
-                            showClearButton: true,
+                            clearButtonProps: ClearButtonProps(isVisible: true),
                             compareFn: (item, selectedItem) =>
                                 item.value == selectedItem.value,
                             popupProps: PopupProps.modalBottomSheet(
@@ -477,6 +477,8 @@ class _ProductIndexState extends State<ProductIndex> {
                               final _text = menuItem.child as Text;
                               return _text.data.toString();
                             },
+                            dropdownSearchTextStyle:
+                                TextStyle(color: AppColor.black),
                             dropdownSearchDecoration: InputDecoration(
                               contentPadding:
                                   const EdgeInsets.only(left: 16, bottom: 8),
@@ -496,7 +498,7 @@ class _ProductIndexState extends State<ProductIndex> {
                           _sizedBox(height: 16.0),
                           FormBuilderSearchableDropdown<DropdownMenuItem>(
                             name: 'unitId',
-                            showClearButton: true,
+                            clearButtonProps: ClearButtonProps(isVisible: true),
                             compareFn: (item, selectedItem) =>
                                 item.value == selectedItem.value,
                             popupProps: PopupProps.modalBottomSheet(
@@ -541,6 +543,8 @@ class _ProductIndexState extends State<ProductIndex> {
                               final _text = menuItem.child as Text;
                               return _text.data.toString();
                             },
+                            dropdownSearchTextStyle:
+                                TextStyle(color: AppColor.black),
                             dropdownSearchDecoration: InputDecoration(
                               contentPadding:
                                   const EdgeInsets.only(left: 16, bottom: 8),
@@ -645,7 +649,7 @@ class _ProductIndexState extends State<ProductIndex> {
     void Function()? onPressed,
   }) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(primary: color),
+      style: ElevatedButton.styleFrom(backgroundColor: color),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

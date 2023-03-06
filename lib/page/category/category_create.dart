@@ -55,7 +55,7 @@ class _CategoryCreateState extends State<CategoryCreate> {
                 children: [
                   Text(
                     'Details',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -73,7 +73,7 @@ class _CategoryCreateState extends State<CategoryCreate> {
                   _sizedBox(height: 16),
                   FormBuilderDropdown(
                     name: 'parentId',
-                    allowClear: true,
+                    // allowClear: true,
                     items: _categories!.map((_category) {
                       return DropdownMenuItem(
                         value: _category.id,

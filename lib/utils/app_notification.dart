@@ -34,7 +34,7 @@ class AppNotification {
         channelShowBadge: true,
         color: AppColor.lightRed,
       ),
-      iOS: IOSNotificationDetails(),
+      iOS: DarwinNotificationDetails(),
     );
   }
 
@@ -42,7 +42,7 @@ class AppNotification {
     final androidInitSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final iosInitSettings = IOSInitializationSettings(
+    final iosInitSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
@@ -59,15 +59,23 @@ class AppNotification {
 
     await _localNotification.initialize(
       initSettings,
-      onSelectNotification: (String? payload) async {
-        selectedPayload = payload;
-        onNotification.add(payload);
-      },
-      // onDidReceiveNotificationResponse: (NotificationResponse response) async {
-      //   selectedPayload = response.payload;
-      //   onNotification.add(response.payload);
+      // onSelectNotification: (String? payload) async {
+      //   selectedPayload = payload;
+      //   onNotification.add(payload);
       // },
-      // onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        selectedPayload = response.payload;
+
+        switch (response.notificationResponseType) {
+          case NotificationResponseType.selectedNotification:
+            onNotification.add(response.payload);
+            break;
+          case NotificationResponseType.selectedNotificationAction:
+            onNotification.add(response.payload);
+            break;
+        }
+      },
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
   }
 

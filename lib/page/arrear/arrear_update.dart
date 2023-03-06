@@ -68,7 +68,7 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                 children: [
                   Text(
                     'Details',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -76,7 +76,7 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                   _sizedBox(height: 32.0),
                   FormBuilderSearchableDropdown<DropdownMenuItem>(
                     name: 'personId',
-                    showClearButton: true,
+                    clearButtonProps: ClearButtonProps(isVisible: true),
                     compareFn: (item, selectedItem) =>
                         item.value == selectedItem.value,
                     initialValue: DropdownMenuItem(
@@ -124,6 +124,7 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                       final _text = menuItem.child as Text;
                       return _text.data.toString();
                     },
+                    dropdownSearchTextStyle: TextStyle(color: AppColor.black),
                     dropdownSearchDecoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.only(left: 16, bottom: 8),
@@ -143,7 +144,7 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                   _sizedBox(height: 32.0),
                   Text(
                     'Arrear',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -151,6 +152,7 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                   _sizedBox(height: 32.0),
                   FormBuilderTextField(
                     name: 'amount',
+                    keyboardType: TextInputType.number,
                     initialValue: _arrear!.amount.toString(),
                     textInputAction: TextInputAction.done,
                     decoration: _inputDecoration('Amount', true),
@@ -233,7 +235,7 @@ class _ArrearUpdateState extends State<ArrearUpdate> {
                       ArrearsCompanion(
                         id: d.Value(_arrear!.id),
                         personId: d.Value(_personId),
-                        status: d.Value(_eic.mapToDart(_status)!),
+                        status: d.Value(_eic.fromSql(_status)),
                         amount: d.Value(double.parse(_amount)),
                         due: d.Value(_due),
                         notificationId: d.Value(_notifId),

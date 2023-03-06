@@ -32,7 +32,7 @@ class _CodelabIndexState extends State<CodelabIndex> {
               children: [
                 Text(
                   'Details',
-                  style: _theme.textTheme.headline6?.copyWith(
+                  style: _theme.textTheme.titleLarge?.copyWith(
                     color: AppColor.red,
                     fontWeight: FontWeight.bold,
                   ),
@@ -40,6 +40,7 @@ class _CodelabIndexState extends State<CodelabIndex> {
                 _sizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'amount',
+                  keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
                   decoration: _inputDecoration('Amount'),
                   validator: FormBuilderValidators.compose([
@@ -51,6 +52,7 @@ class _CodelabIndexState extends State<CodelabIndex> {
                 _sizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'cost',
+                  keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
                   decoration: _inputDecoration('Cost'),
                   validator: FormBuilderValidators.compose([

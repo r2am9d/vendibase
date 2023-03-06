@@ -35,7 +35,7 @@ class AppTheme with ChangeNotifier {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          primary: AppColor.red,
+          backgroundColor: AppColor.red,
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -59,64 +59,64 @@ class AppTheme with ChangeNotifier {
         ),
       ),
       textTheme: TextTheme(
-        headline1: TextStyle(
+        displayLarge: TextStyle(
           fontSize: 96,
           letterSpacing: -1.5,
           color: AppColor.black,
         ),
-        headline2: TextStyle(
+        displayMedium: TextStyle(
           fontSize: 60,
           letterSpacing: -0.5,
           color: AppColor.black,
         ),
-        headline3: TextStyle(
+        displaySmall: TextStyle(
           fontSize: 48,
           letterSpacing: 0,
           color: AppColor.black,
         ),
-        headline4: TextStyle(
+        headlineMedium: TextStyle(
           fontSize: 34,
           letterSpacing: 0.25,
           color: AppColor.black,
         ),
-        headline5: TextStyle(
+        headlineSmall: TextStyle(
           fontSize: 24,
           letterSpacing: 0,
           color: AppColor.black,
         ),
-        headline6: TextStyle(
+        titleLarge: TextStyle(
           fontSize: 20,
           letterSpacing: 0.15,
           color: AppColor.black,
         ),
-        bodyText1: TextStyle(
-          fontSize: 16,
-          letterSpacing: 0.5,
-          color: AppColor.black,
-        ),
-        bodyText2: TextStyle(
-          fontSize: 14,
-          letterSpacing: 0.25,
-          color: AppColor.black,
-        ),
-        subtitle1: TextStyle(
+        titleMedium: TextStyle(
           fontSize: 16,
           letterSpacing: 0.15,
           color: AppColor.black,
         ),
-        subtitle2: TextStyle(
+        titleSmall: TextStyle(
           fontSize: 14,
           letterSpacing: 0.1,
           color: AppColor.black,
         ),
-        button: TextStyle(
-          fontSize: 14,
-          letterSpacing: 0.75,
+        bodyLarge: TextStyle(
+          fontSize: 16,
+          letterSpacing: 0.5,
           color: AppColor.black,
         ),
-        caption: TextStyle(
+        bodyMedium: TextStyle(
+          fontSize: 14,
+          letterSpacing: 0.25,
+          color: AppColor.black,
+        ),
+        bodySmall: TextStyle(
           fontSize: 12,
           letterSpacing: 0.4,
+          color: AppColor.black,
+        ),
+        labelLarge: TextStyle(
+          fontSize: 14,
+          letterSpacing: 0.75,
           color: AppColor.black,
         ),
       ),

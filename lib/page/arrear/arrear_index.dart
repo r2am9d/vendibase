@@ -204,7 +204,7 @@ class _ArrearIndexState extends State<ArrearIndex> {
           children: [
             Text(
               '₱ ${_nf.format(arrear.activeAmount)}',
-              style: theme.textTheme.bodyText1?.copyWith(
+              style: theme.textTheme.bodyLarge?.copyWith(
                 color: AppColor.red,
                 fontWeight: FontWeight.bold,
               ),
@@ -215,7 +215,7 @@ class _ArrearIndexState extends State<ArrearIndex> {
             Expanded(
               child: Text(
                 _due,
-                style: theme.textTheme.bodyText2?.copyWith(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColor.black,
                   fontWeight: FontWeight.bold,
                   overflow: TextOverflow.ellipsis,
@@ -229,13 +229,13 @@ class _ArrearIndexState extends State<ArrearIndex> {
           children: [
             Text(
               arrear.personName,
-              style: theme.textTheme.bodyText1?.copyWith(
+              style: theme.textTheme.bodyLarge?.copyWith(
                 color: AppColor.black.withOpacity(.5),
                 fontWeight: FontWeight.bold,
               ),
             ),
             _sizedBox(height: 8.0),
-            _buildChip(theme, _eic.mapToDart(arrear.status)!)
+            _buildChip(theme, _eic.fromSql(arrear.status))
           ],
         ),
         trailing: Container(
@@ -251,7 +251,7 @@ class _ArrearIndexState extends State<ArrearIndex> {
               _sizedBox(width: 16.0),
               Text(
                 _nf.format(arrear.totalPurchase),
-                style: theme.textTheme.headline5?.copyWith(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   color: AppColor.black,
                   fontWeight: FontWeight.bold,
                 ),
@@ -278,7 +278,7 @@ class _ArrearIndexState extends State<ArrearIndex> {
         backgroundColor: AppColor.white,
         title: Text(
           'Filters',
-          style: theme.textTheme.headline6?.copyWith(
+          style: theme.textTheme.titleLarge?.copyWith(
             color: AppColor.red,
             fontWeight: FontWeight.bold,
           ),
@@ -320,7 +320,7 @@ class _ArrearIndexState extends State<ArrearIndex> {
                           _sizedBox(height: 16.0),
                           FormBuilderDropdown(
                             name: 'status',
-                            allowClear: true,
+                            // allowClear: true,
                             items: [
                               {'id': 0, 'name': 'Unpaid'},
                               {'id': 1, 'name': 'Paid'},
@@ -411,7 +411,7 @@ class _ArrearIndexState extends State<ArrearIndex> {
       ),
       child: Text(
         _text,
-        style: theme.textTheme.bodyText2?.copyWith(
+        style: theme.textTheme.bodyMedium?.copyWith(
           color: _textColor,
         ),
       ),
@@ -425,7 +425,7 @@ class _ArrearIndexState extends State<ArrearIndex> {
     void Function()? onPressed,
   }) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(primary: color),
+      style: ElevatedButton.styleFrom(backgroundColor: color),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

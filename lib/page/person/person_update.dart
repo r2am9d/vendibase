@@ -70,7 +70,7 @@ class _PersonUpdateState extends State<PersonUpdate> {
                 children: [
                   Text(
                     'Details',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),

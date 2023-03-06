@@ -1,3 +1,5 @@
+// ignore_for_file: unused_result
+
 import 'package:flutter/material.dart';
 import 'package:drift_dev/api/migrations.dart';
 import 'package:vendibase/database/app_database.dart';

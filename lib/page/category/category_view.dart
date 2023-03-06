@@ -72,7 +72,7 @@ class _CategoryViewState extends State<CategoryView> {
                     children: [
                       Text(
                         'Name: ${_category.name}',
-                        style: _theme.textTheme.headline6,
+                        style: _theme.textTheme.titleLarge,
                       ),
                       _sizedBox(height: 16.0),
                       Row(
@@ -80,7 +80,7 @@ class _CategoryViewState extends State<CategoryView> {
                         children: [
                           Text(
                             'Sub category:',
-                            style: _theme.textTheme.headline6,
+                            style: _theme.textTheme.titleLarge,
                           ),
                           _elevatedButton(
                             text: 'Create',
@@ -115,7 +115,7 @@ class _CategoryViewState extends State<CategoryView> {
                               return ListTile(
                                 title: Text(
                                   _child.name,
-                                  style: _theme.textTheme.headline6,
+                                  style: _theme.textTheme.titleLarge,
                                 ),
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -275,7 +275,7 @@ class _CategoryViewState extends State<CategoryView> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColor.white,
-        title: Text('$_text sub category', style: theme.textTheme.headline6),
+        title: Text('$_text sub category', style: theme.textTheme.titleLarge),
         content: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: FormBuilder(
@@ -373,7 +373,7 @@ class _CategoryViewState extends State<CategoryView> {
     void Function()? onPressed,
   }) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(primary: color),
+      style: ElevatedButton.styleFrom(backgroundColor: color),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -124,7 +124,7 @@ class _ArrearViewState extends State<ArrearView> {
                         children: [
                           Text(
                             '₱ ${_nf.format(_arrear.activeAmount)}',
-                            style: _theme.textTheme.headline5?.copyWith(
+                            style: _theme.textTheme.headlineSmall?.copyWith(
                               color: AppColor.red,
                               fontWeight: FontWeight.bold,
                             ),
@@ -134,7 +134,7 @@ class _ArrearViewState extends State<ArrearView> {
                           _sizedBox(width: 8.0),
                           Text(
                             _due,
-                            style: _theme.textTheme.headline6?.copyWith(
+                            style: _theme.textTheme.titleLarge?.copyWith(
                               color: AppColor.black,
                               fontWeight: FontWeight.bold,
                             ),
@@ -147,7 +147,7 @@ class _ArrearViewState extends State<ArrearView> {
                         children: [
                           Text(
                             _arrear.personName,
-                            style: _theme.textTheme.headline6?.copyWith(
+                            style: _theme.textTheme.titleLarge?.copyWith(
                               color: AppColor.black.withOpacity(.5),
                               fontWeight: FontWeight.bold,
                             ),
@@ -303,7 +303,7 @@ class _ArrearViewState extends State<ArrearView> {
           ArrearsCompanion(
             id: d.Value(arrear.id),
             personId: d.Value(arrear.personId),
-            status: d.Value(eic.mapToDart(_status)!),
+            status: d.Value(eic.fromSql(_status)),
             amount: d.Value(arrear.amount),
             due: d.Value(arrear.due),
             remarks: d.Value(arrear.remarks),
@@ -364,7 +364,7 @@ class _ArrearViewState extends State<ArrearView> {
               ),
               header: Text(
                 'Purchase',
-                style: theme.textTheme.bodyText1?.copyWith(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: AppColor.red,
                 ),
               ),
@@ -384,11 +384,11 @@ class _ArrearViewState extends State<ArrearView> {
                 ),
                 title: Text(
                   '${_nf.format(arrear.totalPurchase)} product/s',
-                  style: theme.textTheme.bodyText1,
+                  style: theme.textTheme.bodyLarge,
                 ),
                 subtitle: Text(
                   '₱ ${_nf.format(arrear.totalPurchaseAmount)}',
-                  style: theme.textTheme.bodyText2,
+                  style: theme.textTheme.bodyMedium,
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -435,11 +435,11 @@ class _ArrearViewState extends State<ArrearView> {
                       ),
                       title: Text(
                         _arrearPurchase.productName,
-                        style: theme.textTheme.bodyText1,
+                        style: theme.textTheme.bodyLarge,
                       ),
                       subtitle: Text(
                         '₱ ${_nf.format(_arrearPurchase.productPrice)} • ${_nf.format(_arrearPurchase.quantity)} pc/s • ${_df.format(_arrearPurchase.dateCreated)}',
-                        style: theme.textTheme.bodyText2,
+                        style: theme.textTheme.bodyMedium,
                       ),
                     );
                   },
@@ -468,7 +468,7 @@ class _ArrearViewState extends State<ArrearView> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColor.white,
-        title: Text("Create purchase", style: theme.textTheme.headline6),
+        title: Text("Create purchase", style: theme.textTheme.titleLarge),
         content: Scrollbar(
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -483,7 +483,7 @@ class _ArrearViewState extends State<ArrearView> {
                     _sizedBox(height: 16.0),
                     FormBuilderSearchableDropdown<DropdownMenuItem>(
                       name: 'productId',
-                      showClearButton: true,
+                      clearButtonProps: ClearButtonProps(isVisible: true),
                       compareFn: (item, selectedItem) =>
                           item.value == selectedItem.value,
                       popupProps: PopupProps.modalBottomSheet(
@@ -535,6 +535,7 @@ class _ArrearViewState extends State<ArrearView> {
                         final _text = menuItem.child as Text;
                         return _text.data.toString();
                       },
+                      dropdownSearchTextStyle: TextStyle(color: AppColor.black),
                       dropdownSearchDecoration: InputDecoration(
                         contentPadding:
                             const EdgeInsets.only(left: 16, bottom: 8),
@@ -554,6 +555,7 @@ class _ArrearViewState extends State<ArrearView> {
                     _sizedBox(height: 16.0),
                     FormBuilderTextField(
                       name: 'quantity',
+                      keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
                       decoration: _inputDecoration('Quantity'),
                       validator: FormBuilderValidators.compose([
@@ -599,6 +601,7 @@ class _ArrearViewState extends State<ArrearView> {
                     Divider(height: 64.0),
                     FormBuilderTextField(
                       name: 'amount',
+                      keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.done,
                       decoration: _inputDecoration('Amount', true),
                       validator: FormBuilderValidators.compose([
@@ -663,7 +666,7 @@ class _ArrearViewState extends State<ArrearView> {
                     ArrearsCompanion(
                       id: d.Value(arrear.id),
                       personId: d.Value(arrear.personId),
-                      status: d.Value(_eic.mapToDart(arrear.status)!),
+                      status: d.Value(_eic.fromSql(arrear.status)),
                       amount: d.Value(arrear.amount + double.parse(_amount)),
                       due: d.Value(arrear.due),
                       remarks: d.Value(arrear.remarks),
@@ -705,7 +708,7 @@ class _ArrearViewState extends State<ArrearView> {
               ),
               header: Text(
                 'Payment',
-                style: theme.textTheme.bodyText1?.copyWith(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: AppColor.red,
                 ),
               ),
@@ -725,11 +728,11 @@ class _ArrearViewState extends State<ArrearView> {
                 ),
                 title: Text(
                   '${_nf.format(arrear.totalPayment)} payment/s',
-                  style: theme.textTheme.bodyText1,
+                  style: theme.textTheme.bodyLarge,
                 ),
                 subtitle: Text(
                   '₱ ${_nf.format(arrear.totalPaymentAmount)}',
-                  style: theme.textTheme.bodyText2,
+                  style: theme.textTheme.bodyMedium,
                 ),
                 trailing: arrear.activeAmount <= 0
                     ? _sizedBox()
@@ -776,11 +779,11 @@ class _ArrearViewState extends State<ArrearView> {
                       ),
                       title: Text(
                         '₱ ${_nf.format(_arrearPayment.amount)}',
-                        style: theme.textTheme.bodyText1,
+                        style: theme.textTheme.bodyLarge,
                       ),
                       subtitle: Text(
                         'on ${_df.format(_arrearPayment.dateCreated)}',
-                        style: theme.textTheme.bodyText2,
+                        style: theme.textTheme.bodyMedium,
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -832,7 +835,7 @@ class _ArrearViewState extends State<ArrearView> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColor.white,
-        title: Text("$_text payment", style: theme.textTheme.headline6),
+        title: Text("$_text payment", style: theme.textTheme.titleLarge),
         content: Scrollbar(
           child: SingleChildScrollView(
             child: SizedBox(
@@ -846,6 +849,7 @@ class _ArrearViewState extends State<ArrearView> {
                     _sizedBox(height: 16.0),
                     FormBuilderTextField(
                       name: 'amount',
+                      keyboardType: TextInputType.number,
                       initialValue: _amt.toString(),
                       textInputAction: TextInputAction.next,
                       decoration: _inputDecoration('Amount', true),
@@ -1020,7 +1024,7 @@ class _ArrearViewState extends State<ArrearView> {
     void Function()? onPressed,
   }) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(primary: color),
+      style: ElevatedButton.styleFrom(backgroundColor: color),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -114,11 +114,11 @@ class _UnitIndexState extends State<UnitIndex> {
         },
         title: Text(
           unit.name,
-          style: theme.textTheme.bodyText1,
+          style: theme.textTheme.bodyLarge,
         ),
         subtitle: Text(
           '${unit.amount.toString()} pc/s',
-          style: theme.textTheme.bodyText2,
+          style: theme.textTheme.bodyMedium,
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,

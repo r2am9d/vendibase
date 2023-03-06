@@ -2,41 +2,116 @@
 
 part of 'app_database.dart';
 
-// **************************************************************************
-// MoorGenerator
-// **************************************************************************
-
 // ignore_for_file: type=lint
+class $CategoriesTable extends Categories
+    with TableInfo<$CategoriesTable, Category> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CategoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _parentIdMeta =
+      const VerificationMeta('parentId');
+  @override
+  late final GeneratedColumn<int> parentId = GeneratedColumn<int>(
+      'parent_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NULL REFERENCES categories (id) ON DELETE CASCADE');
+  static const VerificationMeta _dateCreatedMeta =
+      const VerificationMeta('dateCreated');
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns => [id, name, parentId, dateCreated];
+  @override
+  String get aliasedName => _alias ?? 'categories';
+  @override
+  String get actualTableName => 'categories';
+  @override
+  VerificationContext validateIntegrity(Insertable<Category> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('parent_id')) {
+      context.handle(_parentIdMeta,
+          parentId.isAcceptableOrUnknown(data['parent_id']!, _parentIdMeta));
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+          _dateCreatedMeta,
+          dateCreated.isAcceptableOrUnknown(
+              data['date_created']!, _dateCreatedMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Category map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Category(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      parentId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}parent_id']),
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+    );
+  }
+
+  @override
+  $CategoriesTable createAlias(String alias) {
+    return $CategoriesTable(attachedDatabase, alias);
+  }
+}
+
 class Category extends DataClass implements Insertable<Category> {
   final int id;
   final String name;
   final int? parentId;
   final DateTime dateCreated;
-  Category(
+  const Category(
       {required this.id,
       required this.name,
       this.parentId,
       required this.dateCreated});
-  factory Category.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Category(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      parentId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}parent_id']),
-      dateCreated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || parentId != null) {
-      map['parent_id'] = Variable<int?>(parentId);
+      map['parent_id'] = Variable<int>(parentId);
     }
     map['date_created'] = Variable<DateTime>(dateCreated);
     return map;
@@ -75,11 +150,14 @@ class Category extends DataClass implements Insertable<Category> {
   }
 
   Category copyWith(
-          {int? id, String? name, int? parentId, DateTime? dateCreated}) =>
+          {int? id,
+          String? name,
+          Value<int?> parentId = const Value.absent(),
+          DateTime? dateCreated}) =>
       Category(
         id: id ?? this.id,
         name: name ?? this.name,
-        parentId: parentId ?? this.parentId,
+        parentId: parentId.present ? parentId.value : this.parentId,
         dateCreated: dateCreated ?? this.dateCreated,
       );
   @override
@@ -125,7 +203,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   static Insertable<Category> custom({
     Expression<int>? id,
     Expression<String>? name,
-    Expression<int?>? parentId,
+    Expression<int>? parentId,
     Expression<DateTime>? dateCreated,
   }) {
     return RawValuesInsertable({
@@ -159,7 +237,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
       map['name'] = Variable<String>(name.value);
     }
     if (parentId.present) {
-      map['parent_id'] = Variable<int?>(parentId.value);
+      map['parent_id'] = Variable<int>(parentId.value);
     }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
@@ -179,47 +257,46 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   }
 }
 
-class $CategoriesTable extends Categories
-    with TableInfo<$CategoriesTable, Category> {
+class $UnitsTable extends Units with TableInfo<$UnitsTable, Unit> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $CategoriesTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $UnitsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _parentIdMeta = const VerificationMeta('parentId');
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<int?> parentId = GeneratedColumn<int?>(
-      'parent_id', aliasedName, true,
-      type: const IntType(),
-      requiredDuringInsert: false,
-      $customConstraints: 'NULL REFERENCES categories (id) ON DELETE CASCADE');
-  final VerificationMeta _dateCreatedMeta =
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
+      'amount', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
-  late final GeneratedColumn<DateTime?> dateCreated =
-      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
-  List<GeneratedColumn> get $columns => [id, name, parentId, dateCreated];
+  List<GeneratedColumn> get $columns => [id, name, amount, dateCreated];
   @override
-  String get aliasedName => _alias ?? 'categories';
+  String get aliasedName => _alias ?? 'units';
   @override
-  String get actualTableName => 'categories';
+  String get actualTableName => 'units';
   @override
-  VerificationContext validateIntegrity(Insertable<Category> instance,
+  VerificationContext validateIntegrity(Insertable<Unit> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -232,9 +309,11 @@ class $CategoriesTable extends Categories
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('parent_id')) {
-      context.handle(_parentIdMeta,
-          parentId.isAcceptableOrUnknown(data['parent_id']!, _parentIdMeta));
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
     }
     if (data.containsKey('date_created')) {
       context.handle(
@@ -248,14 +327,23 @@ class $CategoriesTable extends Categories
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Category map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Category.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Unit map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Unit(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}amount'])!,
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+    );
   }
 
   @override
-  $CategoriesTable createAlias(String alias) {
-    return $CategoriesTable(attachedDatabase, alias);
+  $UnitsTable createAlias(String alias) {
+    return $UnitsTable(attachedDatabase, alias);
   }
 }
 
@@ -264,24 +352,11 @@ class Unit extends DataClass implements Insertable<Unit> {
   final String name;
   final int amount;
   final DateTime dateCreated;
-  Unit(
+  const Unit(
       {required this.id,
       required this.name,
       required this.amount,
       required this.dateCreated});
-  factory Unit.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Unit(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      amount: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
-      dateCreated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -427,44 +502,59 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
   }
 }
 
-class $UnitsTable extends Units with TableInfo<$UnitsTable, Unit> {
+class $PersonsTable extends Persons with TableInfo<$PersonsTable, Person> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $UnitsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $PersonsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _amountMeta = const VerificationMeta('amount');
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _photoMeta = const VerificationMeta('photo');
   @override
-  late final GeneratedColumn<int?> amount = GeneratedColumn<int?>(
-      'amount', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _dateCreatedMeta =
+  late final GeneratedColumn<String> photo = GeneratedColumn<String>(
+      'photo', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _contactNoMeta =
+      const VerificationMeta('contactNo');
+  @override
+  late final GeneratedColumn<String> contactNo = GeneratedColumn<String>(
+      'contact_no', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _remarksMeta =
+      const VerificationMeta('remarks');
+  @override
+  late final GeneratedColumn<String> remarks = GeneratedColumn<String>(
+      'remarks', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
-  late final GeneratedColumn<DateTime?> dateCreated =
-      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
-  List<GeneratedColumn> get $columns => [id, name, amount, dateCreated];
+  List<GeneratedColumn> get $columns =>
+      [id, name, photo, contactNo, remarks, dateCreated];
   @override
-  String get aliasedName => _alias ?? 'units';
+  String get aliasedName => _alias ?? 'persons';
   @override
-  String get actualTableName => 'units';
+  String get actualTableName => 'persons';
   @override
-  VerificationContext validateIntegrity(Insertable<Unit> instance,
+  VerificationContext validateIntegrity(Insertable<Person> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -477,11 +567,19 @@ class $UnitsTable extends Units with TableInfo<$UnitsTable, Unit> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('amount')) {
-      context.handle(_amountMeta,
-          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    if (data.containsKey('photo')) {
+      context.handle(
+          _photoMeta, photo.isAcceptableOrUnknown(data['photo']!, _photoMeta));
     } else if (isInserting) {
-      context.missing(_amountMeta);
+      context.missing(_photoMeta);
+    }
+    if (data.containsKey('contact_no')) {
+      context.handle(_contactNoMeta,
+          contactNo.isAcceptableOrUnknown(data['contact_no']!, _contactNoMeta));
+    }
+    if (data.containsKey('remarks')) {
+      context.handle(_remarksMeta,
+          remarks.isAcceptableOrUnknown(data['remarks']!, _remarksMeta));
     }
     if (data.containsKey('date_created')) {
       context.handle(
@@ -495,14 +593,27 @@ class $UnitsTable extends Units with TableInfo<$UnitsTable, Unit> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Unit map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Unit.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Person map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Person(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      photo: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}photo'])!,
+      contactNo: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}contact_no']),
+      remarks: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}remarks']),
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+    );
   }
 
   @override
-  $UnitsTable createAlias(String alias) {
-    return $UnitsTable(attachedDatabase, alias);
+  $PersonsTable createAlias(String alias) {
+    return $PersonsTable(attachedDatabase, alias);
   }
 }
 
@@ -513,30 +624,13 @@ class Person extends DataClass implements Insertable<Person> {
   final String? contactNo;
   final String? remarks;
   final DateTime dateCreated;
-  Person(
+  const Person(
       {required this.id,
       required this.name,
       required this.photo,
       this.contactNo,
       this.remarks,
       required this.dateCreated});
-  factory Person.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Person(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      photo: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}photo'])!,
-      contactNo: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}contact_no']),
-      remarks: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}remarks']),
-      dateCreated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -544,10 +638,10 @@ class Person extends DataClass implements Insertable<Person> {
     map['name'] = Variable<String>(name);
     map['photo'] = Variable<String>(photo);
     if (!nullToAbsent || contactNo != null) {
-      map['contact_no'] = Variable<String?>(contactNo);
+      map['contact_no'] = Variable<String>(contactNo);
     }
     if (!nullToAbsent || remarks != null) {
-      map['remarks'] = Variable<String?>(remarks);
+      map['remarks'] = Variable<String>(remarks);
     }
     map['date_created'] = Variable<DateTime>(dateCreated);
     return map;
@@ -597,15 +691,15 @@ class Person extends DataClass implements Insertable<Person> {
           {int? id,
           String? name,
           String? photo,
-          String? contactNo,
-          String? remarks,
+          Value<String?> contactNo = const Value.absent(),
+          Value<String?> remarks = const Value.absent(),
           DateTime? dateCreated}) =>
       Person(
         id: id ?? this.id,
         name: name ?? this.name,
         photo: photo ?? this.photo,
-        contactNo: contactNo ?? this.contactNo,
-        remarks: remarks ?? this.remarks,
+        contactNo: contactNo.present ? contactNo.value : this.contactNo,
+        remarks: remarks.present ? remarks.value : this.remarks,
         dateCreated: dateCreated ?? this.dateCreated,
       );
   @override
@@ -664,8 +758,8 @@ class PersonsCompanion extends UpdateCompanion<Person> {
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? photo,
-    Expression<String?>? contactNo,
-    Expression<String?>? remarks,
+    Expression<String>? contactNo,
+    Expression<String>? remarks,
     Expression<DateTime>? dateCreated,
   }) {
     return RawValuesInsertable({
@@ -708,10 +802,10 @@ class PersonsCompanion extends UpdateCompanion<Person> {
       map['photo'] = Variable<String>(photo.value);
     }
     if (contactNo.present) {
-      map['contact_no'] = Variable<String?>(contactNo.value);
+      map['contact_no'] = Variable<String>(contactNo.value);
     }
     if (remarks.present) {
-      map['remarks'] = Variable<String?>(remarks.value);
+      map['remarks'] = Variable<String>(remarks.value);
     }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
@@ -733,66 +827,96 @@ class PersonsCompanion extends UpdateCompanion<Person> {
   }
 }
 
-class $PersonsTable extends Persons with TableInfo<$PersonsTable, Person> {
+class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $PersonsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $ProductsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _categoryIdMeta =
+      const VerificationMeta('categoryId');
   @override
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
-      'name', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _photoMeta = const VerificationMeta('photo');
+  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
+      'category_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NULL REFERENCES categories (id) ON DELETE CASCADE');
+  static const VerificationMeta _unitIdMeta = const VerificationMeta('unitId');
   @override
-  late final GeneratedColumn<String?> photo = GeneratedColumn<String?>(
+  late final GeneratedColumn<int> unitId = GeneratedColumn<int>(
+      'unit_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NULL REFERENCES units (id) ON DELETE CASCADE');
+  static const VerificationMeta _photoMeta = const VerificationMeta('photo');
+  @override
+  late final GeneratedColumn<String> photo = GeneratedColumn<String>(
       'photo', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _contactNoMeta = const VerificationMeta('contactNo');
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
-  late final GeneratedColumn<String?> contactNo = GeneratedColumn<String?>(
-      'contact_no', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  final VerificationMeta _remarksMeta = const VerificationMeta('remarks');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _remarksMeta =
+      const VerificationMeta('remarks');
   @override
-  late final GeneratedColumn<String?> remarks = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> remarks = GeneratedColumn<String>(
       'remarks', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  final VerificationMeta _dateCreatedMeta =
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _isFavoriteMeta =
+      const VerificationMeta('isFavorite');
+  @override
+  late final GeneratedColumn<bool> isFavorite =
+      GeneratedColumn<bool>('is_favorite', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("is_favorite" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
+  static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
-  late final GeneratedColumn<DateTime?> dateCreated =
-      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, photo, contactNo, remarks, dateCreated];
+      [id, categoryId, unitId, photo, name, remarks, isFavorite, dateCreated];
   @override
-  String get aliasedName => _alias ?? 'persons';
+  String get aliasedName => _alias ?? 'products';
   @override
-  String get actualTableName => 'persons';
+  String get actualTableName => 'products';
   @override
-  VerificationContext validateIntegrity(Insertable<Person> instance,
+  VerificationContext validateIntegrity(Insertable<Product> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('name')) {
+    if (data.containsKey('category_id')) {
       context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
+          _categoryIdMeta,
+          categoryId.isAcceptableOrUnknown(
+              data['category_id']!, _categoryIdMeta));
+    }
+    if (data.containsKey('unit_id')) {
+      context.handle(_unitIdMeta,
+          unitId.isAcceptableOrUnknown(data['unit_id']!, _unitIdMeta));
     }
     if (data.containsKey('photo')) {
       context.handle(
@@ -800,13 +924,21 @@ class $PersonsTable extends Persons with TableInfo<$PersonsTable, Person> {
     } else if (isInserting) {
       context.missing(_photoMeta);
     }
-    if (data.containsKey('contact_no')) {
-      context.handle(_contactNoMeta,
-          contactNo.isAcceptableOrUnknown(data['contact_no']!, _contactNoMeta));
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
     }
     if (data.containsKey('remarks')) {
       context.handle(_remarksMeta,
           remarks.isAcceptableOrUnknown(data['remarks']!, _remarksMeta));
+    }
+    if (data.containsKey('is_favorite')) {
+      context.handle(
+          _isFavoriteMeta,
+          isFavorite.isAcceptableOrUnknown(
+              data['is_favorite']!, _isFavoriteMeta));
     }
     if (data.containsKey('date_created')) {
       context.handle(
@@ -820,14 +952,31 @@ class $PersonsTable extends Persons with TableInfo<$PersonsTable, Person> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Person map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Person.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Product map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Product(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      categoryId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}category_id']),
+      unitId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}unit_id']),
+      photo: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}photo'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      remarks: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}remarks']),
+      isFavorite: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_favorite'])!,
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+    );
   }
 
   @override
-  $PersonsTable createAlias(String alias) {
-    return $PersonsTable(attachedDatabase, alias);
+  $ProductsTable createAlias(String alias) {
+    return $ProductsTable(attachedDatabase, alias);
   }
 }
 
@@ -840,7 +989,7 @@ class Product extends DataClass implements Insertable<Product> {
   final String? remarks;
   final bool isFavorite;
   final DateTime dateCreated;
-  Product(
+  const Product(
       {required this.id,
       this.categoryId,
       this.unitId,
@@ -849,41 +998,20 @@ class Product extends DataClass implements Insertable<Product> {
       this.remarks,
       required this.isFavorite,
       required this.dateCreated});
-  factory Product.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Product(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      categoryId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}category_id']),
-      unitId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}unit_id']),
-      photo: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}photo'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      remarks: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}remarks']),
-      isFavorite: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_favorite'])!,
-      dateCreated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     if (!nullToAbsent || categoryId != null) {
-      map['category_id'] = Variable<int?>(categoryId);
+      map['category_id'] = Variable<int>(categoryId);
     }
     if (!nullToAbsent || unitId != null) {
-      map['unit_id'] = Variable<int?>(unitId);
+      map['unit_id'] = Variable<int>(unitId);
     }
     map['photo'] = Variable<String>(photo);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || remarks != null) {
-      map['remarks'] = Variable<String?>(remarks);
+      map['remarks'] = Variable<String>(remarks);
     }
     map['is_favorite'] = Variable<bool>(isFavorite);
     map['date_created'] = Variable<DateTime>(dateCreated);
@@ -939,20 +1067,20 @@ class Product extends DataClass implements Insertable<Product> {
 
   Product copyWith(
           {int? id,
-          int? categoryId,
-          int? unitId,
+          Value<int?> categoryId = const Value.absent(),
+          Value<int?> unitId = const Value.absent(),
           String? photo,
           String? name,
-          String? remarks,
+          Value<String?> remarks = const Value.absent(),
           bool? isFavorite,
           DateTime? dateCreated}) =>
       Product(
         id: id ?? this.id,
-        categoryId: categoryId ?? this.categoryId,
-        unitId: unitId ?? this.unitId,
+        categoryId: categoryId.present ? categoryId.value : this.categoryId,
+        unitId: unitId.present ? unitId.value : this.unitId,
         photo: photo ?? this.photo,
         name: name ?? this.name,
-        remarks: remarks ?? this.remarks,
+        remarks: remarks.present ? remarks.value : this.remarks,
         isFavorite: isFavorite ?? this.isFavorite,
         dateCreated: dateCreated ?? this.dateCreated,
       );
@@ -1020,11 +1148,11 @@ class ProductsCompanion extends UpdateCompanion<Product> {
         name = Value(name);
   static Insertable<Product> custom({
     Expression<int>? id,
-    Expression<int?>? categoryId,
-    Expression<int?>? unitId,
+    Expression<int>? categoryId,
+    Expression<int>? unitId,
     Expression<String>? photo,
     Expression<String>? name,
-    Expression<String?>? remarks,
+    Expression<String>? remarks,
     Expression<bool>? isFavorite,
     Expression<DateTime>? dateCreated,
   }) {
@@ -1068,10 +1196,10 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       map['id'] = Variable<int>(id.value);
     }
     if (categoryId.present) {
-      map['category_id'] = Variable<int?>(categoryId.value);
+      map['category_id'] = Variable<int>(categoryId.value);
     }
     if (unitId.present) {
-      map['unit_id'] = Variable<int?>(unitId.value);
+      map['unit_id'] = Variable<int>(unitId.value);
     }
     if (photo.present) {
       map['photo'] = Variable<String>(photo.value);
@@ -1080,7 +1208,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       map['name'] = Variable<String>(name.value);
     }
     if (remarks.present) {
-      map['remarks'] = Variable<String?>(remarks.value);
+      map['remarks'] = Variable<String>(remarks.value);
     }
     if (isFavorite.present) {
       map['is_favorite'] = Variable<bool>(isFavorite.value);
@@ -1107,109 +1235,81 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   }
 }
 
-class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
+class $ProductPurchasesTable extends ProductPurchases
+    with TableInfo<$ProductPurchasesTable, ProductPurchase> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ProductsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $ProductPurchasesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _categoryIdMeta = const VerificationMeta('categoryId');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _productIdMeta =
+      const VerificationMeta('productId');
   @override
-  late final GeneratedColumn<int?> categoryId = GeneratedColumn<int?>(
-      'category_id', aliasedName, true,
-      type: const IntType(),
-      requiredDuringInsert: false,
-      $customConstraints: 'NULL REFERENCES categories (id) ON DELETE CASCADE');
-  final VerificationMeta _unitIdMeta = const VerificationMeta('unitId');
+  late final GeneratedColumn<int> productId = GeneratedColumn<int>(
+      'product_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints:
+          'NOT NULL REFERENCES products (id) ON DELETE CASCADE');
+  static const VerificationMeta _costMeta = const VerificationMeta('cost');
   @override
-  late final GeneratedColumn<int?> unitId = GeneratedColumn<int?>(
-      'unit_id', aliasedName, true,
-      type: const IntType(),
-      requiredDuringInsert: false,
-      $customConstraints: 'NULL REFERENCES units (id) ON DELETE CASCADE');
-  final VerificationMeta _photoMeta = const VerificationMeta('photo');
+  late final GeneratedColumn<double> cost = GeneratedColumn<double>(
+      'cost', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _quantityMeta =
+      const VerificationMeta('quantity');
   @override
-  late final GeneratedColumn<String?> photo = GeneratedColumn<String?>(
-      'photo', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
-      'name', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _remarksMeta = const VerificationMeta('remarks');
-  @override
-  late final GeneratedColumn<String?> remarks = GeneratedColumn<String?>(
-      'remarks', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  final VerificationMeta _isFavoriteMeta = const VerificationMeta('isFavorite');
-  @override
-  late final GeneratedColumn<bool?> isFavorite = GeneratedColumn<bool?>(
-      'is_favorite', aliasedName, false,
-      type: const BoolType(),
-      requiredDuringInsert: false,
-      defaultConstraints: 'CHECK (is_favorite IN (0, 1))',
-      defaultValue: const Constant(false));
-  final VerificationMeta _dateCreatedMeta =
+  late final GeneratedColumn<int> quantity = GeneratedColumn<int>(
+      'quantity', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
-  late final GeneratedColumn<DateTime?> dateCreated =
-      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, categoryId, unitId, photo, name, remarks, isFavorite, dateCreated];
+      [id, productId, cost, quantity, dateCreated];
   @override
-  String get aliasedName => _alias ?? 'products';
+  String get aliasedName => _alias ?? 'product_purchases';
   @override
-  String get actualTableName => 'products';
+  String get actualTableName => 'product_purchases';
   @override
-  VerificationContext validateIntegrity(Insertable<Product> instance,
+  VerificationContext validateIntegrity(Insertable<ProductPurchase> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('category_id')) {
-      context.handle(
-          _categoryIdMeta,
-          categoryId.isAcceptableOrUnknown(
-              data['category_id']!, _categoryIdMeta));
-    }
-    if (data.containsKey('unit_id')) {
-      context.handle(_unitIdMeta,
-          unitId.isAcceptableOrUnknown(data['unit_id']!, _unitIdMeta));
-    }
-    if (data.containsKey('photo')) {
-      context.handle(
-          _photoMeta, photo.isAcceptableOrUnknown(data['photo']!, _photoMeta));
+    if (data.containsKey('product_id')) {
+      context.handle(_productIdMeta,
+          productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta));
     } else if (isInserting) {
-      context.missing(_photoMeta);
+      context.missing(_productIdMeta);
     }
-    if (data.containsKey('name')) {
+    if (data.containsKey('cost')) {
       context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+          _costMeta, cost.isAcceptableOrUnknown(data['cost']!, _costMeta));
     } else if (isInserting) {
-      context.missing(_nameMeta);
+      context.missing(_costMeta);
     }
-    if (data.containsKey('remarks')) {
-      context.handle(_remarksMeta,
-          remarks.isAcceptableOrUnknown(data['remarks']!, _remarksMeta));
-    }
-    if (data.containsKey('is_favorite')) {
-      context.handle(
-          _isFavoriteMeta,
-          isFavorite.isAcceptableOrUnknown(
-              data['is_favorite']!, _isFavoriteMeta));
+    if (data.containsKey('quantity')) {
+      context.handle(_quantityMeta,
+          quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta));
+    } else if (isInserting) {
+      context.missing(_quantityMeta);
     }
     if (data.containsKey('date_created')) {
       context.handle(
@@ -1223,14 +1323,25 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Product map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Product.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  ProductPurchase map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProductPurchase(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      productId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}product_id'])!,
+      cost: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}cost'])!,
+      quantity: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}quantity'])!,
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+    );
   }
 
   @override
-  $ProductsTable createAlias(String alias) {
-    return $ProductsTable(attachedDatabase, alias);
+  $ProductPurchasesTable createAlias(String alias) {
+    return $ProductPurchasesTable(attachedDatabase, alias);
   }
 }
 
@@ -1240,28 +1351,12 @@ class ProductPurchase extends DataClass implements Insertable<ProductPurchase> {
   final double cost;
   final int quantity;
   final DateTime dateCreated;
-  ProductPurchase(
+  const ProductPurchase(
       {required this.id,
       required this.productId,
       required this.cost,
       required this.quantity,
       required this.dateCreated});
-  factory ProductPurchase.fromData(Map<String, dynamic> data,
-      {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return ProductPurchase(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      productId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}product_id'])!,
-      cost: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}cost'])!,
-      quantity: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}quantity'])!,
-      dateCreated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1431,54 +1526,65 @@ class ProductPurchasesCompanion extends UpdateCompanion<ProductPurchase> {
   }
 }
 
-class $ProductPurchasesTable extends ProductPurchases
-    with TableInfo<$ProductPurchasesTable, ProductPurchase> {
+class $ProductPricesTable extends ProductPrices
+    with TableInfo<$ProductPricesTable, ProductPrice> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ProductPurchasesTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $ProductPricesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _productIdMeta = const VerificationMeta('productId');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _productIdMeta =
+      const VerificationMeta('productId');
   @override
-  late final GeneratedColumn<int?> productId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> productId = GeneratedColumn<int>(
       'product_id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints:
           'NOT NULL REFERENCES products (id) ON DELETE CASCADE');
-  final VerificationMeta _costMeta = const VerificationMeta('cost');
+  static const VerificationMeta _retailMeta = const VerificationMeta('retail');
   @override
-  late final GeneratedColumn<double?> cost = GeneratedColumn<double?>(
-      'cost', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _quantityMeta = const VerificationMeta('quantity');
+  late final GeneratedColumn<double> retail = GeneratedColumn<double>(
+      'retail', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _isActiveMeta =
+      const VerificationMeta('isActive');
   @override
-  late final GeneratedColumn<int?> quantity = GeneratedColumn<int?>(
-      'quantity', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _dateCreatedMeta =
+  late final GeneratedColumn<bool> isActive =
+      GeneratedColumn<bool>('is_active', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("is_active" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(true));
+  static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
-  late final GeneratedColumn<DateTime?> dateCreated =
-      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, productId, cost, quantity, dateCreated];
+      [id, productId, retail, isActive, dateCreated];
   @override
-  String get aliasedName => _alias ?? 'product_purchases';
+  String get aliasedName => _alias ?? 'product_prices';
   @override
-  String get actualTableName => 'product_purchases';
+  String get actualTableName => 'product_prices';
   @override
-  VerificationContext validateIntegrity(Insertable<ProductPurchase> instance,
+  VerificationContext validateIntegrity(Insertable<ProductPrice> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1491,17 +1597,15 @@ class $ProductPurchasesTable extends ProductPurchases
     } else if (isInserting) {
       context.missing(_productIdMeta);
     }
-    if (data.containsKey('cost')) {
-      context.handle(
-          _costMeta, cost.isAcceptableOrUnknown(data['cost']!, _costMeta));
+    if (data.containsKey('retail')) {
+      context.handle(_retailMeta,
+          retail.isAcceptableOrUnknown(data['retail']!, _retailMeta));
     } else if (isInserting) {
-      context.missing(_costMeta);
+      context.missing(_retailMeta);
     }
-    if (data.containsKey('quantity')) {
-      context.handle(_quantityMeta,
-          quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta));
-    } else if (isInserting) {
-      context.missing(_quantityMeta);
+    if (data.containsKey('is_active')) {
+      context.handle(_isActiveMeta,
+          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
     }
     if (data.containsKey('date_created')) {
       context.handle(
@@ -1515,14 +1619,25 @@ class $ProductPurchasesTable extends ProductPurchases
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ProductPurchase map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return ProductPurchase.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  ProductPrice map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProductPrice(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      productId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}product_id'])!,
+      retail: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}retail'])!,
+      isActive: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+    );
   }
 
   @override
-  $ProductPurchasesTable createAlias(String alias) {
-    return $ProductPurchasesTable(attachedDatabase, alias);
+  $ProductPricesTable createAlias(String alias) {
+    return $ProductPricesTable(attachedDatabase, alias);
   }
 }
 
@@ -1532,27 +1647,12 @@ class ProductPrice extends DataClass implements Insertable<ProductPrice> {
   final double retail;
   final bool isActive;
   final DateTime dateCreated;
-  ProductPrice(
+  const ProductPrice(
       {required this.id,
       required this.productId,
       required this.retail,
       required this.isActive,
       required this.dateCreated});
-  factory ProductPrice.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return ProductPrice(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      productId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}product_id'])!,
-      retail: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}retail'])!,
-      isActive: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_active'])!,
-      dateCreated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1721,78 +1821,105 @@ class ProductPricesCompanion extends UpdateCompanion<ProductPrice> {
   }
 }
 
-class $ProductPricesTable extends ProductPrices
-    with TableInfo<$ProductPricesTable, ProductPrice> {
+class $ArrearsTable extends Arrears with TableInfo<$ArrearsTable, Arrear> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ProductPricesTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $ArrearsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _productIdMeta = const VerificationMeta('productId');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _personIdMeta =
+      const VerificationMeta('personId');
   @override
-  late final GeneratedColumn<int?> productId = GeneratedColumn<int?>(
-      'product_id', aliasedName, false,
-      type: const IntType(),
+  late final GeneratedColumn<int> personId = GeneratedColumn<int>(
+      'person_id', aliasedName, false,
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
-      $customConstraints:
-          'NOT NULL REFERENCES products (id) ON DELETE CASCADE');
-  final VerificationMeta _retailMeta = const VerificationMeta('retail');
+      $customConstraints: 'NOT NULL REFERENCES persons (id) ON DELETE CASCADE');
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  late final GeneratedColumn<double?> retail = GeneratedColumn<double?>(
-      'retail', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _isActiveMeta = const VerificationMeta('isActive');
+  late final GeneratedColumnWithTypeConverter<Status, int> status =
+      GeneratedColumn<int>('status', aliasedName, false,
+              type: DriftSqlType.int, requiredDuringInsert: true)
+          .withConverter<Status>($ArrearsTable.$converterstatus);
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<bool?> isActive = GeneratedColumn<bool?>(
-      'is_active', aliasedName, false,
-      type: const BoolType(),
-      requiredDuringInsert: false,
-      defaultConstraints: 'CHECK (is_active IN (0, 1))',
-      defaultValue: const Constant(true));
-  final VerificationMeta _dateCreatedMeta =
+  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
+      'amount', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _dueMeta = const VerificationMeta('due');
+  @override
+  late final GeneratedColumn<DateTime> due = GeneratedColumn<DateTime>(
+      'due', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _notificationIdMeta =
+      const VerificationMeta('notificationId');
+  @override
+  late final GeneratedColumn<int> notificationId = GeneratedColumn<int>(
+      'notification_id', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _remarksMeta =
+      const VerificationMeta('remarks');
+  @override
+  late final GeneratedColumn<String> remarks = GeneratedColumn<String>(
+      'remarks', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
-  late final GeneratedColumn<DateTime?> dateCreated =
-      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, productId, retail, isActive, dateCreated];
+      [id, personId, status, amount, due, notificationId, remarks, dateCreated];
   @override
-  String get aliasedName => _alias ?? 'product_prices';
+  String get aliasedName => _alias ?? 'arrears';
   @override
-  String get actualTableName => 'product_prices';
+  String get actualTableName => 'arrears';
   @override
-  VerificationContext validateIntegrity(Insertable<ProductPrice> instance,
+  VerificationContext validateIntegrity(Insertable<Arrear> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('product_id')) {
-      context.handle(_productIdMeta,
-          productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta));
+    if (data.containsKey('person_id')) {
+      context.handle(_personIdMeta,
+          personId.isAcceptableOrUnknown(data['person_id']!, _personIdMeta));
     } else if (isInserting) {
-      context.missing(_productIdMeta);
+      context.missing(_personIdMeta);
     }
-    if (data.containsKey('retail')) {
-      context.handle(_retailMeta,
-          retail.isAcceptableOrUnknown(data['retail']!, _retailMeta));
+    context.handle(_statusMeta, const VerificationResult.success());
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
     } else if (isInserting) {
-      context.missing(_retailMeta);
+      context.missing(_amountMeta);
     }
-    if (data.containsKey('is_active')) {
-      context.handle(_isActiveMeta,
-          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    if (data.containsKey('due')) {
+      context.handle(
+          _dueMeta, due.isAcceptableOrUnknown(data['due']!, _dueMeta));
+    }
+    if (data.containsKey('notification_id')) {
+      context.handle(
+          _notificationIdMeta,
+          notificationId.isAcceptableOrUnknown(
+              data['notification_id']!, _notificationIdMeta));
+    }
+    if (data.containsKey('remarks')) {
+      context.handle(_remarksMeta,
+          remarks.isAcceptableOrUnknown(data['remarks']!, _remarksMeta));
     }
     if (data.containsKey('date_created')) {
       context.handle(
@@ -1806,15 +1933,36 @@ class $ProductPricesTable extends ProductPrices
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ProductPrice map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return ProductPrice.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Arrear map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Arrear(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      personId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}person_id'])!,
+      status: $ArrearsTable.$converterstatus.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}status'])!),
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
+      due: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}due']),
+      notificationId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}notification_id']),
+      remarks: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}remarks']),
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+    );
   }
 
   @override
-  $ProductPricesTable createAlias(String alias) {
-    return $ProductPricesTable(attachedDatabase, alias);
+  $ArrearsTable createAlias(String alias) {
+    return $ArrearsTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<Status, int, int> $converterstatus =
+      const EnumIndexConverter<Status>(Status.values);
 }
 
 class Arrear extends DataClass implements Insertable<Arrear> {
@@ -1826,7 +1974,7 @@ class Arrear extends DataClass implements Insertable<Arrear> {
   final int? notificationId;
   final String? remarks;
   final DateTime dateCreated;
-  Arrear(
+  const Arrear(
       {required this.id,
       required this.personId,
       required this.status,
@@ -1835,45 +1983,24 @@ class Arrear extends DataClass implements Insertable<Arrear> {
       this.notificationId,
       this.remarks,
       required this.dateCreated});
-  factory Arrear.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Arrear(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      personId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}person_id'])!,
-      status: $ArrearsTable.$converter0.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}status']))!,
-      amount: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
-      due: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}due']),
-      notificationId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}notification_id']),
-      remarks: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}remarks']),
-      dateCreated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['person_id'] = Variable<int>(personId);
     {
-      final converter = $ArrearsTable.$converter0;
-      map['status'] = Variable<int>(converter.mapToSql(status)!);
+      final converter = $ArrearsTable.$converterstatus;
+      map['status'] = Variable<int>(converter.toSql(status));
     }
     map['amount'] = Variable<double>(amount);
     if (!nullToAbsent || due != null) {
-      map['due'] = Variable<DateTime?>(due);
+      map['due'] = Variable<DateTime>(due);
     }
     if (!nullToAbsent || notificationId != null) {
-      map['notification_id'] = Variable<int?>(notificationId);
+      map['notification_id'] = Variable<int>(notificationId);
     }
     if (!nullToAbsent || remarks != null) {
-      map['remarks'] = Variable<String?>(remarks);
+      map['remarks'] = Variable<String>(remarks);
     }
     map['date_created'] = Variable<DateTime>(dateCreated);
     return map;
@@ -1902,7 +2029,8 @@ class Arrear extends DataClass implements Insertable<Arrear> {
     return Arrear(
       id: serializer.fromJson<int>(json['id']),
       personId: serializer.fromJson<int>(json['personId']),
-      status: serializer.fromJson<Status>(json['status']),
+      status: $ArrearsTable.$converterstatus
+          .fromJson(serializer.fromJson<int>(json['status'])),
       amount: serializer.fromJson<double>(json['amount']),
       due: serializer.fromJson<DateTime?>(json['due']),
       notificationId: serializer.fromJson<int?>(json['notificationId']),
@@ -1916,7 +2044,8 @@ class Arrear extends DataClass implements Insertable<Arrear> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'personId': serializer.toJson<int>(personId),
-      'status': serializer.toJson<Status>(status),
+      'status':
+          serializer.toJson<int>($ArrearsTable.$converterstatus.toJson(status)),
       'amount': serializer.toJson<double>(amount),
       'due': serializer.toJson<DateTime?>(due),
       'notificationId': serializer.toJson<int?>(notificationId),
@@ -1930,18 +2059,19 @@ class Arrear extends DataClass implements Insertable<Arrear> {
           int? personId,
           Status? status,
           double? amount,
-          DateTime? due,
-          int? notificationId,
-          String? remarks,
+          Value<DateTime?> due = const Value.absent(),
+          Value<int?> notificationId = const Value.absent(),
+          Value<String?> remarks = const Value.absent(),
           DateTime? dateCreated}) =>
       Arrear(
         id: id ?? this.id,
         personId: personId ?? this.personId,
         status: status ?? this.status,
         amount: amount ?? this.amount,
-        due: due ?? this.due,
-        notificationId: notificationId ?? this.notificationId,
-        remarks: remarks ?? this.remarks,
+        due: due.present ? due.value : this.due,
+        notificationId:
+            notificationId.present ? notificationId.value : this.notificationId,
+        remarks: remarks.present ? remarks.value : this.remarks,
         dateCreated: dateCreated ?? this.dateCreated,
       );
   @override
@@ -2010,11 +2140,11 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
   static Insertable<Arrear> custom({
     Expression<int>? id,
     Expression<int>? personId,
-    Expression<Status>? status,
+    Expression<int>? status,
     Expression<double>? amount,
-    Expression<DateTime?>? due,
-    Expression<int?>? notificationId,
-    Expression<String?>? remarks,
+    Expression<DateTime>? due,
+    Expression<int>? notificationId,
+    Expression<String>? remarks,
     Expression<DateTime>? dateCreated,
   }) {
     return RawValuesInsertable({
@@ -2060,20 +2190,20 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
       map['person_id'] = Variable<int>(personId.value);
     }
     if (status.present) {
-      final converter = $ArrearsTable.$converter0;
-      map['status'] = Variable<int>(converter.mapToSql(status.value)!);
+      final converter = $ArrearsTable.$converterstatus;
+      map['status'] = Variable<int>(converter.toSql(status.value));
     }
     if (amount.present) {
       map['amount'] = Variable<double>(amount.value);
     }
     if (due.present) {
-      map['due'] = Variable<DateTime?>(due.value);
+      map['due'] = Variable<DateTime>(due.value);
     }
     if (notificationId.present) {
-      map['notification_id'] = Variable<int?>(notificationId.value);
+      map['notification_id'] = Variable<int>(notificationId.value);
     }
     if (remarks.present) {
-      map['remarks'] = Variable<String?>(remarks.value);
+      map['remarks'] = Variable<String>(remarks.value);
     }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
@@ -2097,101 +2227,101 @@ class ArrearsCompanion extends UpdateCompanion<Arrear> {
   }
 }
 
-class $ArrearsTable extends Arrears with TableInfo<$ArrearsTable, Arrear> {
+class $ArrearPurchasesTable extends ArrearPurchases
+    with TableInfo<$ArrearPurchasesTable, ArrearPurchase> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ArrearsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $ArrearPurchasesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _personIdMeta = const VerificationMeta('personId');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _arrearIdMeta =
+      const VerificationMeta('arrearId');
   @override
-  late final GeneratedColumn<int?> personId = GeneratedColumn<int?>(
-      'person_id', aliasedName, false,
-      type: const IntType(),
+  late final GeneratedColumn<int> arrearId = GeneratedColumn<int>(
+      'arrear_id', aliasedName, false,
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL REFERENCES persons (id) ON DELETE CASCADE');
-  final VerificationMeta _statusMeta = const VerificationMeta('status');
+      $customConstraints: 'NOT NULL REFERENCES arrears (id) ON DELETE CASCADE');
+  static const VerificationMeta _productIdMeta =
+      const VerificationMeta('productId');
   @override
-  late final GeneratedColumnWithTypeConverter<Status, int?> status =
-      GeneratedColumn<int?>('status', aliasedName, false,
-              type: const IntType(), requiredDuringInsert: true)
-          .withConverter<Status>($ArrearsTable.$converter0);
-  final VerificationMeta _amountMeta = const VerificationMeta('amount');
+  late final GeneratedColumn<int> productId = GeneratedColumn<int>(
+      'product_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints:
+          'NOT NULL REFERENCES products (id) ON DELETE CASCADE');
+  static const VerificationMeta _productPriceIdMeta =
+      const VerificationMeta('productPriceId');
   @override
-  late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
-      'amount', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _dueMeta = const VerificationMeta('due');
+  late final GeneratedColumn<int> productPriceId = GeneratedColumn<int>(
+      'product_price_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints:
+          'NOT NULL REFERENCES product_prices (id) ON DELETE CASCADE');
+  static const VerificationMeta _quantityMeta =
+      const VerificationMeta('quantity');
   @override
-  late final GeneratedColumn<DateTime?> due = GeneratedColumn<DateTime?>(
-      'due', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
-  final VerificationMeta _notificationIdMeta =
-      const VerificationMeta('notificationId');
-  @override
-  late final GeneratedColumn<int?> notificationId = GeneratedColumn<int?>(
-      'notification_id', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
-  final VerificationMeta _remarksMeta = const VerificationMeta('remarks');
-  @override
-  late final GeneratedColumn<String?> remarks = GeneratedColumn<String?>(
-      'remarks', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  final VerificationMeta _dateCreatedMeta =
+  late final GeneratedColumn<int> quantity = GeneratedColumn<int>(
+      'quantity', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
-  late final GeneratedColumn<DateTime?> dateCreated =
-      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, personId, status, amount, due, notificationId, remarks, dateCreated];
+      [id, arrearId, productId, productPriceId, quantity, dateCreated];
   @override
-  String get aliasedName => _alias ?? 'arrears';
+  String get aliasedName => _alias ?? 'arrear_purchases';
   @override
-  String get actualTableName => 'arrears';
+  String get actualTableName => 'arrear_purchases';
   @override
-  VerificationContext validateIntegrity(Insertable<Arrear> instance,
+  VerificationContext validateIntegrity(Insertable<ArrearPurchase> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('person_id')) {
-      context.handle(_personIdMeta,
-          personId.isAcceptableOrUnknown(data['person_id']!, _personIdMeta));
+    if (data.containsKey('arrear_id')) {
+      context.handle(_arrearIdMeta,
+          arrearId.isAcceptableOrUnknown(data['arrear_id']!, _arrearIdMeta));
     } else if (isInserting) {
-      context.missing(_personIdMeta);
+      context.missing(_arrearIdMeta);
     }
-    context.handle(_statusMeta, const VerificationResult.success());
-    if (data.containsKey('amount')) {
-      context.handle(_amountMeta,
-          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    if (data.containsKey('product_id')) {
+      context.handle(_productIdMeta,
+          productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta));
     } else if (isInserting) {
-      context.missing(_amountMeta);
+      context.missing(_productIdMeta);
     }
-    if (data.containsKey('due')) {
+    if (data.containsKey('product_price_id')) {
       context.handle(
-          _dueMeta, due.isAcceptableOrUnknown(data['due']!, _dueMeta));
+          _productPriceIdMeta,
+          productPriceId.isAcceptableOrUnknown(
+              data['product_price_id']!, _productPriceIdMeta));
+    } else if (isInserting) {
+      context.missing(_productPriceIdMeta);
     }
-    if (data.containsKey('notification_id')) {
-      context.handle(
-          _notificationIdMeta,
-          notificationId.isAcceptableOrUnknown(
-              data['notification_id']!, _notificationIdMeta));
-    }
-    if (data.containsKey('remarks')) {
-      context.handle(_remarksMeta,
-          remarks.isAcceptableOrUnknown(data['remarks']!, _remarksMeta));
+    if (data.containsKey('quantity')) {
+      context.handle(_quantityMeta,
+          quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta));
+    } else if (isInserting) {
+      context.missing(_quantityMeta);
     }
     if (data.containsKey('date_created')) {
       context.handle(
@@ -2205,18 +2335,28 @@ class $ArrearsTable extends Arrears with TableInfo<$ArrearsTable, Arrear> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Arrear map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Arrear.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  ArrearPurchase map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ArrearPurchase(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      arrearId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}arrear_id'])!,
+      productId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}product_id'])!,
+      productPriceId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}product_price_id'])!,
+      quantity: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}quantity'])!,
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+    );
   }
 
   @override
-  $ArrearsTable createAlias(String alias) {
-    return $ArrearsTable(attachedDatabase, alias);
+  $ArrearPurchasesTable createAlias(String alias) {
+    return $ArrearPurchasesTable(attachedDatabase, alias);
   }
-
-  static TypeConverter<Status, int> $converter0 =
-      const EnumIndexConverter<Status>(Status.values);
 }
 
 class ArrearPurchase extends DataClass implements Insertable<ArrearPurchase> {
@@ -2226,30 +2366,13 @@ class ArrearPurchase extends DataClass implements Insertable<ArrearPurchase> {
   final int productPriceId;
   final int quantity;
   final DateTime dateCreated;
-  ArrearPurchase(
+  const ArrearPurchase(
       {required this.id,
       required this.arrearId,
       required this.productId,
       required this.productPriceId,
       required this.quantity,
       required this.dateCreated});
-  factory ArrearPurchase.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return ArrearPurchase(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      arrearId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}arrear_id'])!,
-      productId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}product_id'])!,
-      productPriceId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}product_price_id'])!,
-      quantity: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}quantity'])!,
-      dateCreated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2440,65 +2563,57 @@ class ArrearPurchasesCompanion extends UpdateCompanion<ArrearPurchase> {
   }
 }
 
-class $ArrearPurchasesTable extends ArrearPurchases
-    with TableInfo<$ArrearPurchasesTable, ArrearPurchase> {
+class $ArrearPaymentsTable extends ArrearPayments
+    with TableInfo<$ArrearPaymentsTable, ArrearPayment> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ArrearPurchasesTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $ArrearPaymentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _arrearIdMeta = const VerificationMeta('arrearId');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _arrearIdMeta =
+      const VerificationMeta('arrearId');
   @override
-  late final GeneratedColumn<int?> arrearId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> arrearId = GeneratedColumn<int>(
       'arrear_id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL REFERENCES arrears (id) ON DELETE CASCADE');
-  final VerificationMeta _productIdMeta = const VerificationMeta('productId');
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<int?> productId = GeneratedColumn<int?>(
-      'product_id', aliasedName, false,
-      type: const IntType(),
-      requiredDuringInsert: true,
-      $customConstraints:
-          'NOT NULL REFERENCES products (id) ON DELETE CASCADE');
-  final VerificationMeta _productPriceIdMeta =
-      const VerificationMeta('productPriceId');
+  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
+      'amount', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _remarksMeta =
+      const VerificationMeta('remarks');
   @override
-  late final GeneratedColumn<int?> productPriceId = GeneratedColumn<int?>(
-      'product_price_id', aliasedName, false,
-      type: const IntType(),
-      requiredDuringInsert: true,
-      $customConstraints:
-          'NOT NULL REFERENCES product_prices (id) ON DELETE CASCADE');
-  final VerificationMeta _quantityMeta = const VerificationMeta('quantity');
-  @override
-  late final GeneratedColumn<int?> quantity = GeneratedColumn<int?>(
-      'quantity', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _dateCreatedMeta =
+  late final GeneratedColumn<String> remarks = GeneratedColumn<String>(
+      'remarks', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
-  late final GeneratedColumn<DateTime?> dateCreated =
-      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, arrearId, productId, productPriceId, quantity, dateCreated];
+      [id, arrearId, amount, remarks, dateCreated];
   @override
-  String get aliasedName => _alias ?? 'arrear_purchases';
+  String get aliasedName => _alias ?? 'arrear_payments';
   @override
-  String get actualTableName => 'arrear_purchases';
+  String get actualTableName => 'arrear_payments';
   @override
-  VerificationContext validateIntegrity(Insertable<ArrearPurchase> instance,
+  VerificationContext validateIntegrity(Insertable<ArrearPayment> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -2511,25 +2626,15 @@ class $ArrearPurchasesTable extends ArrearPurchases
     } else if (isInserting) {
       context.missing(_arrearIdMeta);
     }
-    if (data.containsKey('product_id')) {
-      context.handle(_productIdMeta,
-          productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta));
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
     } else if (isInserting) {
-      context.missing(_productIdMeta);
+      context.missing(_amountMeta);
     }
-    if (data.containsKey('product_price_id')) {
-      context.handle(
-          _productPriceIdMeta,
-          productPriceId.isAcceptableOrUnknown(
-              data['product_price_id']!, _productPriceIdMeta));
-    } else if (isInserting) {
-      context.missing(_productPriceIdMeta);
-    }
-    if (data.containsKey('quantity')) {
-      context.handle(_quantityMeta,
-          quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta));
-    } else if (isInserting) {
-      context.missing(_quantityMeta);
+    if (data.containsKey('remarks')) {
+      context.handle(_remarksMeta,
+          remarks.isAcceptableOrUnknown(data['remarks']!, _remarksMeta));
     }
     if (data.containsKey('date_created')) {
       context.handle(
@@ -2543,14 +2648,25 @@ class $ArrearPurchasesTable extends ArrearPurchases
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ArrearPurchase map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return ArrearPurchase.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  ArrearPayment map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ArrearPayment(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      arrearId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}arrear_id'])!,
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
+      remarks: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}remarks']),
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+    );
   }
 
   @override
-  $ArrearPurchasesTable createAlias(String alias) {
-    return $ArrearPurchasesTable(attachedDatabase, alias);
+  $ArrearPaymentsTable createAlias(String alias) {
+    return $ArrearPaymentsTable(attachedDatabase, alias);
   }
 }
 
@@ -2560,27 +2676,12 @@ class ArrearPayment extends DataClass implements Insertable<ArrearPayment> {
   final double amount;
   final String? remarks;
   final DateTime dateCreated;
-  ArrearPayment(
+  const ArrearPayment(
       {required this.id,
       required this.arrearId,
       required this.amount,
       this.remarks,
       required this.dateCreated});
-  factory ArrearPayment.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return ArrearPayment(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      arrearId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}arrear_id'])!,
-      amount: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
-      remarks: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}remarks']),
-      dateCreated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2588,7 +2689,7 @@ class ArrearPayment extends DataClass implements Insertable<ArrearPayment> {
     map['arrear_id'] = Variable<int>(arrearId);
     map['amount'] = Variable<double>(amount);
     if (!nullToAbsent || remarks != null) {
-      map['remarks'] = Variable<String?>(remarks);
+      map['remarks'] = Variable<String>(remarks);
     }
     map['date_created'] = Variable<DateTime>(dateCreated);
     return map;
@@ -2633,13 +2734,13 @@ class ArrearPayment extends DataClass implements Insertable<ArrearPayment> {
           {int? id,
           int? arrearId,
           double? amount,
-          String? remarks,
+          Value<String?> remarks = const Value.absent(),
           DateTime? dateCreated}) =>
       ArrearPayment(
         id: id ?? this.id,
         arrearId: arrearId ?? this.arrearId,
         amount: amount ?? this.amount,
-        remarks: remarks ?? this.remarks,
+        remarks: remarks.present ? remarks.value : this.remarks,
         dateCreated: dateCreated ?? this.dateCreated,
       );
   @override
@@ -2692,7 +2793,7 @@ class ArrearPaymentsCompanion extends UpdateCompanion<ArrearPayment> {
     Expression<int>? id,
     Expression<int>? arrearId,
     Expression<double>? amount,
-    Expression<String?>? remarks,
+    Expression<String>? remarks,
     Expression<DateTime>? dateCreated,
   }) {
     return RawValuesInsertable({
@@ -2732,7 +2833,7 @@ class ArrearPaymentsCompanion extends UpdateCompanion<ArrearPayment> {
       map['amount'] = Variable<double>(amount.value);
     }
     if (remarks.present) {
-      map['remarks'] = Variable<String?>(remarks.value);
+      map['remarks'] = Variable<String>(remarks.value);
     }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
@@ -2753,64 +2854,52 @@ class ArrearPaymentsCompanion extends UpdateCompanion<ArrearPayment> {
   }
 }
 
-class $ArrearPaymentsTable extends ArrearPayments
-    with TableInfo<$ArrearPaymentsTable, ArrearPayment> {
+class $EarningsTable extends Earnings with TableInfo<$EarningsTable, Earning> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ArrearPaymentsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $EarningsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _arrearIdMeta = const VerificationMeta('arrearId');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<int?> arrearId = GeneratedColumn<int?>(
-      'arrear_id', aliasedName, false,
-      type: const IntType(),
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL REFERENCES arrears (id) ON DELETE CASCADE');
-  final VerificationMeta _amountMeta = const VerificationMeta('amount');
-  @override
-  late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
+  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
       'amount', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _remarksMeta = const VerificationMeta('remarks');
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _remarksMeta =
+      const VerificationMeta('remarks');
   @override
-  late final GeneratedColumn<String?> remarks = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> remarks = GeneratedColumn<String>(
       'remarks', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  final VerificationMeta _dateCreatedMeta =
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
-  late final GeneratedColumn<DateTime?> dateCreated =
-      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, arrearId, amount, remarks, dateCreated];
+  List<GeneratedColumn> get $columns => [id, amount, remarks, dateCreated];
   @override
-  String get aliasedName => _alias ?? 'arrear_payments';
+  String get aliasedName => _alias ?? 'earnings';
   @override
-  String get actualTableName => 'arrear_payments';
+  String get actualTableName => 'earnings';
   @override
-  VerificationContext validateIntegrity(Insertable<ArrearPayment> instance,
+  VerificationContext validateIntegrity(Insertable<Earning> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('arrear_id')) {
-      context.handle(_arrearIdMeta,
-          arrearId.isAcceptableOrUnknown(data['arrear_id']!, _arrearIdMeta));
-    } else if (isInserting) {
-      context.missing(_arrearIdMeta);
     }
     if (data.containsKey('amount')) {
       context.handle(_amountMeta,
@@ -2834,14 +2923,23 @@ class $ArrearPaymentsTable extends ArrearPayments
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ArrearPayment map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return ArrearPayment.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Earning map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Earning(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
+      remarks: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}remarks']),
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+    );
   }
 
   @override
-  $ArrearPaymentsTable createAlias(String alias) {
-    return $ArrearPaymentsTable(attachedDatabase, alias);
+  $EarningsTable createAlias(String alias) {
+    return $EarningsTable(attachedDatabase, alias);
   }
 }
 
@@ -2850,31 +2948,18 @@ class Earning extends DataClass implements Insertable<Earning> {
   final double amount;
   final String? remarks;
   final DateTime dateCreated;
-  Earning(
+  const Earning(
       {required this.id,
       required this.amount,
       this.remarks,
       required this.dateCreated});
-  factory Earning.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Earning(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      amount: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
-      remarks: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}remarks']),
-      dateCreated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['amount'] = Variable<double>(amount);
     if (!nullToAbsent || remarks != null) {
-      map['remarks'] = Variable<String?>(remarks);
+      map['remarks'] = Variable<String>(remarks);
     }
     map['date_created'] = Variable<DateTime>(dateCreated);
     return map;
@@ -2913,11 +2998,14 @@ class Earning extends DataClass implements Insertable<Earning> {
   }
 
   Earning copyWith(
-          {int? id, double? amount, String? remarks, DateTime? dateCreated}) =>
+          {int? id,
+          double? amount,
+          Value<String?> remarks = const Value.absent(),
+          DateTime? dateCreated}) =>
       Earning(
         id: id ?? this.id,
         amount: amount ?? this.amount,
-        remarks: remarks ?? this.remarks,
+        remarks: remarks.present ? remarks.value : this.remarks,
         dateCreated: dateCreated ?? this.dateCreated,
       );
   @override
@@ -2963,7 +3051,7 @@ class EarningsCompanion extends UpdateCompanion<Earning> {
   static Insertable<Earning> custom({
     Expression<int>? id,
     Expression<double>? amount,
-    Expression<String?>? remarks,
+    Expression<String>? remarks,
     Expression<DateTime>? dateCreated,
   }) {
     return RawValuesInsertable({
@@ -2997,7 +3085,7 @@ class EarningsCompanion extends UpdateCompanion<Earning> {
       map['amount'] = Variable<double>(amount.value);
     }
     if (remarks.present) {
-      map['remarks'] = Variable<String?>(remarks.value);
+      map['remarks'] = Variable<String>(remarks.value);
     }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
@@ -3017,85 +3105,8 @@ class EarningsCompanion extends UpdateCompanion<Earning> {
   }
 }
 
-class $EarningsTable extends Earnings with TableInfo<$EarningsTable, Earning> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $EarningsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
-      'id', aliasedName, false,
-      type: const IntType(),
-      requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _amountMeta = const VerificationMeta('amount');
-  @override
-  late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
-      'amount', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _remarksMeta = const VerificationMeta('remarks');
-  @override
-  late final GeneratedColumn<String?> remarks = GeneratedColumn<String?>(
-      'remarks', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  final VerificationMeta _dateCreatedMeta =
-      const VerificationMeta('dateCreated');
-  @override
-  late final GeneratedColumn<DateTime?> dateCreated =
-      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
-  @override
-  List<GeneratedColumn> get $columns => [id, amount, remarks, dateCreated];
-  @override
-  String get aliasedName => _alias ?? 'earnings';
-  @override
-  String get actualTableName => 'earnings';
-  @override
-  VerificationContext validateIntegrity(Insertable<Earning> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('amount')) {
-      context.handle(_amountMeta,
-          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
-    } else if (isInserting) {
-      context.missing(_amountMeta);
-    }
-    if (data.containsKey('remarks')) {
-      context.handle(_remarksMeta,
-          remarks.isAcceptableOrUnknown(data['remarks']!, _remarksMeta));
-    }
-    if (data.containsKey('date_created')) {
-      context.handle(
-          _dateCreatedMeta,
-          dateCreated.isAcceptableOrUnknown(
-              data['date_created']!, _dateCreatedMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Earning map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Earning.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
-  }
-
-  @override
-  $EarningsTable createAlias(String alias) {
-    return $EarningsTable(attachedDatabase, alias);
-  }
-}
-
 abstract class _$AppDatabase extends GeneratedDatabase {
-  _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  _$AppDatabase(QueryExecutor e) : super(e);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $UnitsTable units = $UnitsTable(this);
   late final $PersonsTable persons = $PersonsTable(this);
@@ -3124,7 +3135,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final EarningsDao earningsDao = EarningsDao(this as AppDatabase);
   late final DashboardDao dashboardDao = DashboardDao(this as AppDatabase);
   @override
-  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         categories,
@@ -3139,10 +3151,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         earnings
       ];
 }
-
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
 
 mixin _$CategoriesDaoMixin on DatabaseAccessor<AppDatabase> {
   $CategoriesTable get categories => attachedDatabase.categories;

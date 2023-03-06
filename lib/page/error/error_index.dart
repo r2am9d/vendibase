@@ -27,7 +27,7 @@ class ErrorIndex extends StatelessWidget {
               ),
               Text(
                 text,
-                style: _theme.textTheme.headline5?.copyWith(
+                style: _theme.textTheme.headlineSmall?.copyWith(
                   color: AppColor.red,
                   fontWeight: FontWeight.bold,
                 ),

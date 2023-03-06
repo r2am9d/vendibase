@@ -123,7 +123,7 @@ class _EarningIndexState extends State<EarningIndex> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColor.white,
-        title: Text("$_text earning", style: theme.textTheme.headline6),
+        title: Text("$_text earning", style: theme.textTheme.titleLarge),
         content: Scrollbar(
           child: SingleChildScrollView(
             child: SizedBox(
@@ -136,6 +136,7 @@ class _EarningIndexState extends State<EarningIndex> {
                     _sizedBox(height: 16.0),
                     FormBuilderTextField(
                       name: 'amount',
+                      keyboardType: TextInputType.number,
                       initialValue: _amount.toString(),
                       textInputAction: TextInputAction.next,
                       decoration: _inputDecoration('Amount', true),
@@ -238,11 +239,11 @@ class _EarningIndexState extends State<EarningIndex> {
         ),
         title: Text(
           "₱ $_amount",
-          style: theme.textTheme.bodyText1,
+          style: theme.textTheme.bodyLarge,
         ),
         subtitle: Text(
           'on ${_df.format(earning.dateCreated)}',
-          style: theme.textTheme.bodyText2,
+          style: theme.textTheme.bodyMedium,
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -314,7 +315,7 @@ class _EarningIndexState extends State<EarningIndex> {
     void Function()? onPressed,
   }) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(primary: color),
+      style: ElevatedButton.styleFrom(backgroundColor: color),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

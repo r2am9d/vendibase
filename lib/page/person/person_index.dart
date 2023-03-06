@@ -126,11 +126,11 @@ class _PersonIndexState extends State<PersonIndex> {
         ),
         title: Text(
           person.name,
-          style: theme.textTheme.bodyText1,
+          style: theme.textTheme.bodyLarge,
         ),
         subtitle: Text(
           person.contactNo ?? '',
-          style: theme.textTheme.bodyText2,
+          style: theme.textTheme.bodyMedium,
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,

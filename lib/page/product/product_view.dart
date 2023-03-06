@@ -235,13 +235,13 @@ class _ProductViewState extends State<ProductView> {
                     children: [
                       Text(
                         product.name,
-                        style: theme.textTheme.headline6?.copyWith(
+                        style: theme.textTheme.titleLarge?.copyWith(
                           color: AppColor.red,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       _sizedBox(width: 8.0),
-                      product.remarks!.isNotEmpty
+                      (product.remarks != null && product.remarks!.isNotEmpty)
                           ? JustTheTooltip(
                               controller: controller,
                               child: Material(
@@ -265,7 +265,7 @@ class _ProductViewState extends State<ProductView> {
                   _sizedBox(height: 16.0),
                   Text(
                     "₱ ${_f.format(product.activePrice)} • ${_f.format(product.activeQuantity)} pc/s",
-                    style: theme.textTheme.bodyText1?.copyWith(
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       color: AppColor.black,
                       fontWeight: FontWeight.bold,
                     ),
@@ -274,7 +274,7 @@ class _ProductViewState extends State<ProductView> {
                     _sizedBox(height: 16.0),
                     Text(
                       "${product.category} • ${product.unit?.toLowerCase()}",
-                      style: theme.textTheme.bodyText2?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         color: AppColor.black,
                         fontWeight: FontWeight.bold,
                       ),
@@ -284,7 +284,7 @@ class _ProductViewState extends State<ProductView> {
                     _sizedBox(height: 16.0),
                     Text(
                       "${product.category}",
-                      style: theme.textTheme.bodyText2?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         color: AppColor.black,
                         fontWeight: FontWeight.bold,
                       ),
@@ -294,7 +294,7 @@ class _ProductViewState extends State<ProductView> {
                     _sizedBox(height: 16.0),
                     Text(
                       "${product.unit?.toLowerCase()}",
-                      style: theme.textTheme.bodyText2?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         color: AppColor.black,
                         fontWeight: FontWeight.bold,
                       ),
@@ -352,7 +352,7 @@ class _ProductViewState extends State<ProductView> {
               ),
               header: Text(
                 'Purchase',
-                style: theme.textTheme.bodyText1?.copyWith(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: AppColor.red,
                 ),
               ),
@@ -372,11 +372,11 @@ class _ProductViewState extends State<ProductView> {
                 ),
                 title: Text(
                   '₱ ${_f.format(product.latestCost)} • ${_f.format(product.latestQuantity)} pc/s',
-                  style: theme.textTheme.bodyText1,
+                  style: theme.textTheme.bodyLarge,
                 ),
                 subtitle: Text(
                   'on ${_d.format(product.latestCostDate!)}',
-                  style: theme.textTheme.bodyText2,
+                  style: theme.textTheme.bodyMedium,
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -422,11 +422,11 @@ class _ProductViewState extends State<ProductView> {
                         ),
                         title: Text(
                           "₱ ${_f.format(_productPurchase.cost)} • ${_f.format(_productPurchase.quantity)} pc/s",
-                          style: theme.textTheme.bodyText1,
+                          style: theme.textTheme.bodyLarge,
                         ),
                         subtitle: Text(
                           _d.format(_productPurchase.dateCreated),
-                          style: theme.textTheme.bodyText2,
+                          style: theme.textTheme.bodyMedium,
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -490,7 +490,7 @@ class _ProductViewState extends State<ProductView> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColor.white,
-        title: Text("$_text purchase", style: theme.textTheme.headline6),
+        title: Text("$_text purchase", style: theme.textTheme.titleLarge),
         content: Scrollbar(
           child: SingleChildScrollView(
             child: SizedBox(
@@ -504,6 +504,7 @@ class _ProductViewState extends State<ProductView> {
                     _sizedBox(height: 16.0),
                     FormBuilderTextField(
                       name: 'cost',
+                      keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
                       decoration: _inputDecoration('Cost', true),
                       initialValue: productPurchase?.cost.toString(),
@@ -516,6 +517,7 @@ class _ProductViewState extends State<ProductView> {
                     _sizedBox(height: 16.0),
                     FormBuilderTextField(
                       name: 'quantity',
+                      keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.done,
                       decoration: _inputDecoration('Quantity'),
                       initialValue: productPurchase?.quantity.toString(),
@@ -652,7 +654,7 @@ class _ProductViewState extends State<ProductView> {
               ),
               header: Text(
                 'Price',
-                style: theme.textTheme.bodyText1?.copyWith(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: AppColor.red,
                 ),
               ),
@@ -672,11 +674,11 @@ class _ProductViewState extends State<ProductView> {
                 ),
                 title: Text(
                   '₱ ${_f.format(product.activePrice)}',
-                  style: theme.textTheme.bodyText1,
+                  style: theme.textTheme.bodyLarge,
                 ),
                 subtitle: Text(
                   'as of ${_d.format(product.activePriceDate!)}',
-                  style: theme.textTheme.bodyText2,
+                  style: theme.textTheme.bodyMedium,
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -723,11 +725,11 @@ class _ProductViewState extends State<ProductView> {
                         ),
                         title: Text(
                           "₱ ${_f.format(_productPrice.retail)}",
-                          style: theme.textTheme.bodyText1,
+                          style: theme.textTheme.bodyLarge,
                         ),
                         subtitle: Text(
                           _d.format(_productPrice.dateCreated),
-                          style: theme.textTheme.bodyText2,
+                          style: theme.textTheme.bodyMedium,
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -816,7 +818,7 @@ class _ProductViewState extends State<ProductView> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColor.white,
-        title: Text("$_text price", style: theme.textTheme.headline6),
+        title: Text("$_text price", style: theme.textTheme.titleLarge),
         content: Scrollbar(
           child: SingleChildScrollView(
             child: SizedBox(
@@ -989,7 +991,7 @@ class _ProductViewState extends State<ProductView> {
     void Function()? onPressed,
   }) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(primary: color),
+      style: ElevatedButton.styleFrom(backgroundColor: color),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

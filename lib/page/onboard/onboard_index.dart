@@ -33,7 +33,7 @@ class _OnboardIndexState extends State<OnboardIndex> {
       padding: const EdgeInsets.only(bottom: 24.0),
       child: Text(
         title,
-        style: theme.textTheme.headline4?.copyWith(
+        style: theme.textTheme.headlineMedium?.copyWith(
           color: AppColor.red,
           fontWeight: FontWeight.bold,
         ),
@@ -44,7 +44,7 @@ class _OnboardIndexState extends State<OnboardIndex> {
   Widget _buildSubTitle(String subtitle, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32.0),
-      child: Text(subtitle, style: theme.textTheme.bodyText1),
+      child: Text(subtitle, style: theme.textTheme.bodyLarge),
     );
   }
 

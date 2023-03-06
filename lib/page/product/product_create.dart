@@ -64,7 +64,7 @@ class _ProductCreateState extends State<ProductCreate> {
                 children: [
                   Text(
                     'Details',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -83,7 +83,7 @@ class _ProductCreateState extends State<ProductCreate> {
                   _sizedBox(height: 16),
                   FormBuilderSearchableDropdown<DropdownMenuItem>(
                     name: 'categoryId',
-                    showClearButton: true,
+                    clearButtonProps: ClearButtonProps(isVisible: true),
                     compareFn: (item, selectedItem) =>
                         item.value == selectedItem.value,
                     popupProps: PopupProps.modalBottomSheet(
@@ -127,6 +127,7 @@ class _ProductCreateState extends State<ProductCreate> {
                       final _text = menuItem.child as Text;
                       return _text.data.toString();
                     },
+                    dropdownSearchTextStyle: TextStyle(color: AppColor.black),
                     dropdownSearchDecoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.only(left: 16, bottom: 8),
@@ -145,7 +146,7 @@ class _ProductCreateState extends State<ProductCreate> {
                     name: 'unitId',
                     compareFn: (item, selectedItem) =>
                         item.value == selectedItem.value,
-                    showClearButton: true,
+                    clearButtonProps: ClearButtonProps(isVisible: true),
                     popupProps: PopupProps.modalBottomSheet(
                       showSearchBox: true,
                       searchFieldProps: TextFieldProps(
@@ -187,6 +188,7 @@ class _ProductCreateState extends State<ProductCreate> {
                       final _text = menuItem.child as Text;
                       return _text.data.toString();
                     },
+                    dropdownSearchTextStyle: TextStyle(color: AppColor.black),
                     dropdownSearchDecoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.only(left: 16, bottom: 8),
@@ -218,7 +220,7 @@ class _ProductCreateState extends State<ProductCreate> {
                   _sizedBox(height: 32),
                   Text(
                     'Purchase',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -226,6 +228,7 @@ class _ProductCreateState extends State<ProductCreate> {
                   _sizedBox(height: 32),
                   FormBuilderTextField(
                     name: 'cost',
+                    keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
                     decoration: _inputDecoration('Cost', true),
                     validator: FormBuilderValidators.compose([
@@ -237,6 +240,7 @@ class _ProductCreateState extends State<ProductCreate> {
                   _sizedBox(height: 16),
                   FormBuilderTextField(
                     name: 'quantity',
+                    keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
                     decoration: _inputDecoration('Quantity'),
                     validator: FormBuilderValidators.compose([
@@ -248,7 +252,7 @@ class _ProductCreateState extends State<ProductCreate> {
                   _sizedBox(height: 32),
                   Text(
                     'Price',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -263,6 +267,7 @@ class _ProductCreateState extends State<ProductCreate> {
                   _sizedBox(height: 16),
                   FormBuilderTextField(
                     name: 'retail',
+                    keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
                     decoration: _inputDecoration('Retail', true),
                     validator: FormBuilderValidators.compose([

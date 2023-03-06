@@ -76,7 +76,7 @@ class _ProductUpdateState extends State<ProductUpdate> {
                 children: [
                   Text(
                     'Details',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -95,9 +95,9 @@ class _ProductUpdateState extends State<ProductUpdate> {
                       _product!.category == null)
                     FormBuilderSearchableDropdown<DropdownMenuItem>(
                       name: 'categoryId',
-                      showClearButton: true,
+                      clearButtonProps: ClearButtonProps(isVisible: true),
                       compareFn: (item, selectedItem) =>
-                        item.value == selectedItem.value,
+                          item.value == selectedItem.value,
                       popupProps: PopupProps.modalBottomSheet(
                         showSearchBox: true,
                         searchFieldProps: TextFieldProps(
@@ -139,6 +139,7 @@ class _ProductUpdateState extends State<ProductUpdate> {
                         final _text = menuItem.child as Text;
                         return _text.data.toString();
                       },
+                      dropdownSearchTextStyle: TextStyle(color: AppColor.black),
                       dropdownSearchDecoration: InputDecoration(
                         contentPadding:
                             const EdgeInsets.only(left: 16, bottom: 8),
@@ -156,9 +157,9 @@ class _ProductUpdateState extends State<ProductUpdate> {
                       _product!.category != null)
                     FormBuilderSearchableDropdown<DropdownMenuItem>(
                       name: 'categoryId',
-                      showClearButton: true,
+                      clearButtonProps: ClearButtonProps(isVisible: true),
                       compareFn: (item, selectedItem) =>
-                        item.value == selectedItem.value,
+                          item.value == selectedItem.value,
                       popupProps: PopupProps.modalBottomSheet(
                         showSearchBox: true,
                         searchFieldProps: TextFieldProps(
@@ -204,6 +205,7 @@ class _ProductUpdateState extends State<ProductUpdate> {
                         final _text = menuItem.child as Text;
                         return _text.data.toString();
                       },
+                      dropdownSearchTextStyle: TextStyle(color: AppColor.black),
                       dropdownSearchDecoration: InputDecoration(
                         contentPadding:
                             const EdgeInsets.only(left: 16, bottom: 8),
@@ -221,9 +223,9 @@ class _ProductUpdateState extends State<ProductUpdate> {
                   if (_product!.unitId == null || _product!.unit == null)
                     FormBuilderSearchableDropdown<DropdownMenuItem>(
                       name: 'unitId',
-                      showClearButton: true,
+                      clearButtonProps: ClearButtonProps(isVisible: true),
                       compareFn: (item, selectedItem) =>
-                        item.value == selectedItem.value,
+                          item.value == selectedItem.value,
                       popupProps: PopupProps.modalBottomSheet(
                         showSearchBox: true,
                         searchFieldProps: TextFieldProps(
@@ -265,6 +267,7 @@ class _ProductUpdateState extends State<ProductUpdate> {
                         final _text = menuItem.child as Text;
                         return _text.data.toString();
                       },
+                      dropdownSearchTextStyle: TextStyle(color: AppColor.black),
                       dropdownSearchDecoration: InputDecoration(
                         contentPadding:
                             const EdgeInsets.only(left: 16, bottom: 8),
@@ -281,9 +284,9 @@ class _ProductUpdateState extends State<ProductUpdate> {
                   if (_product!.unitId != null && _product!.unit != null)
                     FormBuilderSearchableDropdown<DropdownMenuItem>(
                       name: 'unitId',
-                      showClearButton: true,
+                      clearButtonProps: ClearButtonProps(isVisible: true),
                       compareFn: (item, selectedItem) =>
-                        item.value == selectedItem.value,
+                          item.value == selectedItem.value,
                       popupProps: PopupProps.modalBottomSheet(
                         showSearchBox: true,
                         searchFieldProps: TextFieldProps(
@@ -329,6 +332,7 @@ class _ProductUpdateState extends State<ProductUpdate> {
                         final _text = menuItem.child as Text;
                         return _text.data.toString();
                       },
+                      dropdownSearchTextStyle: TextStyle(color: AppColor.black),
                       dropdownSearchDecoration: InputDecoration(
                         contentPadding:
                             const EdgeInsets.only(left: 16, bottom: 8),

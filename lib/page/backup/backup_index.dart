@@ -102,11 +102,11 @@ class _BackupIndexState extends State<BackupIndex> {
                             ),
                             title: Text(
                               _name,
-                              style: _theme.textTheme.bodyText1,
+                              style: _theme.textTheme.bodyLarge,
                             ),
                             subtitle: Text(
                               '$_size • ${_df.format(_dateCreated)}',
-                              style: _theme.textTheme.bodyText2,
+                              style: _theme.textTheme.bodyMedium,
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -303,13 +303,13 @@ class _BackupIndexState extends State<BackupIndex> {
               padding: const EdgeInsets.all(32.0),
               title: Text(
                 'Success',
-                style: theme.textTheme.bodyText1!.copyWith(
+                style: theme.textTheme.bodyLarge!.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               content: Text(
                 content,
-                style: theme.textTheme.bodyText2,
+                style: theme.textTheme.bodyMedium,
               ),
               indicatorColor: AppColor.green,
               icon: Icon(

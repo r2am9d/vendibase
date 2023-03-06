@@ -68,7 +68,7 @@ class _DashboardIndexState extends State<DashboardIndex> {
                     title: ChartTitle(
                       text: 'Earnings [$_year]',
                       alignment: ChartAlignment.near,
-                      textStyle: _theme.textTheme.headline6?.copyWith(
+                      textStyle: _theme.textTheme.titleLarge?.copyWith(
                         color: AppColor.red,
                         fontWeight: FontWeight.bold,
                       ),
@@ -92,7 +92,7 @@ class _DashboardIndexState extends State<DashboardIndex> {
                   _sizedBox(height: 32.0),
                   Text(
                     'Total Products',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -109,7 +109,7 @@ class _DashboardIndexState extends State<DashboardIndex> {
                         _sizedBox(width: 16.0),
                         Text(
                           _nf.format(_dashboardData.totalProducts),
-                          style: _theme.textTheme.headline3?.copyWith(
+                          style: _theme.textTheme.displaySmall?.copyWith(
                             color: AppColor.black,
                             fontWeight: FontWeight.bold,
                           ),
@@ -120,7 +120,7 @@ class _DashboardIndexState extends State<DashboardIndex> {
                   _sizedBox(height: 32.0),
                   Text(
                     'Total Arrears',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -141,7 +141,8 @@ class _DashboardIndexState extends State<DashboardIndex> {
                                 _sizedBox(width: 16.0),
                                 Text(
                                   _nf.format(_dashboardData.totalPaidArrears),
-                                  style: _theme.textTheme.headline3?.copyWith(
+                                  style:
+                                      _theme.textTheme.displaySmall?.copyWith(
                                     color: AppColor.black,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -155,7 +156,7 @@ class _DashboardIndexState extends State<DashboardIndex> {
                         _sizedBox(width: 32.0),
                         Text(
                           'VS',
-                          style: _theme.textTheme.headline5?.copyWith(
+                          style: _theme.textTheme.headlineSmall?.copyWith(
                             color: AppColor.black,
                             fontWeight: FontWeight.bold,
                           ),
@@ -173,7 +174,8 @@ class _DashboardIndexState extends State<DashboardIndex> {
                                 _sizedBox(width: 16.0),
                                 Text(
                                   _nf.format(_dashboardData.totalUnpaidArrears),
-                                  style: _theme.textTheme.headline3?.copyWith(
+                                  style:
+                                      _theme.textTheme.displaySmall?.copyWith(
                                     color: AppColor.black,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -300,7 +302,7 @@ class _DashboardIndexState extends State<DashboardIndex> {
       ),
       child: Text(
         _text,
-        style: theme.textTheme.bodyText2?.copyWith(
+        style: theme.textTheme.bodyMedium?.copyWith(
           color: _textColor,
         ),
       ),

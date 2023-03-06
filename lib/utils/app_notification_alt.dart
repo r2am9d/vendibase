@@ -30,7 +30,7 @@ class AppNotificationAlt {
       ],
       channelGroups: [
         NotificationChannelGroup(
-          channelGroupkey: AppNotificationAlt.VENDIBASE_GROUP_CHANNEL,
+          channelGroupKey: AppNotificationAlt.VENDIBASE_GROUP_CHANNEL,
           channelGroupName: 'Basic Group Notifications',
         ),
       ],
@@ -71,7 +71,7 @@ class AppNotificationAlt {
           key: 'NOTIFICATION_DONE',
           label: 'Done',
           showInCompactView: true,
-          buttonType: ActionButtonType.KeepOnTop,
+          actionType: ActionType.KeepOnTop,
         )
       ],
     );
@@ -111,7 +111,7 @@ class AppNotificationAlt {
           key: 'NOTIFICATION_DONE',
           label: 'Done',
           showInCompactView: true,
-          buttonType: ActionButtonType.KeepOnTop,
+          actionType: ActionType.KeepOnTop,
         ),
       ],
     );

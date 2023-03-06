@@ -39,7 +39,7 @@ class _UnitCreateState extends State<UnitCreate> {
               children: [
                 Text(
                   'Details',
-                  style: _theme.textTheme.headline6?.copyWith(
+                  style: _theme.textTheme.titleLarge?.copyWith(
                     color: AppColor.red,
                     fontWeight: FontWeight.bold,
                   ),
@@ -55,6 +55,7 @@ class _UnitCreateState extends State<UnitCreate> {
                 _sizedBox(height: 16),
                 FormBuilderTextField(
                   name: 'amount',
+                  keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.done,
                   decoration: _inputDecoration('Amount (pc/s)'),
                   validator: FormBuilderValidators.compose([

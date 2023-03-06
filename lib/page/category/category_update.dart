@@ -69,7 +69,7 @@ class _CategoryUpdateState extends State<CategoryUpdate> {
                   _sizedBox(height: 16),
                   FormBuilderDropdown(
                     name: 'parentId',
-                    allowClear: true,
+                    // allowClear: true,
                     initialValue: _category!.parentId,
                     items: _categories!.map((_category) {
                       return DropdownMenuItem(

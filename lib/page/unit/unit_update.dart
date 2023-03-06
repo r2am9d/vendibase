@@ -60,7 +60,7 @@ class _UnitUpdateState extends State<UnitUpdate> {
                 children: [
                   Text(
                     'Details',
-                    style: _theme.textTheme.headline6?.copyWith(
+                    style: _theme.textTheme.titleLarge?.copyWith(
                       color: AppColor.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -76,6 +76,7 @@ class _UnitUpdateState extends State<UnitUpdate> {
                   _sizedBox(height: 16),
                   FormBuilderTextField(
                     name: 'amount',
+                    keyboardType: TextInputType.number,
                     initialValue: _unit!.amount.toString(),
                     textInputAction: TextInputAction.done,
                     decoration: _inputDecoration('Amount (pc/s)'),

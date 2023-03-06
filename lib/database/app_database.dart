@@ -825,7 +825,7 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
       ORDER BY P.is_favorite DESC;
     """;
 
-    List<Variable<dynamic>> _vars = [
+    List<Variable<Object>> _vars = [
       Variable.withString('%$term%'),
     ];
 
@@ -1401,7 +1401,7 @@ class ArrearsDao extends DatabaseAccessor<AppDatabase>
       /* %DUE_FILTER% */
     """;
 
-    List<Variable<dynamic>> _vars = [
+    List<Variable<Object>> _vars = [
       Variable.withString('%$term%'),
     ];
 

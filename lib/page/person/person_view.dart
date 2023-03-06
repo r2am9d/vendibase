@@ -82,17 +82,17 @@ class PersonView extends StatelessWidget {
                     _sizedBox(height: 16),
                     Text(
                       'Name: ${_person.name}',
-                      style: _theme.textTheme.headline6,
+                      style: _theme.textTheme.titleLarge,
                     ),
                     _sizedBox(height: 16),
                     Text(
                       'Contact No: ${_person.contactNo ?? ''}',
-                      style: _theme.textTheme.headline6,
+                      style: _theme.textTheme.titleLarge,
                     ),
                     _sizedBox(height: 16),
                     Text(
                       'Remarks: ${_person.remarks ?? ''}',
-                      style: _theme.textTheme.headline6,
+                      style: _theme.textTheme.titleLarge,
                     ),
                   ],
                 ),
@@ -213,7 +213,7 @@ class PersonView extends StatelessWidget {
     void Function()? onPressed,
   }) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(primary: color),
+      style: ElevatedButton.styleFrom(backgroundColor: color),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -57,12 +57,12 @@ class UnitView extends StatelessWidget {
                   children: [
                     Text(
                       'Name: ${_unit.name}',
-                      style: _theme.textTheme.headline6,
+                      style: _theme.textTheme.titleLarge,
                     ),
                     _sizedBox(height: 16),
                     Text(
                       'Amount: ${_unit.amount} pc/s',
-                      style: _theme.textTheme.headline6,
+                      style: _theme.textTheme.titleLarge,
                     ),
                   ],
                 ),
@@ -180,7 +180,7 @@ class UnitView extends StatelessWidget {
     void Function()? onPressed,
   }) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(primary: color),
+      style: ElevatedButton.styleFrom(backgroundColor: color),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

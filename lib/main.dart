@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:flutter_config/flutter_config.dart';
 import 'package:sqlite3/open.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,6 +33,7 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await FlutterConfig.loadEnvVariables();
   await AppNotification.init();
   _setupSqlCipher();
 
@@ -101,7 +103,8 @@ class _MyAppState extends State<MyApp> {
     _initialRoute =
         await _checkOnboard() ? AppRouter.onboardIndex : AppRouter.home;
     if (didNotifLaunchApp) {
-      AppNotification.selectedPayload = launchDetails!.payload;
+      AppNotification.selectedPayload =
+          launchDetails!.notificationResponse!.payload;
       _initialRoute = AppRouter.arrearView;
     }
 
@@ -128,7 +131,7 @@ class _MyAppState extends State<MyApp> {
           themeMode: appTheme.appTheme,
           initialRoute: _initialRoute,
           onGenerateRoute: AppRouter.generateRoute,
-          supportedLocales: FormBuilderLocalizations.delegate.supportedLocales,
+          supportedLocales: FormBuilderLocalizationsImpl.supportedLocales,
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
