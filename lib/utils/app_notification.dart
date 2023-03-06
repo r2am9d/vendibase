@@ -102,7 +102,7 @@ class AppNotification {
     String? payload,
   }) async {
     // Debugging notifs
-    // final _dt = tz.TZDateTime.now(tz.local).add(Duration(seconds: 15));
+    // final _dt = tz.TZDateTime.now(tz.local).add(Duration(seconds: 5));
 
     notificationId = _getRandomNumber();
     final _dt = tz.TZDateTime.from(dateTime, tz.local).add(Duration(hours: 8));
